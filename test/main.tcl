@@ -1,14 +1,26 @@
 # Import Design
-read_file -format verilog  "./FAS.v"
 
-current_design [get_designs FAS]
+
+set source_path ./verilog/
+set file BT_MULT
+set syn_path ./syn/
+set design DUT
+set sv 1
+
+if {$sv} {
+read_file -format sverilog  ${source_path}${file}.sv
+} else {
+read_file -format verilog  ${source_path}${file}.v
+}
+
+current_design [get_designs $design]
 link
 
-source -echo -verbose ./FAS_syn.sdc
+source -echo -verbose _syn.sdc
 
 # Compile Design
-current_design [get_designs FAS]
-#current_design [get_designs FIR]
+current_design [get_designs $design]
+
 set high_fanout_net_threshold 0
 
 uniquify
@@ -17,7 +29,7 @@ set_fix_multiple_port_nets -all -buffer_constants [get_designs *]
 #compile 
 compile_ultra
 # Output Design
-current_design [get_designs FAS]
+current_design [get_designs $design]
 
 remove_unconnected_ports -blast_buses [get_cells -hierarchical *]
 
@@ -31,6 +43,12 @@ define_name_rules name_rule -map {{"\\*cell\\*" "cell"}}
 define_name_rules name_rule -case_insensitive
 change_names -hierarchy -rules name_rule
 
-write -format ddc     -hierarchy -output "FAS_syn.ddc"
-write -format verilog -hierarchy -output "FAS_syn.v"
-write_sdf -version 2.1  FAS_syn.sdf
+write -format ddc     -hierarchy -output  ${syn_path}/${design}/${design}_syn.ddc
+#EX:"FAS_syn.ddc"
+if {$sv} {
+write -format sverilog -hierarchy -output  ${syn_path}/${design}/${design}_syn.sv
+} else {
+write -format verilog -hierarchy -output  ${syn_path}/${design}/${design}_syn.v
+}
+#EX:"FAS_syn.v"
+write_sdf -version 2.1  ${syn_path}/${design}/${design}_syn.sdf

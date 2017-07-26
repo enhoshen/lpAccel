@@ -8,8 +8,7 @@
 set company {NTUGIEE}
 set designer {Student}
 
-#set search_path [concat  [list . /opt/CAD/cell_lib/CBDK_TSMC90GUTM_Arm_f1.0/CIC/SynopsysDC/db .] $search_path]
-set search_path [concat  [list . /opt/CAD/cell_lib/CBDK_IC_Contest_v2.1/SynopsysDC/db .] $search_path]
+set search_path [concat  [list . /opt/CAD/cell_lib/CBDK_TSMC90GUTM_Arm_f1.0/CIC/SynopsysDC/db .] $search_path]
 set link_library [list "dw_foundation.sldb" "typical.db" "slow.db" "fast.db"]
 set target_library [list "typical.db" "slow.db" "fast.db"]
 set symbol_library [list "generic.sdb"]

@@ -1,7 +1,7 @@
 # Import Design
 
 
-set source_path ../verilog/
+set source_path ../verilog/ALU/
 set file Bitcount
 set syn_path ../syn/
 set design Bitcount
