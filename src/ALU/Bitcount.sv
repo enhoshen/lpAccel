@@ -13,7 +13,9 @@ input [BW_I-1:0] i_in,
 output [BW_O-1:0] o_out
 );
 
-// core //
+//================//
+//core
+//===============//
 /*
 ForCount#(
 .BW_O(BW_O) 
