@@ -4,7 +4,7 @@ parameter BW_I=16
 )(
 input [BW_I-1:0] i_in1, 
 input [BW_I-1:0] i_in2,
-input i_x_sel,        // use XNOR gate if high
+input i_ax_sel,        // use XNOR gate if high
 output signed [BW_O-1:0] o_out 
 );
 //=====================//
