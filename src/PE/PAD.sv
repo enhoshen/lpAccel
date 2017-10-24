@@ -18,7 +18,7 @@ interface IPcont_if#(              // to and from PE ,
     logic reset;
     logic done;
 
-    modport pad(
+    modport ipad(
         input IFLen,
         input PopU,
         input Pch,
@@ -31,32 +31,26 @@ interface IPcont_if#(              // to and from PE ,
     );
     modport pe(
         output IFLen,
-	output PopU,
-	output Pch,
-	output pop,
-	output nxtRow,
-	output stall,
-	output start,
+    output PopU,
+    output Pch,
+    output pop,
+    output nxtRow,
+    output stall,
+    output start,
         output reset,
-	output done
+    output done
     );    
 
 endinterface 
 
 interface IPflag_if ;
     logic zero  ;  // next pixel is zero, posedge
-    logic flag_n;  // negedge trigger , follow zero
 
     modport ipad(
-        output zero,
-	output flag_n
+        output zero
     );
 
     modport wpad(
-        input flag_n
-    );
-
-    modport xbu(
         input zero
     );
 
@@ -70,29 +64,42 @@ interface IPBpix_if #(  // input pad,buffer pixel interface
     logic valid; 
     logic zero ;
 
-    modport pad(   
+    modport ipad(   
         input data,
-	output ready,
-	input valid,
-	input zero
+    output ready,
+    input valid,
+    input zero
     );
     modport ibuf(
         output data,
-	input ready,
-	output valid,
-	output zero
+    input ready,
+    output valid,
+    output zero
     );
 endinterface
 
-interface IPout_if #(  // input pad out pixel interface
+interface Pout_if #(  // input pad out pixel interface
     parameter DWd = 16
 );
     logic [DWd-1:0] data;
     logic ready;
     logic valid;
-    
+    logic zero;
 
-    modport 
+    modport  pad(
+        output data,
+        output valid,
+        input ready,
+        output zero
+    );
+    
+    modport alu(
+        input data,
+        input valid,
+        output ready,
+        input zero
+    );
+
 endinterface
 
 module IFPAD #( 
@@ -106,14 +113,13 @@ module IFPAD #(
 input i_clk,
 input i_rstn,
 IPflag_if.ipad flag,// zero flag to WPAD
-IPcont_if.pad  cont,
-IPBpix_if.pad  ipix,              // from IFbuffer
-IPout_if.pad   opix               // to XBunit  
+IPcont_if.ipad  cont,
+IPBpix_if.ipad  ipix,              // from IFbuffer
+Pout_if.pad   opix               // to XBunit  
 );
     //=========================================
     //parameters
     //=========================================
-    import ISA1::*;
     
     //=========================================
     //logics
@@ -129,74 +135,79 @@ IPout_if.pad   opix               // to XBunit
     logic [PadSize-1:0] flag_reg_r, flag_reg_w;
     logic cur_flag_neg_r   ;   //negedge
         wire zero = flag_reg_r [waddr_r];  
+        wire opix_en = zero;
 
-    logic i_pix_ready_r , i_pix_ready_w;
-    logic o_pix_valid_r , o_pix_valid_w;
     //=========================================
     //RF 12x16b
     //=========================================
     
-	
+    
     //=========================================
     //combination
     //=========================================
-	    //control 
-	     
+        //control 
+         
     always_comb begin
-        pstate_nxt     = pstate     ;	
-        
-	waddr_w      = waddr_r      ;
-        raddr_w      = raddr_r   ;
+        pstate_nxt     = pstate     ;           
+        waddr_w      = waddr_r      ;
+        raddr_w      = raddr_r      ;
         base_addr_w  = base_addr_r  ;
         
-	flag_reg_w   = flag_reg_r   ; 
+        flag_reg_w   = flag_reg_r   ; 
+        if (cont.reset = 1'b1) begin 
+            case ( pstate ) 
+                IDLE  :begin
+                pstate_nxt = ( cont.start == 1'b1  )? WAITW : IDLE; 
+                    waddr_w = 0;
+                    raddr_w = 0;
+                    base_addr_w = 0
+                    flag_reg_w = 0;
+                end
+                WAHEAD:begin
+                pstate_nxt = ( cont.
+            
+                end
+                WAITW :begin
+                pstate_nxt = ( ipix.valid == 1'b1 && cont.pop)? WAHEAD : WAITW; 
+                    ipix.ready = 1'b1;          
+                    opix.valid = 1'b0;
+                end
+            endcase
+        else
+        end 
         
-	case ( pstate_r ) begin
-	    IDLE  :begin
-	    pstate_w = ( )?
-                waddr_w = 0;
-		raddr_w = 0;
-                base_addr_w = 0;
-
-                flag_reg_w = 0;
-                
-            end
-	    WAHEAD:begin
-                o_pix_valid_w = 1'b1;
-	    end
-	    RAHEAD:begin
-            end
-	    WAITR :begin
-            end
-	    WAITW :begin
-            end
-	end
-        	
-    end	
-	
-	
-	
-	
+    end 
+    
+    
+    
+    
   
     //=========================================
     //sequential
     //=========================================
     always_ff @ (posedge i_clk or negedge i_rstn)begin
-        if( i_rstn) begin
-		
+        if( !i_rstn) begin
+        
         end
-        else if ( en ) begin
-		
+        else if( en ) begin
+        
         end
     end
+    
+    always_ff @ (posedge i_clk or negedge i_rstn)begin  // opix sequential
+        if( !i_rstn) begin
+        end
+    else if ( opix_en ) begin
+        end
+    end
+
 endmodule
 
-module WBPAD #(
+module WPAD #(
 )(
+WPcont_if.wpad cont,
+WPBpix_if.wpad ipix,
+Pout_if.pad opix
 );
 endmodule
 
-module WZPAD #(
-)(
-);
-endmodule
