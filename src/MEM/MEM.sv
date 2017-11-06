@@ -1,6 +1,6 @@
 interface Rf2p_if #(  // 2p rf interface,  read/write when r/w wire is high
     parameter wordWd =12,
-    parameter DWd    =16,
+    parameter DWd    =32,
     parameter AWd    =$clog2(wordWd)
 );  
 
@@ -21,22 +21,12 @@ interface Rf2p_if #(  // 2p rf interface,  read/write when r/w wire is high
         output rdata  
         
     );
-    modport mast(
-        output read,
-        output write,
-        output raddr,
-        output waddr,
-
-        output wdata,
-        input  rdata
-    );
-
 
 endinterface
 
-module RF_2F#(
+module RF_2F #(
     parameter wordWd = 12,
-    parameter DWd    = 16,
+    parameter DWd    = 32,
     parameter AWd    = $clog2(wordWd)
 )(
 input i_clk,
@@ -79,10 +69,88 @@ generate
                 );   
         end
         16 :begin
+            if (wordWd==12) // 3x3/11x1/5x2/7x1
+                RF_2P_12x16 rf0(
+                .QA  (port.rdata),
+                .CLKA(i_clk),
+                .CENA(we),
+                .AA  (port.waddr),
+                .CLKB(i_clk),
+                .CENB(re),
+                .AB  (port.raddr),
+                .DB  (port.wdata),
+                .EMAA(),
+                .EMAB()
+                );
+            if(wordWd==48)  // 4x4x3 
+                RF_2P_48x16 rf0(
+                .QA  (port.rdata),
+                .CLKA(i_clk),
+                .CENA(we),
+                .AA  (port.waddr),
+                .CLKB(i_clk),
+                .CENB(re),
+                .AB  (port.raddr),
+                .DB  (port.wdata),
+                .EMAA(),
+                .EMAB()
+                ); 
         end 
         32 :begin
+            if (wordWd==12) // 3x3/11x1/5x2/7x1
+                RF_2P_12x32 rf0(
+                .QA  (port.rdata),
+                .CLKA(i_clk),
+                .CENA(we),
+                .AA  (port.waddr),
+                .CLKB(i_clk),
+                .CENB(re),
+                .AB  (port.raddr),
+                .DB  (port.wdata),
+                .EMAA(),
+                .EMAB()
+                );
+            if(wordWd==48)  // 4x4x3 
+                RF_2P_48x32 rf0(
+                .QA  (port.rdata),
+                .CLKA(i_clk),
+                .CENA(we),
+                .AA  (port.waddr),
+                .CLKB(i_clk),
+                .CENB(re),
+                .AB  (port.raddr),
+                .DB  (port.wdata),
+                .EMAA(),
+                .EMAB()
+                ); 
         end
         64 :begin
+            if (wordWd==12) // 3x3/11x1/5x2/7x1
+                RF_2P_12x64 rf0(
+                .QA  (port.rdata),
+                .CLKA(i_clk),
+                .CENA(we),
+                .AA  (port.waddr),
+                .CLKB(i_clk),
+                .CENB(re),
+                .AB  (port.raddr),
+                .DB  (port.wdata),
+                .EMAA(),
+                .EMAB()
+                );
+            if(wordWd==48)  // 4x4x3 
+                RF_2P_48x64 rf0(
+                .QA  (port.rdata),
+                .CLKA(i_clk),
+                .CENA(we),
+                .AA  (port.waddr),
+                .CLKB(i_clk),
+                .CENB(re),
+                .AB  (port.raddr),
+                .DB  (port.wdata),
+                .EMAA(),
+                .EMAB()
+                ); 
         end
         
         default:begin

@@ -30,16 +30,28 @@ interface IPcont_if#(              // to and from PE ,
     );
     modport pe(
         output IFLen,
-    output PopU,
-    output Pch,
-    output pop,
-    output nxtRow,
-    output stall,
-    output start,
+        output PopU,
+        output Pch,
+        output pop,
+        output nxtRow,
+        output stall,
+        output start,
         output reset,
-    output done
+        output done
     );    
 
+endinterface 
+
+//TODO
+interface WPcont_if ;
+
+    logic nxtWRow;
+    modport wpad(
+        input nxtWRow
+    );
+    modport pe(
+        output nxtWRow
+    );
 endinterface 
 
 interface IPflag_if ;
@@ -55,29 +67,30 @@ interface IPflag_if ;
 
 endinterface
 
-interface IPBpix_if #(  // input pad,buffer pixel interface
+interface PBpix_if #(  // input pad,buffer pixel interface
     parameter DWd = 16
 );
-    logic [DWd-1 :0 ] data;
+    logic [DWd-1 :0 ] wdata;
     logic ready;
     logic valid; 
     logic zero ;
 
-    modport ipad(   
-        input data,
-    output ready,
-    input valid,
-    input zero
+    modport pad(   
+        input wdata,
+        output ready,
+        input valid,
+        input zero
     );
-    modport ibuf(
-        output data,
-    input ready,
-    output valid,
-    output zero
+    modport buff(
+        output wdata,
+        input ready,
+        output valid,
+        output zero
     );
 endinterface
 
-interface Pout_if #(  // input pad out pixel interface
+
+interface Pout_if #(  //  pad out pixel interface
     parameter DWd = 16
 );
     logic [DWd-1:0] data;
@@ -92,7 +105,7 @@ interface Pout_if #(  // input pad out pixel interface
         output zero
     );
     
-    modport alu(
+    modport au(
         input data,
         input valid,
         output ready,
@@ -113,7 +126,7 @@ input i_clk,
 input i_rstn,
 IPflag_if.ipad flag,// zero flag to WPAD
 IPcont_if.ipad  cont,
-IPBpix_if.ipad  ipix,              // from IFbuffer
+PBpix_if.pad  ipix,              // from IFbuffer
 Pout_if.pad   opix               // to XBunit  
 );
 typedef enum logic [3:0]{ IDLE = 0 , WAHEAD= 1 , RAHEAD = 2 , WAITR =3, WAITW = 4
@@ -137,11 +150,21 @@ typedef enum logic [3:0]{ IDLE = 0 , WAHEAD= 1 , RAHEAD = 2 , WAITR =3, WAITW = 
     logic cur_flag_neg_r   ;   //negedge
         wire zero = flag_reg_r [waddr_r];  
         wire opix_en = zero;
-
+    Rf2p_if #(
+        .wordWd(PadSize),
+        .DWd(DWd)
+    ) rfif (); 
     //=========================================
     //RF 12x16b
     //=========================================
-    
+    RF_2F #(
+        .wordWd(PadSize),
+        .DWd(DWd)
+    ) RF0 (
+        .i_clk(i_clk),
+        .i_rstn(i_rstn),
+        .port(rfif)
+    );
     
     //=========================================
     //combination
@@ -155,17 +178,17 @@ typedef enum logic [3:0]{ IDLE = 0 , WAHEAD= 1 , RAHEAD = 2 , WAITR =3, WAITW = 
         base_addr_w  = base_addr_r  ;
         
         flag_reg_w   = flag_reg_r   ; 
-        if (cont.reset = 1'b1) begin 
+        if (cont.reset == 1'b1) begin 
             case ( pstate ) 
                 IDLE  :begin
                 pstate_nxt = ( cont.start == 1'b1  )? WAITW : IDLE; 
                     waddr_w = 0;
                     raddr_w = 0;
-                    base_addr_w = 0
+                    base_addr_w = 0;
                     flag_reg_w = 0;
                 end
                 WAHEAD:begin
-                pstate_nxt = ( cont.
+                pstate_nxt = WAHEAD;
             
                 end
                 WAITW :begin
@@ -174,7 +197,9 @@ typedef enum logic [3:0]{ IDLE = 0 , WAHEAD= 1 , RAHEAD = 2 , WAITR =3, WAITW = 
                     opix.valid = 1'b0;
                 end
             endcase
-        else
+        end
+        else begin
+        
         end 
         
     end 
@@ -207,7 +232,7 @@ endmodule
 module WPAD #(
 )(
 WPcont_if.wpad cont,
-WPBpix_if.wpad ipix,
+PBpix_if.pad ipix,
 Pout_if.pad opix
 );
 endmodule
