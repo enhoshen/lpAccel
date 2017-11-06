@@ -1,7 +1,6 @@
 // include IF.sv
 // check IF/typedef.sv
-typedef enum logic [3:0]{ IDLE = 0 , WAHEAD= 1 , RAHEAD = 2 , WAITR =3, WAITW = 4
-                        }  PixState ;  // pix r/w address overlapping handling
+
 interface IPcont_if#(              // to and from PE ,
     parameter ConfDWd = 4,
     parameter PConfDWd = 3
@@ -117,6 +116,8 @@ IPcont_if.ipad  cont,
 IPBpix_if.ipad  ipix,              // from IFbuffer
 Pout_if.pad   opix               // to XBunit  
 );
+typedef enum logic [3:0]{ IDLE = 0 , WAHEAD= 1 , RAHEAD = 2 , WAITR =3, WAITW = 4
+                        }  PixState ;  // pix r/w address overlapping handling   
     //=========================================
     //parameters
     //=========================================
