@@ -32,7 +32,7 @@ echo ${MEM_PATH}
 
 sourceMem
 echo ${MEM_PATH}
-$MEM_PATH
+$MEM_PATH&
 
 #if [ $1 == "ls" ]; then
 #   ls /opt/CAD/cell_lib/CBDK_TSMC90GUTM_Arm_f1.0/CIC/Memory/

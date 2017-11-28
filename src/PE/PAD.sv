@@ -1,140 +1,60 @@
 // include IF.sv
 // check IF/typedef.sv
 
-interface IPcont_if#(              // to and from PE ,
-    parameter ConfDWd = 4,
-    parameter PConfDWd = 3
-);
-    logic [ConfDWd-1:0]  IFLen;   // RxPch  
-    logic [ConfDWd-1:0]  PopU;    // (U-1)Pch+1 
-    logic [PConfDWd-1:0] Pch;    // channel tile Pch
-
-    logic pop ;                 // WPAD tell PE end of Tm, PE tell IPAD to pop
-    logic nxtRow;               // PE keeps track of Tw, swap IF rows
-    
-    logic stall;
-    logic start;
-    logic reset;
-    logic done;
-
-    modport ipad(
-        input IFLen,
-        input PopU,
-        input Pch,
-        input pop,
-        input nxtRow,
-        input stall,
-        input start,
-        input reset,
-        input done
-    );
-    modport pe(
-        output IFLen,
-        output PopU,
-        output Pch,
-        output pop,
-        output nxtRow,
-        output stall,
-        output start,
-        output reset,
-        output done
-    );    
-
-endinterface 
-
-//TODO
-interface WPcont_if ;
-
-    logic nxtWRow;
-    modport wpad(
-        input nxtWRow
-    );
-    modport pe(
-        output nxtWRow
-    );
-endinterface 
-
-interface IPflag_if ;
-    logic zero  ;  // next pixel is zero, posedge
-
-    modport ipad(
-        output zero
-    );
-
-    modport wpad(
-        input zero
-    );
-
-endinterface
-
-interface PBpix_if #(  // input pad,buffer pixel interface
-    parameter DWd = 16
-);
-    logic [DWd-1 :0 ] wdata;
-    logic ready;
-    logic valid; 
-    logic zero ;
-
-    modport pad(   
-        input wdata,
-        output ready,
-        input valid,
-        input zero
-    );
-    modport buff(
-        output wdata,
-        input ready,
-        output valid,
-        output zero
-    );
-endinterface
-
-
-interface Pout_if #(  //  pad out pixel interface
-    parameter DWd = 16
-);
-    logic [DWd-1:0] data;
-    logic ready;
-    logic valid;
-    logic zero;
-
-    modport  pad(
-        output data,
-        output valid,
-        input ready,
-        output zero
-    );
-    
-    modport au(
-        input data,
-        input valid,
-        output ready,
-        input zero
-    );
-
-endinterface
 
 module IFPAD #( 
     parameter DWd =16,
     parameter PadSize = 12,
     parameter ConfDWd = 4,
     parameter PConfDWd = 3, //PE configuration: Pc, Pm
-    parameter InstDWd = 3,  
-    parameter AddrWd  = 4
+    parameter InstDWd = 3
 )(
 input i_clk,
 input i_rstn,
-IPflag_if.ipad flag,// zero flag to WPAD
-IPcont_if.ipad  cont,
-PBpix_if.pad  ipix,              // from IFbuffer
-Pout_if.pad   opix               // to XBunit  
+//IPcont_if.ipad  cont,
+input [ConfDWd-1:0]i_cont_IFLen,
+input [ConfDWd-1:0]i_cont_PopU,
+input [PConfDWd-1:0]i_cont_Pch,
+input i_cont_pop,
+input i_cont_nxtRow,
+input i_cont_stall,
+input i_cont_start,
+input i_cont_reset,
+input i_cont_done,
+
+//PBpix_if.pad  ipix,              // from IFbuffer
+input [DWd-1:0] i_ipix_wdata,
+output o_ipix_ready,
+input  i_ipix_valid,
+//input  i_ipix_zero,
+
+//Pout_if.pad   opix               // to XBunit  
+
+output [DWd-1:0]o_opix_data,
+output o_opix_valid,
+input  i_opix_ready
+//output o_opix_zero
+ 
 );
 typedef enum logic [3:0]{ IDLE = 0 , WAHEAD= 1 , RAHEAD = 2 , WAITR =3, WAITW = 4
                         }  PixState ;  // pix r/w address overlapping handling   
     //=========================================
     //parameters
     //=========================================
+    localparam AddrWd = $clog2(PadSize);
+    //=========================================
+    //RF 12x16b
+    //=========================================
+    `Rf2pIf_logic( ipad, PadSize, DWd);
     
+    RF_2F #(
+        .wordWd(PadSize),
+        .DWd(DWd)
+    ) RF0 (
+        .i_clk(i_clk),
+        .i_rstn(i_rstn),
+        `Rf2pIf_ic_rf(ipad)
+    );
     //=========================================
     //logics
     //=========================================
@@ -143,29 +63,13 @@ typedef enum logic [3:0]{ IDLE = 0 , WAHEAD= 1 , RAHEAD = 2 , WAITR =3, WAITW = 
     PixState pstate, pstate_nxt ; 
         // addr
     logic [AddrWd-1:0] waddr_r ,     waddr_w    ;
+        assign ipad_waddr = waddr_r;
     logic [AddrWd-1:0] raddr_r ,     raddr_w ;
+        assign ipad_raddr = raddr_r;
     logic [AddrWd-1:0] base_addr_r,  base_addr_w;
-    
-    logic [PadSize-1:0] flag_reg_r, flag_reg_w;
-    logic cur_flag_neg_r   ;   //negedge
-        wire zero = flag_reg_r [waddr_r];  
-        wire opix_en = zero;
-    Rf2p_if #(
-        .wordWd(PadSize),
-        .DWd(DWd)
-    ) rfif (); 
-    //=========================================
-    //RF 12x16b
-    //=========================================
-    RF_2F #(
-        .wordWd(PadSize),
-        .DWd(DWd)
-    ) RF0 (
-        .i_clk(i_clk),
-        .i_rstn(i_rstn),
-        .port(rfif)
-    );
-    
+    logic read_r, read_w;
+    logic write_r, write_w;
+   
     //=========================================
     //combination
     //=========================================
