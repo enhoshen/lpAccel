@@ -1,0 +1,6 @@
+*.swp
+*.log
+*INCA_libs/
+*.swo
+novas*
+verdiLog/
