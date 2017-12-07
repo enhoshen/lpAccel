@@ -4,3 +4,5 @@
 *.swo
 novas*
 verdiLog/
+ncverilog*
+.diagnose.oneSearch

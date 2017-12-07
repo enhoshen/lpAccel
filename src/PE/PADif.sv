@@ -1,16 +1,16 @@
 `define IPcontIf_logic ( logname , ConfDWd, PConfDWd)\
-    logic [ConfDWd-1:0]  logname``_IFLen;  // RxPch\
-    logic [ConfDWd-1:0]  logname``_PopU;   // (U-1)Pch+1\
-    logic [PConfDWd-1:0] logname``_Pch;    // channel tile Pch\
-    logic logname``_lastPix;    // end of pixels, change psum, reset ipad base\
-    logic logname``_pop ;       // WPAD tell PE end of Tm, PE tell IPAD to pop\
-    logic logname``_noSpReuse;       // PE keeps track of Tw, swap IF rows\
+    logic [ConfDWd-1:0]  logname``_IFLen;\
+    logic [ConfDWd-1:0]  logname``_PopU;\
+    logic [PConfDWd-1:0] logname``_Pch;\
+    logic logname``_lastPix;\
+    logic logname``_pop ;\
+    logic logname``_noSpReuse;\
     logic logname``_stall;\
     logic logname``_start;\
     logic logname``_reset;\
     logic logname``_done;
 `define IPcontIf_pc_ipad ( logname )\
-    .i_cont_IFLen (logname``_IFLen),\    
+    .i_cont_IFLen (logname``_IFLen),\
     .i_cont_PopU  (logname``_PopU ),\
     .i_cont_Pch   (logname``_Pch  ),\
     .i_cont_lastPix(logname``_lastPix),\
@@ -20,8 +20,8 @@
     .i_cont_start (logname``_start),\
     .i_cont_reset (logname``_reset),\
     .i_cont_done  (logname``_done )
-`define IPcontIf_pc_pe ( logname)
-    .o_ipad_IFLen (logname``_IFLen),\    
+`define IPcontIf_pc_pe ( logname)\
+    .o_ipad_IFLen (logname``_IFLen),\
     .o_ipad_PopU  (logname``_PopU ),\
     .o_ipad_Pch   (logname``_Pch  ),\
     .o_ipad_lastPix(logname``_lastPix),\
@@ -52,9 +52,9 @@
     input  o_opix_ready,\
     output i_opix_valid,\
     output o_opix_zero
-`define PBpixIf_pc_ipix(logname)\
+`define PBpixIf_pc_opix(logname)\
     .o_opix_data(logname``_data),\
     .o_opix_ready(logname``_ready),\
     .i_opix_valid(logname``_valid),\
     .o_opix_zero(logname``_zero)
-`
+

@@ -5,7 +5,7 @@
     logic [$clog2(wordWd)-1:0] logname``_raddr;\
     logic [$clog2(wordWd)-1:0] logname``_waddr;\
     logic [DWd-1:0] logname``_rdata;\
-    logic [DWd-1:0] logname``_wdata;
+    logic [DWd-1:0] logname``_wdata
 `define Rf2pIf_pc_rf(logname)\
     .i_read(logname``_read),\
     .i_write(logname``_write),\
