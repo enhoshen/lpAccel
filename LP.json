@@ -1,0 +1,55 @@
+{
+  "session_name": "LP",
+  "windows": [
+    {
+      "options": {
+        "automatic-rename": "off"
+      },
+      "window_name": "dev",
+      "layout": "3d63,207x58,0,0{103x58,0,0,0,103x58,104,0,7}",
+      "panes": [
+        {} ,
+        {}      
+      ],
+      "start_directory": "/home/enhoshen/research/lpAccel/src/PE",
+      "focus": true
+    },
+    {
+      "options": {
+        "automatic-rename": "off"
+      },
+      "window_name": "references",
+      "layout": "bd63,207x58,0,0{103x58,0,0,1,103x58,104,0,6}",
+      "panes": [
+        {} ,
+        {}      
+      ],
+      "start_directory": "/home/enhoshen/media3temp"
+    },
+    {
+      "options": {
+        "automatic-rename": "off"
+      },
+      "window_name": "MEM",
+      "layout": "3d64,207x58,0,0{103x58,0,0,2,103x58,104,0,5}",
+      "panes": [
+        {} ,
+        {}      
+      ],
+      "start_directory": "/home/enhoshen/research/lpAccel/src/MEM",
+      "focus": false
+    },
+    {
+      "options": {
+        "automatic-rename": "off"
+      },
+      "window_name": "enviroment",
+      "layout": "bd64,207x58,0,0{103x58,0,0,3,103x58,104,0,4}",
+      "panes": [
+        "git status",
+        {} 
+      ],
+      "start_directory": "/home/enhoshen/research/lpAccel/src"
+    }
+  ]
+}
