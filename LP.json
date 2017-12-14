@@ -1,15 +1,20 @@
 {
   "session_name": "LP",
+  "shell_command_before":[
+      "tool 2",
+      "tool 1"
+    ],
   "windows": [
     {
       "options": {
         "automatic-rename": "off"
       },
       "window_name": "dev",
-      "layout": "3d63,207x58,0,0{103x58,0,0,0,103x58,104,0,7}",
+      "layout": "3cc8,207x58,0,0{103x58,0,0,1,103x58,104,0[103x29,104,0,2,103x28,104,30,9]}",
       "panes": [
         {} ,
-        {}      
+        {} ,
+        {}     
       ],
       "start_directory": "/home/enhoshen/research/lpAccel/src/PE",
       "focus": true
@@ -47,7 +52,7 @@
       "layout": "bd64,207x58,0,0{103x58,0,0,3,103x58,104,0,4}",
       "panes": [
         "git status",
-        {} 
+        "git pull" 
       ],
       "start_directory": "/home/enhoshen/research/lpAccel/src"
     }

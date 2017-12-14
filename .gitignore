@@ -1,4 +1,5 @@
 *.swp
+*.swn
 *.log
 *INCA_libs/
 *.swo

@@ -9,6 +9,17 @@
     logic logname``_start;\
     logic logname``_reset;\
     logic logname``_done;
+`define IPcontIf_cont(ConfDWd,PConfDWd)\
+    input [ConfDWd-1:0]i_cont_IFLen,\
+    input [ConfDWd-1:0]i_cont_PopU,\
+    input [PConfDWd-1:0]i_cont_Pch,\
+    input i_cont_lastPix,\
+    input i_cont_pop,\
+    input i_cont_noSpReuse,\
+    input i_cont_stall,\
+    input i_cont_start,\
+    input i_cont_reset,\
+    input i_cont_done
 `define IPcontIf_pc_ipad ( logname )\
     .i_cont_IFLen (logname``_IFLen),\
     .i_cont_PopU  (logname``_PopU ),\

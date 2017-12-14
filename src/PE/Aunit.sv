@@ -1,28 +1,38 @@
-interface AuPa_if#(      // arithmetic unit to partial sum accumulator
-    parameter IfDWd = 16 , // ifmap  width
-    parameter WDWd = 16,   // weight width
-    parameter ODWd = 5     // adder sum width
-);
-
-    modport Au(
-    );
-    modport p(
-    );
-    
-endinterface
-
-
-
+`define AucontIf_cont
 module Aunit #(
     parameter IfDWd = 16 , // ifmap  width
     parameter WDWd =  16,   // weight width
     parameter OfDWd = 32     // adder sum width , 16x2
 )(
-Au_if.Au 
+input [1:0] i_cont_auSel , 
+input i_cont_stall,
+input i_cont_start,
+input i_cont_reset,
+
+input [IfDWd-1:0] i_ifpix_data,
+output o_ifpix_ready,
+input i_ifpix_valid,
+input i_ifpix_zero,
+
+input [WDWd-1:0] i_wpix_data,
+output o_wpix_ready,
+input i_wpix_valid,
+input i_wpix_zero,
+
+
+
 );
+
+
+
+
+
+
+
 endmodule
 
 
+logic 
 
 module XBunit#(
     parameter BW_O=5,
