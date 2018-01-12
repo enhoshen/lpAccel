@@ -12,13 +12,11 @@ input i_rstn,
 //from pe control,
 `IPcontIf_cont(ConfDWd,PConfDWd),
 // from IFbuffer
-`PBpixIf_ipix(DWd),  // ipix valid only when every PE ready 
+`PBpixIf_in(ipix,DWd),  // ipix valid only when every PE ready 
 // to AU 
-`PBpixIf_opix(DWd)   // opix ready only when every PADs ready
+`PBpixIf_out(opix,DWd)   // opix ready only when every PADs ready
 );
-typedef enum logic [3:0]{ IDLE = 0 , INIT= 1 , LOOP = 2 , POP =3
-                        }  PixState ;  // pix r/w address overlapping handling   
-    //=========================================
+   //=========================================
     //parameters
     //=========================================
     localparam AddrWd = $clog2(PadSize);
@@ -37,10 +35,7 @@ typedef enum logic [3:0]{ IDLE = 0 , INIT= 1 , LOOP = 2 , POP =3
     );
     //=========================================
     //logics
-    //=========================================
-        // control
-    wire en ;
-    PixState pstate, pstate_nxt ; 
+    //========================================= 
         // addr
     logic [AddrWd-1:0] waddr_r ,     waddr_w;
     logic [AddrWd-1:0] raddr_r ,     raddr_w ;
@@ -50,9 +45,6 @@ typedef enum logic [3:0]{ IDLE = 0 , INIT= 1 , LOOP = 2 , POP =3
         // enable
     wire ce ;
         assign ce = !i_cont_reset && !i_cont_stall;
-    wire re , we ;
-        assign re = ce && ( (pstate==INIT && waddr_r!=raddr_r) || pstate!=IDLE);
-        assign we = ce && ( (pstate==POP  && waddr_r!=raddr_r) || pstate!=IDLE);
     //=========================================
     //combination
     //=========================================
@@ -70,62 +62,7 @@ typedef enum logic [3:0]{ IDLE = 0 , INIT= 1 , LOOP = 2 , POP =3
     assign o_opix_valid = ipad_read;
     assign o_opix_zero  = flag_r[raddr_r];
     
-    always_comb begin
-        pstate_nxt     = pstate     ;           
-        waddr_w      = waddr_r      ;
-        raddr_w      = raddr_r      ;
-        nxtBase_addr_w  = nxtBase_addr_r  ;
-        flag_w       = flag_r;
-        if ( i_cont_reset ) begin
-        pstate_nxt = IDLE;
-            waddr_w= 0;
-            raddr_w= 0;
-            nxtBase_addr_w=0;
-            flag_w=1;
-        end
-        else if ( i_cont_stall ) begin
-        pstate_nxt     = pstate     ;           
-            waddr_w      = waddr_r      ;
-            raddr_w      = raddr_r      ;
-            nxtBase_addr_w  = nxtBase_addr_r  ;
-            flag_w       = flag_r; 
-        end
-        else begin
-            if (pstate==IDLE) begin
-                waddr_w = 0;
-                nxtBase_addr_
-            end
-            else begin
-                waddr_w = (ipad_write)? ((waddr_r==i_cont_IFLen)? 0 : waddr_r+1 ) : waddr_r;
-                nxtBase_addr_w = (ipad_write || pstate == INIT)? ((nxtBase_addr_r==i_cont_IFLen)? 0 : nxtBase_addr_r+1) : nxtBase_addr_r;
-                raddr_w = (ipad_read) ? ((i_cont_lastPix)? nxtBase_addr_r : (raddr_r==i_cont_IFLen)? 0 : raddr_r+1) : raddr_r;
-                flag_w[waddr_r]= (ipad_write && !i_ipix_zero) ? 0 : flag_r[raddr_r];
-            end 
-        case ( pstate ) 
-            IDLE  :begin
-            pstate_nxt = (i_cont_start) ? INIT : IDLE ;
-            end
-            INIT:begin
-                if( i_cont_noSpReuse &&  )begin
-
-                end
-                else if( i_cont_ 
-                
-                end
-            end
-            LOOP :begin
-                if( i_cont_done)begin
-
-                end 
-            end
-            POP:begin
-            end
-
-        endcase
-        end
-    end 
-    
-    
+   
     
     
   

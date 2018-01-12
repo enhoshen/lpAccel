@@ -43,29 +43,29 @@
     .o_ipad_reset (logname``_reset),\
     .o_ipad_done  (logname``_done )
 // PBpix interface
-`define PBpixIf_logic(logname, DWd)\
+`define PBpixIf_logic(logname,name, DWd)\
     logic [DWd-1:0] logname_data;\
     logic logname_ready;\
     logic logname_valid;\
     logic logname_zero;
-`define PBpixIf_ipix(DWd)\
-    input [DWd-1:0] i_ipix_data,\
-    output o_ipix_ready,\
-    input i_ipix_valid,\
-    input i_ipix_zero
-`define PBpixIf_pc_ipix(logname)\
-    .i_ipix_data(logname``_data),\
-    .o_ipix_ready(logname``_ready),\
-    .i_ipix_valid(logname``_valid),\
-    .i_ipix_zero(logname``_zero)
-`define PBpixIf_opix(DWd)\
-    output [DWd-1:0] o_opix_data,\
-    input  o_opix_ready,\
-    output i_opix_valid,\
-    output o_opix_zero
-`define PBpixIf_pc_opix(logname)\
-    .o_opix_data(logname``_data),\
-    .o_opix_ready(logname``_ready),\
-    .i_opix_valid(logname``_valid),\
-    .o_opix_zero(logname``_zero)
+`define PBpixIf_in(name ,DWd)\
+    input [DWd-1:0] i_``name``_data,\
+    output o_``name``_ready,\
+    input i_``name``_valid,\
+    input i_``name``_zero
+`define PBpixIf_pc_in(name, logname)\
+    .i_``name``_data(logname``_data),\
+    .o_``name``_ready(logname``_ready),\
+    .i_``name``_valid(logname``_valid),\
+    .i_``name``_zero(logname``_zero)
+`define PBpixIf_out(name,DWd)\
+    output [DWd-1:0] o_``name``_data,\
+    input  o_``name``_ready,\
+    output i_``name``_valid,\
+    output o_``name``_zero
+`define PBpixIf_pc_out(name,logname)\
+    .o_``name``_data(logname``_data),\
+    .o_``name``_ready(logname``_ready),\
+    .i_``name``_valid(logname``_valid),\
+    .o_``name``_zero(logname``_zero)
 
