@@ -6,12 +6,19 @@
 
 
 set company {NTUGIEE}
-set designer {Student}
-
-set search_path [concat  [list . /opt/CAD/cell_lib/CBDK_TSMC90GUTM_Arm_f1.0/CIC/SynopsysDC/db .] $search_path]
+set designer {EnHo}
+set memdb_path ~/research/lpAccel/src/MEM/memdb
+set memdb_list [ glob  ${memdb_path}/*.db ] 
+#glob return each names of files that matches the pattern
+echo $memdb_list
+set search_path [concat  [list . /opt/CAD/cell_lib/CBDK_TSMC90GUTM_Arm_f1.0/CIC/SynopsysDC/db .] $search_path $memdb_path]
+echo $search_path
 #set search_path [concat  [list . /opt/CAD/cell_lib/CBDK_IC_Contest_v2.1/SynopsysDC/db .] $search_path]
-set link_library [list "dw_foundation.sldb" "typical.db" "slow.db" "fast.db" "rf_sp_16x16.db" "rf_2p_128x64.db"]
-set target_library [list "typical.db" "slow.db" "fast.db" "rf_sp_16x16.db" "rf_2p_128x64.db"]
+set link_library [list "dw_foundation.sldb" "typical.db" "slow.db" "fast.db" ]
+set link_library [concat $link_library $memdb_list ]         
+set target_library [list "typical.db" "slow.db" "fast.db"]
+set target_library [concat $target_library $memdb_list]          
+
 set symbol_library [list "generic.sdb"]
 set synthetic_library [list "dw_foundation.sldb"]
 set default_schematic_options {-size infinite}
