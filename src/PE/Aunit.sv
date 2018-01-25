@@ -1,78 +1,150 @@
-`define AucontIf_cont
-module Aunit #(
-    parameter IfDWd = 16 , // ifmap  width
-    parameter WDWd =  16,   // weight width
-    parameter OfDWd = 32     // adder sum width , 16x2
-)(
-input [1:0] i_cont_auSel , 
-input i_cont_stall,
-input i_cont_start,
+//`include "PE.sv"
+import PECfg::*;
+module Aunit (
+input [3*PECfg::DWd-1:0] i_cont_mask , 
+input PECfg::AuSel  i_cont_mode ,
+input PECfg::NumT i_cont_iNumT,  // signed/unsigned numerical type
+input PECfg::NumT i_cont_wNumT,
 input i_cont_reset,
+input i_cont_stall,
 
-input [IfDWd-1:0] i_ifpix_data,
-output o_ifpix_ready,
-input i_ifpix_valid,
-input i_ifpix_zero,
-
-input [WDWd-1:0] i_wpix_data,
-output o_wpix_ready,
-input i_wpix_valid,
-input i_wpix_zero,
-
-
-
+input i_smode_ipix,  // smode indicate sign/unsigned mode
+input [PECfg::DWd-1:0] i_ipix,
+`pbpix_input(ipix),
+input i_smode_wpix,
+input [PECfg::DWd-1:0] i_wpix,
+`pbpix_input(wpix),
+output [PECfg::AuODWd-1:0] o_sum,
+`pbpix_output(sum)
 );
 
+    //=================
+    //parameter
+    //=================
+    localparam ODWd = PECfg::AuODWd;
+    localparam DWd  = PECfg::DWd;    
+    //=================
+    //logic
+    //=================
+    wire [3*DWd-1:0] msk_ipix ,msk_wpix;
+        assign msk_ipix = i_ipix & i_cont_mask;
+        assign msk_wpix = i_wpix & i_cont_mask;
+    wire [DWd-1:0] msk1b_ipix,msk2b_ipix,msk4b_ipix ;
+        assign  msk1b_ipix=msk_ipix[1*DWd-1:0];   
+        assign  msk2b_ipix=msk_ipix[2*DWd-1:1*DWd];
+        assign  msk4b_ipix=msk_ipix[3*DWd-1:2*DWd];
+    wire [DWd-1:0] msk1b_wpix,msk2b_wpix,msk4b_wpix ;
+        assign  msk1b_wpix=msk_wpix[1*DWd-1:0];   
+        assign  msk2b_wpix=msk_wpix[2*DWd-1:1*DWd];
+        assign  msk4b_wpix=msk_wpix[3*DWd-1:2*DWd];
+    
+        // num range 1b: -1~1
+        //           2b: -2~3
+        //           4b: -8~15
+    logic signed [1:0] setd1b_ipix [16]; // sign extend 
+    logic signed [2:0] setd2b_ipix [8] ;
+    logic signed [4:0] setd4b_ipix [4] ;
+    logic signed [1:0] setd1b_wpix [16]; // sign extend 
+    logic signed [2:0] setd2b_wpix [8] ;
+    logic signed [4:0] setd4b_wpix [4] ;
+        // num range 1bx1b: -1~1 
+        //           2bx2b: -6~9
+        //           4bx4b: -120~225  
+    logic signed [1:0] m1b [16];
+    logic signed [4:0] m2b [8];
+    logic signed [8:0] m4b [4];
+        // num range sum1b:-16~16
+        //           sum2b:-48~72
+        //           sum4b:-480~900
+    logic signed [5:0] sum1b ;
+    logic signed [7:0] sum2b ;
+    logic signed [10:0]sum4b ;
+
+    logic signed [ODWd-1:0] o_sum_r , o_sum_w;
+        assign o_sum = o_sum_r;
+    //================
+    //submodule
+    //================
+    ADDT #(
+        .OWd(6),
+        .DWd(2),
+        .Num(16)
+    ) AT1b(
+        .i_in(m1b),
+        .o_out(sum1b)
+    );
+    ADDT #(
+        .OWd(8),
+        .DWd(5),
+        .Num(8)
+    ) AT2b(
+        .i_in(m2b),
+        .o_out(sum2b)
+    );
+    ADDT #(
+        .OWd(11),
+        .DWd(9),
+        .Num(4)
+    ) AT4b(
+        .i_in(m4b),
+        .o_out(sum4b)
+    );
 
 
 
-
-
-
+    //================
+    //combination
+    //================
+    
+    integer i;
+    always_comb begin
+         
+        for ( i = 0 ; i <16; i=i+1)begin: m1  
+            case(i_cont_mode) 
+                XNOR: begin
+                    setd1b_ipix[i] =  (!msk1b_ipix[i]) ? -2'd1 : 2'd1; 
+                    setd1b_wpix[i] =  (!msk1b_wpix[i]) ? -2'd1 : 2'd1;
+                end
+                default  : begin
+                    setd1b_ipix[i] = (i_cont_iNumT==SIGNED)? $signed(msk1b_ipix[i]):$unsigned(msk1b_ipix[i]) ;
+                    setd1b_wpix[i] = (i_cont_wNumT==SIGNED)? $signed(msk1b_wpix[i]):$unsigned(msk1b_wpix[i]);
+                end       
+            endcase
+            m1b [i] = setd1b_ipix[i]*setd1b_wpix[i];       
+        end
+        for ( i = 0 ; i <8; i=i+1)begin: m2  
+            setd2b_ipix[i] = (i_cont_iNumT==SIGNED)? $signed(msk2b_ipix[i]):$unsigned(msk2b_ipix[i]); 
+            setd2b_wpix[i] = (i_cont_wNumT==SIGNED)? $signed(msk2b_wpix[i]):$unsigned(msk2b_wpix[i]);
+            m2b [i] = setd2b_ipix[i]*setd2b_wpix[i];
+        end
+        for ( i = 0 ; i <4; i=i+1)begin: m4
+            setd4b_ipix[i] = (i_cont_iNumT==SIGNED)? $signed(msk4b_ipix[i]):$unsigned(msk4b_ipix[i]); 
+            setd4b_wpix[i] = (i_cont_wNumT==SIGNED)? $signed(msk4b_wpix[i]):$unsigned(msk4b_wpix[i]);
+            m4b [i] = setd4b_ipix[i]*setd4b_wpix[i]; 
+        end
+    end
+    
+    
 endmodule
 
 
-logic 
-
-module XBunit#(
-    parameter BW_O=5,
-    parameter BW_I=16 
+module ADDT #(
+    parameter OWd = 6,
+    parameter DWd = 2,
+    parameter Num = 16
 )(
-input [BW_I-1:0] i_in1, 
-input [BW_I-1:0] i_in2,
-input i_ax_sel,        // use XNOR gate if high
-output signed [BW_O-1:0] o_out 
+input signed [DWd-1:0] i_in [Num],
+output signed [OWd-1:0] o_out
 );
-//=====================//
-//definition
-//=====================//
-    logic [BW_I-1:0] AND;
-    logic [BW_I-1:0] XNOR;
-    logic [BW_I-1:0] src_sel; // select AND or XNOR
-    logic signed [BW_O-1:0] b_cnt;
-
-//=====================//
-//module
-//=====================//
-    Bitcount #(
-        .BW_O(BW_O),
-        .BW_I(BW_I)
-        )B_0(
-        .i_in(src_sel),
-        .o_out(b_cnt) );
-//=====================//
-//comb
-//=====================//
-
-    assign AND = i_in1 & i_in2;
-    assign XNOR= i_in1 ~^i_in2;
-    assign src_sel = (i_ax_sel==1'b1)? XNOR : AND;
-    assign o_out = (i_ax_sel==1'b1)? b_cnt-16: b_cnt;
+    logic signed [OWd-1:0] out; 
+        assign o_out = out;
+    integer i;
+    
+    always_comb  begin
+        out = {OWd{1'd0}};
+            for ( i=0 ; i< Num ; i=i+1)begin
+                out = out + i_in[i]; 
+            end
+    end
 
 endmodule
-
-module XBunitTer#(
-parameter BW_O=3)();
-
-endmodule
-

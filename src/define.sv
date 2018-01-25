@@ -19,6 +19,14 @@
 // modified by En-ho Shen
 
 
+`define pbpix_input(name) output logic name``_ack, input name``_rdy , input name``_zero
+`define pbpix_output(name) output logic name``_rdy, input name``_ack , output name``_zero
+`define pbpix_logic(name) logic name``_rdy, name``_ack ,name``_zero
+`define pbpix_port(name) name``_rdy, name``_ack , name``_zero
+`define pbpix_connect(port_name, logic_name) .port_name``_rdy(logic_name``_rdy), .port_name``_ack(logic_name``_ack), .port_name``_zero(logic_name``_zero)
+`define pbpix_unconnect(port_name) .port_name``_rdy(), .port_name``_ack() , .port_name``_zero()
+
+
 `define rdyack_input(name) output logic name``_ack; input name``_rdy
 `define rdyack_output(name) output logic name``_rdy; input name``_ack
 `define rdyack_logic(name) logic name``_rdy, name``_ack
@@ -34,6 +42,9 @@
 `define clk_port i_clk, i_rst
 `define clk_connect .i_clk(i_clk), .i_rst(i_rst)
 `define clk_input input i_clk; input i_rst
+
+`define ff_rstn always_ff @(posedge i_clk or negedge i_rstn) if (!i_rstn) begin
+
 `define ff_rst always_ff @(posedge i_clk or negedge i_rst) if (!i_rst) begin
 `define ff_cg(cg) end else if (cg) begin
 `define ff_nocg end else begin

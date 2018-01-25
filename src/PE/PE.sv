@@ -1,60 +1,86 @@
+`include "../define.sv"
+package PECfg ;
+    typedef enum logic [1:0] { XNOR,M1,M2,M4 } AuSel;
+    typedef enum logic { SIGNED , UNSIGNED } NumT;
+    typedef enum logic [3:0]{ IDLE  , INIT , LOOP , POP  , OLAP 
+                        }  IPadState ;  // pix r/w address overlapping handling   
+    
+    parameter PConfDWd = 4; 
+    parameter TileConfDWd=10; 
+	parameter DWd  = 16;     // data bit width 
+	parameter PsumDWd  = 16;
+    parameter InstDWd  = 3;   // 
+    parameter PEcol =16;
+    parameter IPadSize =12;
+    parameter WPadSize =48; 
+    parameter AuODWd = 11;
+endpackage
 
-// include ../IF/IF.sv
+import PECfg::*;
 
-
-
-module PE #(
-    parameter PConfDWd = 4, 
-    parameter TileConfDWd=10, 
-	parameter DWd  = 16,     // data bit width 
-	parameter PsumDWd  = 16,
-    parameter InstDWd  = 3,   // 
-    parameter PEcol =16
-    )(
+module PE (
 input i_clk,
 input i_rstn,
-input [PConfDWd-1:0] i_conf_Pch,  // channel number to be handled
-input [PConfDWd-1:0] i_conf_Pm, // filters number to be handled
-input [PConfDWd-1:0] i_conf_Pwb, //
-input [PConfDWd-1:0] i_conf_Pxb, //
+input [PECfg::PConfDWd-1:0] i_conf_Pch,  // channel number to be handled
+input [PECfg::PConfDWd-1:0] i_conf_Pm, // filters number to be handled
+input [PECfg::PConfDWd-1:0] i_conf_Pwb, //
+input [PECfg::PConfDWd-1:0] i_conf_Pxb, //
 input [2:0] i_conf_Tb,
 input [5:0] i_conf_wpad_size,
 input [3:0] i_conf_ipad_size,
 
 input i_conf_opath , // 1 as to buffer, 0 as to left PE
-input [TileConfDWd-1:0] i_conf_Tw,
+input [PECfg::TileConfDWd-1:0] i_conf_Tw,
 
-input [InstDwd-1:0] i_inst_pe,
+input [PECfg::InstDwd-1:0] i_inst_pe,
 
-`PBpixIf_in ( ipix , DWd),
-`PBpixIf_in ( wpix , PEcol*DWd),
-
-`PBpixIf_out ( pspix , DWd)
+`pbpix_input ( ipix ),
+input [PECfg::DWd-1:0] i_ipix,
+`pbpix_input ( wpix ),
+input [PECfg::DWd*PECfg::PEcol-1:0] i_wpix,
+`pbpix_output ( pspix ),
+output[PECfg::DWd*PECfg::PEcol-1:0] o_pspix
 ///////////////////////////////////
 
 );
-    typedef  logic enum {IDLE,WRITE,READ,DONE} fsm_t;
-    fsm_t state;
-    typedef enum logic [3:0]{ IDLE = 0 , INIT= 1 , LOOP = 2 , POP = 3 , OLAP = 4
-                        }  IPadState ;  // pix r/w address overlapping handling   
+    
+    PECfg::IPadState s_ip_w , s_ip_r;
     //=========================================
     //
     //parameters
     //=========================================
-    localparam IPadSize = 12;
-    localparam WPadSize = 48;
+    localparam IPadSize = PECfg::IPadSize;
+    localparam WPadSize = PECfg::WPadSize;
     localparam IAddrWd =$clog2(IPadSize);
     localparam WAddrWd =$clog2(WAddrWd );
 	//=========================================
 	//logics
 	//=========================================
-        // module // 
+        // control //
+    typedef enum logic {IDLE,WRITE,READ,DONE} s_main_w , s_main_r;
 
-    genvar pe_row ; 
-    generate begin : pe_row 
-        for ( pe_row = 0 ; pe ; pe_row = pe_row+1)begin
-         
-            RF_2F #(
+    logic [7:0] cur_opix_r , cur_opix_w;     // max 64
+    logic [3:0] cur_ipix_r , cur_ipix_w;
+    logic [IPadSize-1:0] ipad_flag_w, ipad_flag_r;
+
+    wire ce ;
+        wire re , we;
+            //assign re = ce && ( (pstate==INIT && waddr_r!=raddr_r) || pstate!=IDLE);
+            //assign we = ce && ( (pstate==POP  && waddr_r!=raddr_r) || pstate!=IDLE);
+    wire cont_reset ;
+    wire cont_stall ;
+    wire cont_start ;
+    
+    logic [IAddrWd-1:0] ipad_waddr_r , ipad_waddr_w ;
+    logic [IAddrWd-1:0] ipad_raddr_r , ipad_raddr_w;
+        logic [IAddrWd-1:0] ipad_base_r , ipad_base_w;
+    logic [WAddrWd-1:0] wpad_waddr_r , wpad_waddr_w ;
+    logic [WAddrWd-1:0] wpad_raddr_r , wpad_raddr_w;
+    //=========================================
+    //combination
+    //=========================================
+        // module // 
+    RF_2F #(
                 .wordWd(IPadSize),
                 .DWd(DWd)
             ) IPAD (
@@ -67,6 +93,15 @@ input [InstDwd-1:0] i_inst_pe,
                 .o_rdata(),
                 .i_wdata(),
             );
+           
+    genvar pe_row ; 
+    generate begin : pe_row 
+        for ( pe_row = 0 ; pe ; pe_row = pe_row+1)begin
+
+
+            Aunit Au1(
+            );
+     
             RF_2F#(
                 .wordWd(WPadSize),
                 .DWd(DWd)
@@ -84,18 +119,9 @@ input [InstDwd-1:0] i_inst_pe,
 
         end
     endgenerate 
-        // control //
 
-    logic [7:0] cur_opix_r , cur_opix_w;     // max 64
-    logic [3:0] cur_ipix_r , cur_ipix_w;
-    
-    logic [IAddrWd-1:0] ipad_waddr_r , ipad_waddr_w , ipad_raddr_r , ipad_raddr_w;
-        logic [IAddrWd-1:0] ipad_base_r , ipad_base_w;
-    logic [WAddrWd-1:0] wpad_waddr_r , wpad_waddr_w , wpad_waddr_r , wpad_waddr_w;
-    //=========================================
-    //combination
-    //=========================================
-        // IPAD
+
+
     always_comb begin
         pstate_nxt     = pstate     ;           
         waddr_w      = waddr_r      ;
