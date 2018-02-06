@@ -2,6 +2,7 @@
 package PECfg ;
     typedef enum logic [1:0] { XNOR,M1,M2,M4 } AuSel;
     typedef enum logic { SIGNED , UNSIGNED } NumT;
+    typedef enum logic { FSTPIX , FROMBUF } PsumInit;
     typedef enum logic [3:0]{ IDLE  , INIT , LOOP , POP  , OLAP 
                         }  IPadState ;  // pix r/w address overlapping handling   
     
@@ -13,6 +14,7 @@ package PECfg ;
     parameter PEcol =16;
     parameter IPadSize =12;
     parameter WPadSize =48; 
+    parameter PPadSize =64;
     parameter AuODWd = 11;
 endpackage
 
@@ -28,19 +30,17 @@ input [PECfg::PConfDWd-1:0] i_conf_Pxb, //
 input [2:0] i_conf_Tb,
 input [5:0] i_conf_wpad_size,
 input [3:0] i_conf_ipad_size,
-
-input i_conf_opath , // 1 as to buffer, 0 as to left PE
 input [PECfg::TileConfDWd-1:0] i_conf_Tw,
 
 input [PECfg::InstDwd-1:0] i_inst_pe,
 
-`pbpix_input ( ipix ),
 input [PECfg::DWd-1:0] i_ipix,
-`pbpix_input ( wpix ),
+`pbpix_input ( ipix ),
 input [PECfg::DWd*PECfg::PEcol-1:0] i_wpix,
-`pbpix_output ( pspix ),
+`pbpix_input ( wpix ),
 output[PECfg::DWd*PECfg::PEcol-1:0] o_pspix
-///////////////////////////////////
+`pbpix_output ( pspix ),
+//////////////////////////////////
 
 );
     
@@ -51,8 +51,10 @@ output[PECfg::DWd*PECfg::PEcol-1:0] o_pspix
     //=========================================
     localparam IPadSize = PECfg::IPadSize;
     localparam WPadSize = PECfg::WPadSize;
+    localparam PPadSize= PECfg::PPadSize;
     localparam IAddrWd =$clog2(IPadSize);
-    localparam WAddrWd =$clog2(WAddrWd );
+    localparam WAddrWd =$clog2(WPadSize );
+    localparam PAddrWd=$clog2(PPadSize);
 	//=========================================
 	//logics
 	//=========================================
@@ -76,6 +78,9 @@ output[PECfg::DWd*PECfg::PEcol-1:0] o_pspix
         logic [IAddrWd-1:0] ipad_base_r , ipad_base_w;
     logic [WAddrWd-1:0] wpad_waddr_r , wpad_waddr_w ;
     logic [WAddrWd-1:0] wpad_raddr_r , wpad_raddr_w;
+    logic [PAddrWd-1:0] ppad_waddr_r , ppad_waddr_r;
+    logic [PAddrWd-1:0] ppad_raddr_r , ppad_raddr_r;
+    
     //=========================================
     //combination
     //=========================================
@@ -99,9 +104,24 @@ output[PECfg::DWd*PECfg::PEcol-1:0] o_pspix
         for ( pe_row = 0 ; pe ; pe_row = pe_row+1)begin
 
 
-            Aunit Au1(
+            Aunit Au(
+                `clk_connect,
+                i_cont_mask (), 
+                i_cont_mode (),
+                i_cont_iNumT(),  // signed/unsigned numerical type
+                i_cont_wNumT(),
+                i_cont_reset(),
+                i_cont_stall(),
+                i_smode_ipix(),  // smode indicate sign/unsigned mode
+                i_ipix(),
+                `pbpix_connect(ipix , ),
+                i_smode_wpix(),
+                i_wpix(),
+                `pbpix_connect(wpix,),
+                o_sum(),
+                `pbpix_connect(sum,)
             );
-     
+
             RF_2F#(
                 .wordWd(WPadSize),
                 .DWd(DWd)
@@ -116,7 +136,22 @@ output[PECfg::DWd*PECfg::PEcol-1:0] o_pspix
                 .i_wdata(),
                 
             );
-
+            
+            RF_2F#(
+                .wordWd(PPADSize),
+                .DWd(DWd)
+            ) PPAD (
+                .i_clk(i_clk),
+                .i_rstn(i_rstn),
+                .i_read(),
+                .i_write(),
+                .i_raddr(),
+                .i_waddr(),
+                .o_rdata(),
+                .i_wdata(),
+                
+            );
+            
         end
     endgenerate 
 

@@ -1,12 +1,13 @@
 //`include "PE.sv"
 import PECfg::*;
 module Aunit (
+`clk_input
 input [3*PECfg::DWd-1:0] i_cont_mask , 
 input PECfg::AuSel  i_cont_mode ,
 input PECfg::NumT i_cont_iNumT,  // signed/unsigned numerical type
 input PECfg::NumT i_cont_wNumT,
 input i_cont_reset,
-input i_cont_stall,
+input i_cont_stall, // high as enable
 
 input i_smode_ipix,  // smode indicate sign/unsigned mode
 input [PECfg::DWd-1:0] i_ipix,
@@ -37,7 +38,7 @@ output [PECfg::AuODWd-1:0] o_sum,
         assign  msk1b_wpix=msk_wpix[1*DWd-1:0];   
         assign  msk2b_wpix=msk_wpix[2*DWd-1:1*DWd];
         assign  msk4b_wpix=msk_wpix[3*DWd-1:2*DWd];
-    
+       
         // num range 1b: -1~1
         //           2b: -2~3
         //           4b: -8~15
@@ -60,8 +61,21 @@ output [PECfg::AuODWd-1:0] o_sum,
     logic signed [7:0] sum2b ;
     logic signed [10:0]sum4b ;
 
-    logic signed [ODWd-1:0] o_sum_r , o_sum_w;
-        assign o_sum = o_sum_r;
+    logic signed [DWd-1:0] sum_r , sum_w;
+        assign o_sum = sum_r ;
+        // control
+    wire ce ;
+        assign ce = (forward && wpix_zero && ipix_zero && i_cont_stall)||(sum_ack && wpix_zero && ipix_zer && i_cont_stall) ; 
+    
+    logic sum_rdy_w ;
+         assign sum_rdy_w = ( wpix_rdy && ipix_rdy ) || ( sum_rdy && !sum_ack);
+    logic sum_zero_w ;
+        assign sum_zero_w = ipix_zero && wpix_zero;
+
+    wire forward ;
+        assign forward = wpix_rdy && ipix_rdy &&  (!sum_rdy || sum_ack) ;
+        assign ipix_ack = forward;
+        assign wpix_ack = forward;
     //================
     //submodule
     //================
@@ -122,9 +136,30 @@ output [PECfg::AuODWd-1:0] o_sum,
             setd4b_wpix[i] = (i_cont_wNumT==SIGNED)? $signed(msk4b_wpix[i]):$unsigned(msk4b_wpix[i]);
             m4b [i] = setd4b_ipix[i]*setd4b_wpix[i]; 
         end
+
+        case ( i_cont_mode )
+            XNOR: sum_w = sum1b;
+            M1:   sum_w = sum1b;
+            M2:   sum_w = sum2b;
+            M4:   sum_w = sum4b;
+        endcase
+        
+
     end
     
-    
+    `ff_srstn(i_cont_reset) 
+        sum_r <= 16'b0; 
+    `ff_cg( ce  )
+        sum_r <= sum_w; 
+    `ff_end
+
+    `ff_srstn(i_cont_reset)
+        sum_rdy <= 1'b0;
+        sum_zero<= 1'b1;
+    `ff_cg( i_cont_stall )
+        sum_rdy <= sum_rdy_w;
+        sum_zero<= sum_zero_w;
+    `ff_end
 endmodule
 
 
