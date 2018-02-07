@@ -1,12 +1,7 @@
-`include "../define.sv"
+
 package PECfg ;
-    typedef enum logic [1:0] { XNOR,M1,M2,M4 } AuSel;
-    typedef enum logic { SIGNED , UNSIGNED } NumT;
-    typedef enum logic { FSTPIX , FROMBUF } PsumInit;
-    typedef enum logic [3:0]{ IDLE  , INIT , LOOP , POP  , OLAP 
-                        }  IPadState ;  // pix r/w address overlapping handling   
-    
-    parameter PConfDWd = 4; 
+   
+    parameter PConfDWd = 6; 
     parameter TileConfDWd=10; 
 	parameter DWd  = 16;     // data bit width 
 	parameter PsumDWd  = 16;
@@ -16,21 +11,29 @@ package PECfg ;
     parameter WPadSize =48; 
     parameter PPadSize =64;
     parameter AuODWd = 11;
+    typedef enum logic [1:0] { XNOR,M1,M2,M4 } AuSel;
+    typedef enum logic { SIGNED , UNSIGNED } NumT;
+    typedef enum logic { FSTPIX , FROMBUF } PsumInit;
+    typedef enum logic [3:0]{ IDLE  , INIT , LOOP , POP  , OLAP 
+                        }  IPadState ;  // pix r/w address overlapping handling   
+    typedef enum logic [InstDWd-1:0] {STALL,RESET,START,WORK,} PEiss ;  
 endpackage
 
 import PECfg::*;
 
 module PE (
-input i_clk,
-input i_rstn,
+`clk_input,
 input [PECfg::PConfDWd-1:0] i_conf_Pch,  // channel number to be handled
 input [PECfg::PConfDWd-1:0] i_conf_Pm, // filters number to be handled
-input [PECfg::PConfDWd-1:0] i_conf_Pwb, //
-input [PECfg::PConfDWd-1:0] i_conf_Pxb, //
-input [2:0] i_conf_Tb,
-input [5:0] i_conf_wpad_size,
-input [3:0] i_conf_ipad_size,
+input [PECfg::PConfDWd-1:0] i_conf_Ab, // Aunit bit used
+input [PECfg::PConfDWd-1:0] i_conf_Tb, // batch tile
+input [PECfg::PConfDWd-1:0] i_conf_U , // stride
+input [PECfg::PConfDWd-1:0] i_conf_R , // filter width
+input [PECfg::PConfDWd-1:0] i_conf_wpad_size, // pch*pm*R
+input [PECfg::PConfDWd-1:0] i_conf_ipad_size, // pch*R
 input [PECfg::TileConfDWd-1:0] i_conf_Tw,
+input [PECfg::PConfDWd-1:0] i_conf_Xb, // *b is the bit channel num = tensor precision/Aunit bit
+input [PECfg::PConfDWd-1:0] i_conf_Wb,
 
 input [PECfg::InstDwd-1:0] i_inst_pe,
 
@@ -46,7 +49,6 @@ output[PECfg::DWd*PECfg::PEcol-1:0] o_pspix
     
     PECfg::IPadState s_ip_w , s_ip_r;
     //=========================================
-    //
     //parameters
     //=========================================
     localparam IPadSize = PECfg::IPadSize;
@@ -62,8 +64,11 @@ output[PECfg::DWd*PECfg::PEcol-1:0] o_pspix
     typedef enum logic {IDLE,WRITE,READ,DONE} s_main_w , s_main_r;
 
     logic [7:0] cur_opix_r , cur_opix_w;     // max 64
-    logic [3:0] cur_ipix_r , cur_ipix_w;
+    logic [7:0] cur_ipix_r , cur_ipix_w;    
+    logic [7:0] cur_wpix_r , cur_wpix_w;    
     logic [IPadSize-1:0] ipad_flag_w, ipad_flag_r;
+    wire last_xb , last_wb ; 
+    wire 
 
     wire ce ;
         wire re , we;
@@ -86,18 +91,22 @@ output[PECfg::DWd*PECfg::PEcol-1:0] o_pspix
     //=========================================
         // module // 
     RF_2F #(
-                .wordWd(IPadSize),
-                .DWd(DWd)
-            ) IPAD (
-                .i_clk(i_clk),
-                .i_rstn(i_rstn),
-                .i_read(),
-                .i_write(),
-                .i_raddr(),
-                .i_waddr(),
-                .o_rdata(),
-                .i_wdata(),
-            );
+        .wordWd(IPadSize),
+        .DWd(DWd)
+    ) IPAD (
+        .i_clk(i_clk),
+        .i_rstn(i_rstn),
+        .i_read(),
+        .i_write(),
+        .i_raddr(),
+        .i_waddr(),
+        .o_rdata(),
+        .i_wdata(),
+    );
+    InStageController IC(
+    );
+    DataPathController DC(
+    );
            
     genvar pe_row ; 
     generate begin : pe_row 
@@ -121,7 +130,10 @@ output[PECfg::DWd*PECfg::PEcol-1:0] o_pspix
                 o_sum(),
                 `pbpix_connect(sum,)
             );
-
+            SumStage Ss(
+            );
+            PathStage Ps(
+            );
             RF_2F#(
                 .wordWd(WPadSize),
                 .DWd(DWd)

@@ -61,7 +61,7 @@ output [PECfg::AuODWd-1:0] o_sum,
     logic signed [7:0] sum2b ;
     logic signed [10:0]sum4b ;
 
-    logic signed [DWd-1:0] sum_r , sum_w;
+    logic signed [ODWd-1:0] sum_r , sum_w;
         assign o_sum = sum_r ;
         // control
     wire ce ;
@@ -80,7 +80,7 @@ output [PECfg::AuODWd-1:0] o_sum,
     //submodule
     //================
     ADDT #(
-        .OWd(6),
+        .ODWd(6),
         .DWd(2),
         .Num(16)
     ) AT1b(
@@ -88,7 +88,7 @@ output [PECfg::AuODWd-1:0] o_sum,
         .o_out(sum1b)
     );
     ADDT #(
-        .OWd(8),
+        .ODWd(8),
         .DWd(5),
         .Num(8)
     ) AT2b(
@@ -96,7 +96,7 @@ output [PECfg::AuODWd-1:0] o_sum,
         .o_out(sum2b)
     );
     ADDT #(
-        .OWd(11),
+        .ODWd(11),
         .DWd(9),
         .Num(4)
     ) AT4b(
@@ -148,7 +148,7 @@ output [PECfg::AuODWd-1:0] o_sum,
     end
     
     `ff_srstn(i_cont_reset) 
-        sum_r <= 16'b0; 
+        sum_r <= '0; 
     `ff_cg( ce  )
         sum_r <= sum_w; 
     `ff_end
@@ -164,19 +164,19 @@ endmodule
 
 
 module ADDT #(
-    parameter OWd = 6,
+    parameter ODWd = 6,
     parameter DWd = 2,
     parameter Num = 16
 )(
 input signed [DWd-1:0] i_in [Num],
-output signed [OWd-1:0] o_out
+output signed [ODWd-1:0] o_out
 );
-    logic signed [OWd-1:0] out; 
+    logic signed [ODWd-1:0] out; 
         assign o_out = out;
     integer i;
     
     always_comb  begin
-        out = {OWd{1'd0}};
+        out = {ODWd{1'd0}};
             for ( i=0 ; i< Num ; i=i+1)begin
                 out = out + i_in[i]; 
             end
