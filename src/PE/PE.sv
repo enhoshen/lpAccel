@@ -1,24 +1,4 @@
 
-package PECfg ;
-   
-    parameter PConfDWd = 6; 
-    parameter TileConfDWd=10; 
-	parameter DWd  = 16;     // data bit width 
-	parameter PsumDWd  = 16;
-    parameter InstDWd  = 3;   // 
-    parameter PEcol =16;
-    parameter IPadSize =12;
-    parameter WPadSize =48; 
-    parameter PPadSize =64;
-    parameter AuODWd = 11;
-    typedef enum logic [1:0] { XNOR,M1,M2,M4 } AuSel;
-    typedef enum logic { SIGNED , UNSIGNED } NumT;
-    typedef enum logic { FSTPIX , FROMBUF } PsumInit;
-    typedef enum logic [3:0]{ IDLE  , INIT , LOOP , POP  , OLAP 
-                        }  IPadState ;  // pix r/w address overlapping handling   
-    typedef enum logic [InstDWd-1:0] {STALL,RESET,START,WORK,} PEiss ;  
-endpackage
-
 import PECfg::*;
 
 module PE (
@@ -29,6 +9,7 @@ input [PECfg::PConfDWd-1:0] i_conf_Ab, // Aunit bit used
 input [PECfg::PConfDWd-1:0] i_conf_Tb, // batch tile
 input [PECfg::PConfDWd-1:0] i_conf_U , // stride
 input [PECfg::PConfDWd-1:0] i_conf_R , // filter width
+input [PECfg::PConfDWd-1:0] i_conf_S , // filter height
 input [PECfg::PConfDWd-1:0] i_conf_wpad_size, // pch*pm*R
 input [PECfg::PConfDWd-1:0] i_conf_ipad_size, // pch*R
 input [PECfg::TileConfDWd-1:0] i_conf_Tw,
@@ -36,6 +17,8 @@ input [PECfg::PConfDWd-1:0] i_conf_Xb, // *b is the bit channel num = tensor pre
 input [PECfg::PConfDWd-1:0] i_conf_Wb,
 
 input [PECfg::InstDwd-1:0] i_inst_pe,
+input [PECfg::PConfDWd-1:0] i_cont_curWb,
+input [PECfg::PConfDWd-1:0] i_cont_curTb, 
 
 input [PECfg::DWd-1:0] i_ipix,
 `pbpix_input ( ipix ),

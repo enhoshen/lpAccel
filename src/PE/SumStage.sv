@@ -7,6 +7,7 @@ input i_cont_stall,
 input i_cont_first_pix,
 input i_cont_read_psum,
 input i_cont_forward,
+input i_cont_
 
 input signed[PECfg::AuODWd-1:0] i_sum,
 `pbpix_input (sum),

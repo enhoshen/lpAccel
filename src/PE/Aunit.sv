@@ -42,31 +42,29 @@ output [PECfg::AuODWd-1:0] o_sum,
         // num range 1b: -1~1
         //           2b: -2~3
         //           4b: -8~15
-    logic signed [1:0] setd1b_ipix [16]; // sign extend 
+    //logic signed [1:0] setd1b_ipix [16]; // sign extend 
     logic signed [2:0] setd2b_ipix [8] ;
     logic signed [4:0] setd4b_ipix [4] ;
-    logic signed [1:0] setd1b_wpix [16]; // sign extend 
+    //logic signed [1:0] setd1b_wpix [16]; // sign extend 
     logic signed [2:0] setd2b_wpix [8] ;
     logic signed [4:0] setd4b_wpix [4] ;
         // num range 1bx1b: -1~1 
         //           2bx2b: -6~9
         //           4bx4b: -120~225  
-    logic signed [1:0] m1b [16];
+    logic signed [15:0] m1b ;
     logic signed [4:0] m2b [8];
     logic signed [8:0] m4b [4];
         // num range sum1b:-16~16
         //           sum2b:-48~72
         //           sum4b:-480~900
-    logic signed [5:0] sum1b ;
+    logic [4:0] sum1b ;
     logic signed [7:0] sum2b ;
     logic signed [10:0]sum4b ;
 
     logic signed [ODWd-1:0] sum_r , sum_w;
         assign o_sum = sum_r ;
         // control
-    wire ce ;
-        assign ce = (forward && wpix_zero && ipix_zero && i_cont_stall)||(sum_ack && wpix_zero && ipix_zer && i_cont_stall) ; 
-    
+   
     logic sum_rdy_w ;
          assign sum_rdy_w = ( wpix_rdy && ipix_rdy ) || ( sum_rdy && !sum_ack);
     logic sum_zero_w ;
@@ -76,12 +74,14 @@ output [PECfg::AuODWd-1:0] o_sum,
         assign forward = wpix_rdy && ipix_rdy &&  (!sum_rdy || sum_ack) ;
         assign ipix_ack = forward;
         assign wpix_ack = forward;
+    wire ce ;
+        assign ce = (forward && wpix_zero && ipix_zero && i_cont_stall)||(sum_ack && wpix_zero && ipix_zero && i_cont_stall) ; 
     //================
     //submodule
     //================
     ADDT #(
-        .ODWd(6),
-        .DWd(2),
+        .ODWd(5),
+        .DWd(1),
         .Num(16)
     ) AT1b(
         .i_in(m1b),
@@ -116,15 +116,12 @@ output [PECfg::AuODWd-1:0] o_sum,
         for ( i = 0 ; i <16; i=i+1)begin: m1  
             case(i_cont_mode) 
                 XNOR: begin
-                    setd1b_ipix[i] =  (!msk1b_ipix[i]) ? -2'd1 : 2'd1; 
-                    setd1b_wpix[i] =  (!msk1b_wpix[i]) ? -2'd1 : 2'd1;
+                    m1b[i] = msk1b_ipix[i] ~^ msk1b_wpix[i];
                 end
                 default  : begin
-                    setd1b_ipix[i] = (i_cont_iNumT==SIGNED)? $signed(msk1b_ipix[i]):$unsigned(msk1b_ipix[i]) ;
-                    setd1b_wpix[i] = (i_cont_wNumT==SIGNED)? $signed(msk1b_wpix[i]):$unsigned(msk1b_wpix[i]);
+                    m1b[i] = msk1b_ipix[i] &  msk1b_wpix[i];
                 end       
             endcase
-            m1b [i] = setd1b_ipix[i]*setd1b_wpix[i];       
         end
         for ( i = 0 ; i <8; i=i+1)begin: m2  
             setd2b_ipix[i] = (i_cont_iNumT==SIGNED)? $signed(msk2b_ipix[i]):$unsigned(msk2b_ipix[i]); 
@@ -138,8 +135,8 @@ output [PECfg::AuODWd-1:0] o_sum,
         end
 
         case ( i_cont_mode )
-            XNOR: sum_w = sum1b;
-            M1:   sum_w = sum1b;
+            XNOR: sum_w = sum1b - 5'd16;
+            M1:   sum_w = (i_cont_iNumT == i_cont_wNumT)? sum1b : -sum1b ;
             M2:   sum_w = sum2b;
             M4:   sum_w = sum4b;
         endcase
@@ -147,13 +144,13 @@ output [PECfg::AuODWd-1:0] o_sum,
 
     end
     
-    `ff_srstn(i_cont_reset) 
+    `ff_rstn 
         sum_r <= '0; 
     `ff_cg( ce  )
         sum_r <= sum_w; 
     `ff_end
 
-    `ff_srstn(i_cont_reset)
+    `ff_rstn
         sum_rdy <= 1'b0;
         sum_zero<= 1'b1;
     `ff_cg( i_cont_stall )
@@ -164,8 +161,8 @@ endmodule
 
 
 module ADDT #(
-    parameter ODWd = 6,
-    parameter DWd = 2,
+    parameter ODWd = 5,
+    parameter DWd = 1,
     parameter Num = 16
 )(
 input signed [DWd-1:0] i_in [Num],
