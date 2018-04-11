@@ -41,7 +41,7 @@
 `define dval_unconnect(port_name) .port_name``_dval()
 `define clk_port i_clk, i_rstn
 `define clk_connect .i_clk(i_clk), .i_rstn(i_rstn)
-`define clk_input input i_clk , input i_rstn,
+`define clk_input input i_clk , input i_rstn
 
 `define ff_rstn always_ff @(posedge i_clk or negedge i_rstn)if (!i_rstn)begin
 `define ff_srstn(srst) always_ff @(posedge i_clk or negedge i_rstn) if (!i_rstn || srst) begin

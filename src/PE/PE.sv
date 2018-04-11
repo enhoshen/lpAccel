@@ -16,6 +16,7 @@ input [PECfg::TileConfDWd-1:0] i_conf_Tw,
 input [PECfg::PConfDWd-1:0] i_conf_Xb, // *b is the bit channel num = tensor precision/Aunit bit
 input [PECfg::PConfDWd-1:0] i_conf_Wb,
 
+
 input [PECfg::InstDwd-1:0] i_inst_pe,
 input [PECfg::PConfDWd-1:0] i_cont_curWb,
 input [PECfg::PConfDWd-1:0] i_cont_curTb, 
@@ -51,7 +52,7 @@ output[PECfg::DWd*PECfg::PEcol-1:0] o_pspix
     logic [7:0] cur_wpix_r , cur_wpix_w;    
     logic [IPadSize-1:0] ipad_flag_w, ipad_flag_r;
     wire last_xb , last_wb ; 
-    wire 
+    wire ; 
 
     wire ce ;
         wire re , we;
@@ -86,32 +87,15 @@ output[PECfg::DWd*PECfg::PEcol-1:0] o_pspix
         .o_rdata(),
         .i_wdata(),
     );
-    InStageController IC(
-    );
     DataPathController DC(
     );
            
     genvar pe_row ; 
     generate begin : pe_row 
         for ( pe_row = 0 ; pe ; pe_row = pe_row+1)begin
-
-
-            Aunit Au(
-                `clk_connect,
-                i_cont_mask (), 
-                i_cont_mode (),
-                i_cont_iNumT(),  // signed/unsigned numerical type
-                i_cont_wNumT(),
-                i_cont_reset(),
-                i_cont_stall(),
-                i_smode_ipix(),  // smode indicate sign/unsigned mode
-                i_ipix(),
-                `pbpix_connect(ipix , ),
-                i_smode_wpix(),
-                i_wpix(),
-                `pbpix_connect(wpix,),
-                o_sum(),
-                `pbpix_connect(sum,)
+            FetchStage Fs(
+            );
+            MultStage Ms(
             );
             SumStage Ss(
             );

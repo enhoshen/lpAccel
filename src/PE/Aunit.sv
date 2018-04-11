@@ -1,8 +1,8 @@
 //`include "PE.sv"
 import PECfg::*;
 module Aunit (
-`clk_input
-input [3*PECfg::DWd-1:0] i_cont_mask , 
+`clk_input,
+input [PECfg::AuMaskWd-1:0] i_cont_mask , 
 input PECfg::AuSel  i_cont_mode ,
 input PECfg::NumT i_cont_iNumT,  // signed/unsigned numerical type
 input PECfg::NumT i_cont_wNumT,
@@ -23,11 +23,12 @@ output [PECfg::AuODWd-1:0] o_sum,
     //parameter
     //=================
     localparam ODWd = PECfg::AuODWd;
-    localparam DWd  = PECfg::DWd;    
+    localparam DWd  = PECfg::DWd;
+    localparam AuMaskWd = PECfg::AuMaskWd;    
     //=================
     //logic
     //=================
-    wire [3*DWd-1:0] msk_ipix ,msk_wpix;
+    wire [AuMaskWd-1:0] msk_ipix ,msk_wpix;
         assign msk_ipix = i_ipix & i_cont_mask;
         assign msk_wpix = i_wpix & i_cont_mask;
     wire [DWd-1:0] msk1b_ipix,msk2b_ipix,msk4b_ipix ;
@@ -64,7 +65,14 @@ output [PECfg::AuODWd-1:0] o_sum,
     logic signed [ODWd-1:0] sum_r , sum_w;
         assign o_sum = sum_r ;
         // control
-   
+`ifdef PECfg::MULT8
+    logic msk8b_ipix;
+        assign msk8b_ipix=msk_ipix[4*DWd-1:3*DWd];
+    logic msk8b_wpix;
+        assign msk8b_wpix=msk_wpix[4*DWd-1:3*DWd];
+    logic signed [8:0] setd8b_ipix[2];
+    logic signed [8:0] setd8b_wpix[2];
+`endif   
     logic sum_rdy_w ;
          assign sum_rdy_w = ( wpix_rdy && ipix_rdy ) || ( sum_rdy && !sum_ack);
     logic sum_zero_w ;
