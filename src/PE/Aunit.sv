@@ -4,15 +4,13 @@ module Aunit (
 `clk_input,
 input [PECfg::AuMaskWd-1:0] i_cont_mask , 
 input PECfg::AuSel  i_cont_mode ,
-input PECfg::NumT i_cont_iNumT,  // signed/unsigned numerical type
-input PECfg::NumT i_cont_wNumT,
 input i_cont_reset,
 input i_cont_stall, // high as enable
 
-input i_smode_ipix,  // smode indicate sign/unsigned mode
+input PECfg::NumT i_cont_iNumT,  // signed/unsigned numerical type
 input [PECfg::DWd-1:0] i_ipix,
 `pbpix_input(ipix),
-input i_smode_wpix,
+input PECfg::NumT i_cont_wNumT,
 input [PECfg::DWd-1:0] i_wpix,
 `pbpix_input(wpix),
 output [PECfg::AuODWd-1:0] o_sum,
