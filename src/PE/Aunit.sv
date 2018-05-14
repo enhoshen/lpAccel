@@ -1,28 +1,30 @@
 //`include "PE.sv"
+import PECtlCfg::*;
 import PECfg::*;
+
 module Aunit (
 `clk_input,
-input [PECfg::AuMaskWd-1:0] i_cont_mask , 
-input PECfg::AuSel  i_cont_mode ,
+input [PECtlCfg::AuMaskWd-1:0] i_cont_mask , 
+input PECtlCfg::AuSel  i_cont_mode ,
 input i_cont_reset,
 input i_cont_stall, // high as enable
 
-input PECfg::NumT i_cont_iNumT,  // signed/unsigned numerical type
+input PECtlCfg::NumT i_cont_iNumT,  // signed/unsigned numerical type
 input [PECfg::DWd-1:0] i_ipix,
 `pbpix_input(ipix),
-input PECfg::NumT i_cont_wNumT,
+input PECtlCfg::NumT i_cont_wNumT,
 input [PECfg::DWd-1:0] i_wpix,
 `pbpix_input(wpix),
-output [PECfg::AuODWd-1:0] o_sum,
+output [PECtlCfg::AuODWd-1:0] o_sum,
 `pbpix_output(sum)
 );
 
     //=================
     //parameter
     //=================
-    localparam ODWd = PECfg::AuODWd;
+    localparam ODWd = PECtlCfg::AuODWd;
     localparam DWd  = PECfg::DWd;
-    localparam AuMaskWd = PECfg::AuMaskWd;    
+    localparam AuMaskWd = PECtlCfg::AuMaskWd;    
     //=================
     //logic
     //=================
@@ -50,7 +52,7 @@ output [PECfg::AuODWd-1:0] o_sum,
         // num range 1bx1b: -1~1 
         //           2bx2b: -6~9
         //           4bx4b: -120~225  
-    logic signed [15:0] m1b ;
+    logic signed  m1b [16];
     logic signed [4:0] m2b [8];
     logic signed [8:0] m4b [4];
         // num range sum1b:-16~16
@@ -63,7 +65,7 @@ output [PECfg::AuODWd-1:0] o_sum,
     logic signed [ODWd-1:0] sum_r , sum_w;
         assign o_sum = sum_r ;
         // control
-`ifdef PECfg::MULT8
+`ifdef PECtlCfg::MULT8
     logic msk8b_ipix;
         assign msk8b_ipix=msk_ipix[4*DWd-1:3*DWd];
     logic msk8b_wpix;

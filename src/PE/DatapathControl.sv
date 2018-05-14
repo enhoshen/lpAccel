@@ -8,16 +8,18 @@ output PECtlCfg::IPadAddr o_IPctl,
 output PECtlCfg::WPadAddr o_WPctl,
 output PECtlCfg::PPadAddr o_PPctl,
 
-output                         o_forward,
+output                    o_forward,
 
-output                         o_FetchStage_valid,
+output                    o_FS_valid,
 
-output                         o_MultStage_valid,
+output                    o_MS_valid,
 
-output                         o_SumStage_fstpix,
-output                         o_SumStage_sht,
-output                         o_SumStage_valid,
+output                    o_SS_fstpix,
+output                    o_SS_sht,
+output                    o_SS_valid,
+output                    o_SS_last,    
 
+output                    o_PS,
 
 `pbpix_input ( ipix ),
 `pbpix_input ( wpix )

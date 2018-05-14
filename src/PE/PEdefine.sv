@@ -30,6 +30,28 @@ package PECfg ;
  
 
 
+endpackage
+
+package PECtlCfg;
+    import PECfg::*;
+    typedef struct packed{
+        logic [PECfg::IPadAddrWd-1:0] raddr;
+        logic [PECfg::IPadAddrWd-1:0] waddr;
+        logic                          read;
+        logic                         write; 
+    } IPadAddr ;
+    typedef struct packed{
+        logic [PECfg::WPadAddrWd-1:0] raddr;
+        logic [PECfg::WPadAddrWd-1:0] waddr;
+        logic                          read;
+        logic                         write; 
+    } WPadAddr ;
+    typedef struct packed{
+        logic [PECfg::PPadAddrWd-1:0] raddr;
+        logic [PECfg::PPadAddrWd-1:0] waddr;
+        logic                          read;
+        logic                         write; 
+    } PPadAddr ;
     `ifdef MULT8
     parameter AuMultSize=4 
     typedef enum logic [2:0] { XNOR,M1,M2,M4,M8 } AuSel; 
@@ -65,27 +87,6 @@ package PECfg ;
     typedef enum logic [3:0]{ IDLE  , INIT , LOOP , POP  , OLAP 
                         }  IPadState ;  // pix r/w address overlapping handling   
     typedef enum logic [InstDWd-1:0] {STALL,RESET,START,WORK} PEiss ;  
-endpackage
 
-package PECtlCfg;
-    import PECfg::*;
-    typedef struct packed{
-        logic [PECfg::IPadAddrWd-1:0] raddr;
-        logic [PECfg::IPadAddrWd-1:0] waddr;
-        logic                          read;
-        logic                         write; 
-    } IPadAddr ;
-    typedef struct packed{
-        logic [PECfg::WPadAddrWd-1:0] raddr;
-        logic [PECfg::WPadAddrWd-1:0] waddr;
-        logic                          read;
-        logic                         write; 
-    } WPadAddr ;
-    typedef struct packed{
-        logic [PECfg::PPadAddrWd-1:0] raddr;
-        logic [PECfg::PPadAddrWd-1:0] waddr;
-        logic                          read;
-        logic                         write; 
-    } PPadAddr ;
 endpackage
 
