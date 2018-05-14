@@ -1,40 +1,12 @@
 import PECfg::*;
-import CTLCfg::*;
+import PECtlCfg::*;
 
 module DataPathController(
 `clk_input,
-/*
-input [PECfg::PConfDWd-1:0]    i_conf_Pch,  // channel number to be handled
-input [PECfg::PConfDWd-1:0]    i_conf_Pm, // filters number to be handled
-input [PECfg::PConfDWd-1:0]    i_conf_Ab, // Aunit bit used
-input [PECfg::PConfDWd-1:0]    i_conf_Tb, // batch tile
-input [PECfg::PConfDWd-1:0]    i_conf_U , // stride
-input [PECfg::PConfDWd-1:0]    i_conf_R , // filter width
-input [PECfg::PConfDWd-1:0]    i_conf_S , // filter height
-input [PECfg::PConfDWd-1:0]    i_conf_wpad_size, // pch*pm*R
-input [PECfg::PConfDWd-1:0]    i_conf_ipad_size, // pch*R
-input [PECfg::PConfDWd-1:0]    i_conf_Xb, // *b is the bit channel num = tensor precision/Aunit bit
-input [PECfg::PConfDWd-1:0]    i_conf_Wb,
-input [PECfg::TileConfDWd-1:0] i_conf_Tw,
-input                          i_conf_XNOR, // xnor multiply mode
-
-input PECfg::PEiss    i_inst_pe,
-input [PECfg::PConfDWd-1:0]    i_cont_wb,
-input [PECfg::PConfDWd-1:0]    i_cont_b, 
-*/
-input  CTLCfg::Conf i_PEconf,
-output [PECfg::IPadAddrWd-1:0] o_IPad_raddr,
-output [PECfg::WPadAddrWd-1:0] o_WPad_raddr,
-output [PECfg::PPadAddrWd-1:0] o_PPad_raddr,
-output [PECfg::IPadAddrWd-1:0] o_IPad_waddr,
-output [PECfg::WPadAddrWd-1:0] o_WPad_waddr,
-output [PECfg::PPadAddrWd-1:0] o_PPad_waddr,
-output                         o_IPad_read,
-output                         o_WPad_read,
-output                         o_PPad_read,
-output                         o_IPad_write,
-output                         o_WPad_write,
-output                         o_PPad_write,
+input  PECfg::Conf i_PEconf,
+output PECtlCfg::IPadAddr o_IPctl,
+output PECtlCfg::WPadAddr o_WPctl,
+output PECtlCfg::PPadAddr o_PPctl,
 
 output                         o_forward,
 

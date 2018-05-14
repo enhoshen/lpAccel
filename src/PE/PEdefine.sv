@@ -12,7 +12,22 @@ package PECfg ;
     parameter IPadAddrWd=$clog2(IPadSize);
     parameter WPadAddrWd=$clog2(WPadSize);
     parameter PPadAddrWd=$clog2(PPadSize);
-
+    typedef struct packed{
+        logic [PECfg::PConfDWd-1:0]    Pch;  // channel number to b   
+        logic [PECfg::PConfDWd-1:0]    Pm; // filters number to be 
+        logic [PECfg::PConfDWd-1:0]    Ab; // Aunit bit used
+        logic [PECfg::PConfDWd-1:0]    Tb;// batch tile
+        logic [PECfg::PConfDWd-1:0]    U ;// stride
+        logic [PECfg::PConfDWd-1:0]    R ;// filter width
+        logic [PECfg::PConfDWd-1:0]    S ;// filter height
+        logic [PECfg::PConfDWd-1:0]    wpad_size; // pch*pm*R
+        logic [PECfg::PConfDWd-1:0]    ipad_size; // pch*R
+        logic [PECfg::PConfDWd-1:0]    Xb; // *b is the bit channel
+        logic [PECfg::PConfDWd-1:0]    Wb;
+        logic [PECfg::TileConfDWd-1:0] Tw;
+        logic                          XNOR; // xnor multiply mode
+    } Conf ;
+ 
 
 
     `ifdef MULT8
@@ -52,23 +67,8 @@ package PECfg ;
     typedef enum logic [InstDWd-1:0] {STALL,RESET,START,WORK} PEiss ;  
 endpackage
 
-package CTLCfg;
+package PECtlCfg;
     import PECfg::*;
-    typedef struct packed{
-        logic [PECfg::PConfDWd-1:0]    Pch;  // channel number to b   
-        logic [PECfg::PConfDWd-1:0]    Pm; // filters number to be 
-        logic [PECfg::PConfDWd-1:0]    Ab; // Aunit bit used
-        logic [PECfg::PConfDWd-1:0]    Tb;// batch tile
-        logic [PECfg::PConfDWd-1:0]    U ;// stride
-        logic [PECfg::PConfDWd-1:0]    R ;// filter width
-        logic [PECfg::PConfDWd-1:0]    S ;// filter height
-        logic [PECfg::PConfDWd-1:0]    wpad_size; // pch*pm*R
-        logic [PECfg::PConfDWd-1:0]    ipad_size; // pch*R
-        logic [PECfg::PConfDWd-1:0]    Xb; // *b is the bit channel
-        logic [PECfg::PConfDWd-1:0]    Wb;
-        logic [PECfg::TileConfDWd-1:0] Tw;
-        logic                          XNOR; // xnor multiply mode
-    } Conf ;
     typedef struct packed{
         logic [PECfg::IPadAddrWd-1:0] raddr;
         logic [PECfg::IPadAddrWd-1:0] waddr;
