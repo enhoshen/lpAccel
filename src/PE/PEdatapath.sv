@@ -32,12 +32,13 @@ endmodule
 
 module SumStage(
 `clk_input,
-input i_cont_reset,
-input i_cont_stall,
-input i_cont_first_pix,
-input i_cont_read_psum,
-input i_cont_forward,
-input i_cont_
+input i_ctl_reset,
+input i_ctl_stall,
+input i_ctl_valid,
+input i_ctl_init,  // init 0 psum, rather than from psum pad
+input i_ctl_fstpix,// first pix, receive data from psum pad/ init 0 psum
+input i_ctl_lstpix,  // write out to psum pad
+input i_ctl_sht,
 
 input signed[PECfg::AuODWd-1:0] i_sum,
 `pbpix_input (sum),
