@@ -5,14 +5,16 @@
     logic [$clog2(wordWd)-1:0] logname``_raddr;\
     logic [$clog2(wordWd)-1:0] logname``_waddr;\
     logic [DWd-1:0] logname``_rdata;\
-    logic [DWd-1:0] logname``_wdata
+    logic [DWd-1:0] logname``_wdata;
+    logic           logname``_rvalid;
 `define Rf2pIf_pc_rf(logname)\
     .i_read(logname``_read),\
     .i_write(logname``_write),\
     .i_raddr(logname``_raddr),\
     .i_waddr(logname``_waddr),\
     .o_rdata(logname``_rdata),\
-    .i_wdata(logname``_wdata)
+    .i_wdata(logname``_wdata),
+    .o_rvalid(logname``_rvalid)
 module RF_2F #(
     parameter wordWd = 12,
     parameter DWd    = 32,
@@ -26,14 +28,21 @@ input [AWd-1:0] i_raddr,
 input [AWd-1:0] i_waddr,
 output [DWd-1:0] o_rdata, 
 input [DWd-1:0] i_wdata
- 
+output          o_rvalid,
 );
     localparam EMA = 3'b000;
 
     wire we_n, re_n;
         assign we_n = !i_write;
         assign re_n = !i_read ;
- 
+    logic rvalid_w , rvalid_r;
+        assign rvalid_w = i_read;
+        assign o_rvalid = rvalid_r;
+    `ff_rstn
+        rvalid_r <= 1'b0; 
+    `ff_nocg
+        rvalid_r <= rvalid_w;
+    `ff_end
 generate 
     case ( DWd )
         8  :begin 

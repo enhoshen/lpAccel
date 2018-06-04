@@ -44,8 +44,6 @@
 `define clk_input input i_clk , input i_rstn
 
 `define ff_rstn always_ff @(posedge i_clk or negedge i_rstn)if (!i_rstn)begin
-`define ff_srstn(srst) always_ff @(posedge i_clk or negedge i_rstn) if (!i_rstn || srst) begin
-// synchronize rst
 `define ff_cg(cg) end else if (cg) begin
 `define ff_nocg end else begin
 `define ff_end end
