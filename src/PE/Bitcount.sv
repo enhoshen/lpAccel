@@ -45,6 +45,38 @@ end
 
 endmodule
 
+module MultAdderTree #(
+parameter DWd = 8,
+parameter OWd = 16
+)(
+input i_clk,
+input i_rstn,
+input [DWd*DWd-1:0] i_a,
+output [OWd-1:0] out
+);
+    integer i;
+    logic [OWd-1:0] out_r;
+        assign out = out_r;
+    always_comb begin
+        out_r = '0;
+        for(i=0 ; i<DWd ; i=i+1)begin
+            out_r=out_r+( i_a[DWd*i+:DWd] <<i);
+        end           
+    end
+endmodule
+
+module Mult #(
+parameter DWd = 16,
+parameter OWd = 32
+)(
+input i_clk,
+input i_rstn,
+input signed [DWd-1:0] i_a,
+input signed [DWd-1:0] i_b,
+output signed [OWd-1:0] out
+);
+    assign out = i_a*i_b;
+endmodule 
 /*
 module TreeCount16
 (

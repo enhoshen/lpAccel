@@ -12,22 +12,22 @@ package PECfg ;
     parameter IPadAddrWd=$clog2(IPadSize);
     parameter WPadAddrWd=$clog2(WPadSize);
     parameter PPadAddrWd=$clog2(PPadSize);
+    typedef enum logic [2:0] { XNOR,M1,M2,M4,M8 } AuSel;
     typedef struct packed{
-        logic [PECfg::PConfDWd-1:0]    Pch;  // channel number to b   
-        logic [PECfg::PConfDWd-1:0]    Pm; // filters number to be 
-        logic [PECfg::PConfDWd-1:0]    Ab; // Aunit bit used
-        logic [PECfg::PConfDWd-1:0]    Tb;// batch tile
-        logic [PECfg::PConfDWd-1:0]    U ;// stride spatially
-        logic [PECfg::PConfDWd-1:0]    R ;// filter width
-        logic [PECfg::PConfDWd-1:0]    S ;// filter height
-        logic [PECfg::PConfDWd-1:0]    wpad_size; // pch*pm*R
-        logic [PECfg::PConfDWd-1:0]    ipad_size; // pch*R
-        logic [PECfg::PConfDWd-1:0]    Upix;// stride used, U*pch
-        logic                          PixReuse;// R<U or fully connected
-        logic [PECfg::PConfDWd-1:0]    Xb; // *b is the bit channel        
-        logic [PECfg::PConfDWd-1:0]    Wb;
-        logic [PECfg::TileConfDWd-1:0] Tw;
-        logic                          Xnor; // xnor multiply mode
+        logic [PConfDWd-1:0]    Pch;  // channel number to b   
+        logic [PConfDWd-1:0]    Pm; // filters number to be 
+        AuSel                   Au; // Aunit bit used
+        logic [PConfDWd-1:0]    Tb;// batch tile
+        logic [PConfDWd-1:0]    U ;// stride spatially
+        logic [PConfDWd-1:0]    R ;// filter width
+        logic [PConfDWd-1:0]    S ;// filter height
+        logic [PConfDWd-1:0]    wpad_size; // pch*pm*R
+        logic [PConfDWd-1:0]    ipad_size; // pch*R
+        logic [PConfDWd-1:0]    Upix;// stride used, U*pch
+        logic                   PixReuse;// R<U or fully connected
+        logic [PConfDWd-1:0]    Xb; // *b is the bit channel        
+        logic [PConfDWd-1:0]    Wb;
+        logic [TileConfDWd-1:0] Tw;
     } Conf ;
    
 
@@ -36,11 +36,10 @@ endpackage
 
 package PECtlCfg;
     import PECfg::*;
-    } SSstl;
     `ifdef MULT8
     parameter AuMultSize=4 
-    typedef enum logic [2:0] { XNOR,M1,M2,M4,M8 } AuSel; 
-    function AuMask;
+   
+    function automatic AuMask;
         input AuSel sel;
         case (sel)
             XNOR:AuMask={ {48{1'b0}} , {16{1'b1}} }; 
@@ -55,7 +54,7 @@ package PECtlCfg;
     `else
     parameter AuMultSize=3;
     typedef enum logic [1:0] { XNOR,M1,M2,M4 } AuSel;
-    function AuMask;
+    function automatic AuMask;
         input AuSel sel;
         case (sel)
             XNOR:AuMask={ {32{1'b0}} , {16{1'b1}} }; 

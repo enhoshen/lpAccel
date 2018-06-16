@@ -1,16 +1,15 @@
+module DataPathController
 import PECfg::*;
-import PECtlCfg::*;
-
-module DataPathController(
+import PECtlCfg::*;(
 `clk_input,
-input  PECfg::Conf i_PEconf,
-input  PECfg::Inst i_PEinst,
-output PECtlCfg::IPadAddr o_IPctl,
-output PECtlCfg::WPadAddr o_WPctl,
-output PECtlCfg::PPadAddr o_PPctl,
-output PECtlCfg::FSctl    o_FSctl,
-output PECtlCfg::MSctl    o_MSctl,
-output PECtlCfg::SSctl    o_SSctl,
+input  PECfg::Conf     i_PEconf,
+input  PECfg::Inst     i_PEinst,
+output IPadAddr        o_IPctl,
+output WPadAddr        o_WPctl,
+output PPadAddr        o_PPctl,
+output FSctl           o_FSctl,
+output MSctl           o_MSctl,
+output SSctl           o_SSctl,
 output o_error,
 `pbpix_input ( ipix ),
 `pbpix_input ( wpix )
@@ -19,12 +18,6 @@ output o_error,
     //==================
     //param
     //==================
-    localparam TileConfWd = PECfg::TileConfDWd;
-    localparam PConfWd    = PECfg::PConfDWd;
-    localparam IPadAddrWd = PECfg::IPadAddrWd;
-    localparam WPadAddrWd = PECfg::WPadAddrWd;
-    localparam PPadAddrWd = PECfg::PPadAddrWd;
-
 
 
     //==================
@@ -42,7 +35,7 @@ output o_error,
     logic [PConfWd-1:0]    pm_idx_w   , pm_idx_r;
     logic [PConfWd-1:0]    xb_idx_w   , xb_idx_r;
     logic [PConfWd-1:0]    s_idx_w    , s_idx_r;  
-    PECtlCfg::AuSel        Au_mde_w   , Au_mde_r;
+    AuSel        Au_mde_w   , Au_mde_r;
     
     logic [PConfWd-1:0] 
          //init  stage : prepare fetch stage's address
@@ -56,8 +49,8 @@ output o_error,
     logic [PConfWd-1:0] fs_w_idx_w    , fs_w_idx_r ;
     logic               fs_forward_w  , fs_forward_r;     
         //Mult Stage
-    PECtlCfg::PsumInit  ms_SwapPix_w  , ms_SwapPix_r; // read next psum pix/reset from 0 / read and shift
-    PECtlCfg::NumT      ms_MultNumT_w , ms_MultNumT_r; // 
+    PsumInit  ms_SwapPix_w  , ms_SwapPix_r; // read next psum pix/reset from 0 / read and shift
+    NumT      ms_MultNumT_w , ms_MultNumT_r; // 
     logic [PConfWd-1:0] ms_SwapPix_w  , ms_SwapPix_r;
     logic [PConfWd-1:0] ms_psum_idx_w , ms_psum_idx_r;
     logic               ms_forward_w  , ms_forward_r;
@@ -91,8 +84,7 @@ always_comb begin
     pm_idx_w     =pm_idx_r;
     xb_idx_w     =xb_idx_r;
     s_idx_w      =s_idx_r;  
-    Au_mde_w     =Au_mde_r;
-                                
+                               
                                 
     fs_psum_idx_w=fs_psum_idx_r; 
     fs_in_idx_w  =fs_in_idx_r;   
@@ -108,7 +100,6 @@ always_comb begin
 
     case (s_main) begin
         IDLE: begin
-            
         end 
         INIT: begin 
             width_idx_w = 0;
@@ -116,8 +107,6 @@ always_comb begin
             pm_idx_w    = 0;
             xb_idx_w    = 0;
             s_idx_w     = 0;
-            Au_mde_w    = (i_PEconf.Xnor && i_PEconf.Ab==1 )? XNOR : (i_PEconf.Ab==1)? M1 : (i_PEconf.Ab ==2)? M2 :(i_PEconf.Ab==4)? M4;
-                
         end
         WORK: begin 
         end

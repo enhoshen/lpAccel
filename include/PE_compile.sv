@@ -1,3 +1,3 @@
-`include "../src/PE/PE_include.sv"
-`include "../src/typedef.sv"
-`include "../src/IF/IF.sv"
+`include "../src/define.sv"
+`include "../src/PE/PEdefine.sv"
+`include "../src/PE/Aunit.sv"
