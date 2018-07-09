@@ -29,7 +29,9 @@ package PECfg ;
         logic [PConfDWd-1:0]    Wb;
         logic [TileConfDWd-1:0] Tw;
     } Conf ;
-   
+    typedef struct packed{
+        
+    } Inst ; 
 
 
 endpackage

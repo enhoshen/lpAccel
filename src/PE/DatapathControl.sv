@@ -31,10 +31,9 @@ output o_error,
     //==================
     logic ce;
     logic [TileConfWd-1:0] width_idx_w, width_idx_r; // convolve width~width+S-1
-    logic [PConfWd-1:0]    tch_idx_w  , tch_idx_r;
     logic [PConfWd-1:0]    pm_idx_w   , pm_idx_r;
     logic [PConfWd-1:0]    xb_idx_w   , xb_idx_r;
-    logic [PConfWd-1:0]    s_idx_w    , s_idx_r;  
+    logic [PConfWd-1:0]    pix_cnt_w  , pix_cnt_r;
     AuSel        Au_mde_w   , Au_mde_r;
     
     logic [PConfWd-1:0] 
@@ -101,6 +100,9 @@ always_comb begin
     case (s_main) begin
         IDLE: begin
         end 
+        STALL:begin 
+        end
+
         INIT: begin 
             width_idx_w = 0;
             tch_idx_w   = 0;
@@ -110,9 +112,7 @@ always_comb begin
         end
         WORK: begin 
         end
-        STALL:begin 
-        end
-        STOP: begin 
+                STOP: begin 
         end
         default: begin
         end   

@@ -13,22 +13,13 @@ input i_write,
 input [AWd-1:0] i_raddr,
 input [AWd-1:0] i_waddr,
 output [DWd-1:0] o_rdata, 
-input [DWd-1:0] i_wdata,
-output          o_rvalid
+input [DWd-1:0] i_wdata
 );
     localparam EMA = 3'b000;
 
     wire we_n, re_n;
         assign we_n = !i_write;
         assign re_n = !i_read ;
-    logic rvalid_w , rvalid_r;
-        assign rvalid_w = i_read;
-        assign o_rvalid = rvalid_r;
-    `ff_rstn
-        rvalid_r <= 1'b0; 
-    `ff_nocg
-        rvalid_r <= rvalid_w;
-    `ff_end
     generate  
         if (RFCfg::gen_mode == SIM) begin: sim_mode
         end 

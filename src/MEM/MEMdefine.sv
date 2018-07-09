@@ -6,7 +6,7 @@
     logic [DWd-1:0] logname``_rdata;\
     logic [DWd-1:0] logname``_wdata;\
     logic           logname``_rvalid;
-`define RF2PIf_sharedCtl_logic ( logname , wordWd , DWd , AWd)\
+`define RF2PIf_sharedCtl_logic( logname , wordWd , DWd , AWd)\
     logic logname``_read;\
     logic logname``_write;\
     logic [AWd-1:0] logname``_raddr;\
@@ -18,8 +18,7 @@
     .i_raddr(logname``_raddr),\
     .i_waddr(logname``_waddr),\
     .o_rdata(logname``_rdata),\
-    .i_wdata(logname``_wdata),\
-    .o_rvalid(logname``_rvalid)
+    .i_wdata(logname``_wdata)
 `define RF2PIf_sharedCtl_pc_rf(logname)\
     .i_read(logname``_read),\
     .i_write(logname``_write),\
