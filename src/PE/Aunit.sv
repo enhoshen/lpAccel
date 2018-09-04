@@ -2,23 +2,19 @@
 import PECtlCfg::*;
 import PECfg::*;
 
+
 module Aunit (
+
 `clk_input,
 input [PECtlCfg::AuMaskWd-1:0] i_cont_mask , 
-input PECtlCfg::AuSel  i_cont_mode ,
-input i_cont_reset,
-input i_cont_stall, // high as enable
-
-input PECtlCfg::NumT i_cont_iNumT,  // signed/unsigned numerical type
+input AuCtl i_cont,
 input [PECfg::DWd-1:0] i_ipix,
 `pbpix_input(ipix),
-input PECtlCfg::NumT i_cont_wNumT,
 input [PECfg::DWd-1:0] i_wpix,
 `pbpix_input(wpix),
 output [PECtlCfg::AuODWd-1:0] o_sum,
 `pbpix_output(sum)
 );
-
     //=================
     //parameter
     //=================
@@ -32,14 +28,13 @@ output [PECtlCfg::AuODWd-1:0] o_sum,
         assign msk_ipix = i_ipix & i_cont_mask;
         assign msk_wpix = i_wpix & i_cont_mask;
     wire [DWd-1:0] msk1b_ipix,msk2b_ipix,msk4b_ipix ;
-        assign  msk1b_ipix=msk_ipix[1*DWd-1:0];   
-        assign  msk2b_ipix=msk_ipix[2*DWd-1:1*DWd];
-        assign  msk4b_ipix=msk_ipix[3*DWd-1:2*DWd];
+        assign  msk1b_ipix=
+        assign  msk2b_ipix=
+        assign  msk4b_ipix=
     wire [DWd-1:0] msk1b_wpix,msk2b_wpix,msk4b_wpix ;
-        assign  msk1b_wpix=msk_wpix[1*DWd-1:0];   
-        assign  msk2b_wpix=msk_wpix[2*DWd-1:1*DWd];
-        assign  msk4b_wpix=msk_wpix[3*DWd-1:2*DWd];
-       
+        assign  msk1b_wpix=
+        assign  msk2b_wpix=
+        assign  msk4b_wpix=
         // num range 1b: -1~1
         //           2b: -2~3
         //           4b: -8~15
@@ -65,13 +60,13 @@ output [PECtlCfg::AuODWd-1:0] o_sum,
     logic signed [ODWd-1:0] sum_r , sum_w;
         assign o_sum = sum_r ;
         // control
-`ifdef PECtlCfg::MULT8
+`ifdef MULT8
     logic msk8b_ipix;
         assign msk8b_ipix=msk_ipix[4*DWd-1:3*DWd];
     logic msk8b_wpix;
         assign msk8b_wpix=msk_wpix[4*DWd-1:3*DWd];
-    logic signed [8:0] setd8b_ipix[2];
-    logic signed [8:0] setd8b_wpix[2];
+    logic signed [7:0] m8b[2];
+    logic signed [15:0] sum8b;
 `endif   
     logic sum_rdy_w ;
          assign sum_rdy_w = ( wpix_rdy && ipix_rdy ) || ( sum_rdy && !sum_ack);
@@ -83,7 +78,7 @@ output [PECtlCfg::AuODWd-1:0] o_sum,
         assign ipix_ack = forward;
         assign wpix_ack = forward;
     wire ce ;
-        assign ce = (forward && wpix_zero && ipix_zero && i_cont_stall)||(sum_ack && wpix_zero && ipix_zero && i_cont_stall) ; 
+        assign ce = (forward && wpix_zero && ipix_zero && i_cont.work)||(sum_ack && wpix_zero && ipix_zero && i_cont.work) ; 
     //================
     //submodule
     //================
@@ -111,6 +106,16 @@ output [PECtlCfg::AuODWd-1:0] o_sum,
         .i_in(m4b),
         .o_out(sum4b)
     );
+`ifdef MULT8
+    ADDT #(
+        .ODWd(16),
+        .DWd(8),
+        .Num(2)
+    )AT8b(
+        .i_in(m8b),
+        .o_out(sum8b)
+    );
+`endif   
 
 
 
@@ -122,7 +127,7 @@ output [PECtlCfg::AuODWd-1:0] o_sum,
     always_comb begin
          
         for ( i = 0 ; i <16; i=i+1)begin: m1  
-            case(i_cont_mode) 
+            case(i_cont.mode) 
                 XNOR: begin
                     m1b[i] = msk1b_ipix[i] ~^ msk1b_wpix[i];
                 end
@@ -132,21 +137,28 @@ output [PECtlCfg::AuODWd-1:0] o_sum,
             endcase
         end
         for ( i = 0 ; i <8; i=i+1)begin: m2  
-            setd2b_ipix[i] = (i_cont_iNumT==SIGNED)? $signed(msk2b_ipix[i]):$unsigned(msk2b_ipix[i]); 
-            setd2b_wpix[i] = (i_cont_wNumT==SIGNED)? $signed(msk2b_wpix[i]):$unsigned(msk2b_wpix[i]);
+            setd2b_ipix[i] = (i_cont.iNumT==SIGNED)? $signed(msk2b_ipix[i]):$unsigned(msk2b_ipix[i]); 
+            setd2b_wpix[i] = (i_cont.wNumT==SIGNED)? $signed(msk2b_wpix[i]):$unsigned(msk2b_wpix[i]);
             m2b [i] = setd2b_ipix[i]*setd2b_wpix[i];
         end
         for ( i = 0 ; i <4; i=i+1)begin: m4
-            setd4b_ipix[i] = (i_cont_iNumT==SIGNED)? $signed(msk4b_ipix[i]):$unsigned(msk4b_ipix[i]); 
-            setd4b_wpix[i] = (i_cont_wNumT==SIGNED)? $signed(msk4b_wpix[i]):$unsigned(msk4b_wpix[i]);
+            setd4b_ipix[i] = (i_cont.iNumT==SIGNED)? $signed(msk4b_ipix[i]):$unsigned(msk4b_ipix[i]); 
+            setd4b_wpix[i] = (i_cont.wNumT==SIGNED)? $signed(msk4b_wpix[i]):$unsigned(msk4b_wpix[i]);
             m4b [i] = setd4b_ipix[i]*setd4b_wpix[i]; 
         end
-
-        case ( i_cont_mode )
+        `ifdef MULT8 
+            for ( i=0 ; i<2 ; ++i)begin: m8
+                m8b[i] = msk8b_ipix[i] * msk8b_wpix[i];
+            end
+        `endif
+        case ( i_cont.mode )
             XNOR: sum_w = sum1b - 5'd16;
-            M1:   sum_w = (i_cont_iNumT == i_cont_wNumT)? sum1b : -sum1b ;
+            M1:   sum_w = (i_cont.iNumT == i_cont.wNumT)? sum1b : -sum1b ;
             M2:   sum_w = sum2b;
             M4:   sum_w = sum4b;
+            `ifdef MULT8
+                M8:   sum_w = sum8b;
+            `endif
         endcase
         
 
@@ -161,17 +173,150 @@ output [PECtlCfg::AuODWd-1:0] o_sum,
     `ff_rstn
         sum_rdy <= 1'b0;
         sum_zero<= 1'b1;
-    `ff_cg( i_cont_stall )
+    `ff_cg( i_cont.work )
         sum_rdy <= sum_rdy_w;
         sum_zero<= sum_zero_w;
     `ff_end
 endmodule
 
+module AunitPacked16 (
+`clk_input,
+input           AuCtl     i_cont,
+input           [15:0] i_ipix,
+input           [15:0] i_wpix,
+`pbpix_input(ipix),
+`pbpix_input(wpix),
+output logic    [15:0] o_sum,
+`pbpix_output(sum)
+);
+
+    //================
+    //parameter
+    //================
+    //================
+    //logic
+    //================
+    logic ce;
+    logic [15:0] sum_w ;
+    logic sum_rdy_w;
+    logic sum_zero_w;
+    //================
+    //comb
+    //================
+        //============
+        //submodule
+        //============
+    genvar i;
+    generate 
+        for ( i=0 ; i<2 ; i++) begin : ADDT_8b
+            ADTMult8 adt8(
+                .i_cont(),
+                .i_i(),
+                .i_w(),
+                .o_o()
+            );
+        end
+    endgenerate 
+    //================
+    //seq
+    //================
+    
+    `ff_rstn 
+        o_sum <= '0; 
+    `ff_cg( ce  )
+        o_sum <= sum_w; 
+    `ff_end
+
+    `ff_rstn
+        sum_rdy <= 1'b0;
+        sum_zero<= 1'b1;
+    `ff_cg( i_cont.work )
+        sum_rdy <= sum_rdy_w;
+        sum_zero<= sum_zero_w;
+    `ff_end
+
+endmodule
+
+module ADTMult8 (
+input  AuCtl  i_cont,
+input  [7:0]  i_i,
+input  [7:0]  i_w,
+output [15:0] o_o
+);
+    
+    //================
+    //parameter
+    //================
+    
+    //================
+    //logic
+    //================
+    logic [7:0] PP [8];
+    logic [7:0] AndPP [8]; // ANDed partial product
+    logic XnorBit [8];
+    logic [1:0] FlipBit2b [4];
+    logic [3:0] FlipBit4b [2];
+    logic [7:0] FlipBit8b ;
+    NumT PPNumType [8];
+    logic PPSignExtend [8];
+        logic Msb [8];
+    //================
+    //comb
+    //================
+    integer i;
+    always_comb begin 
+        for ( i=0 ; i<8 ; ++i)begin: and_partial_product
+            AndPP [i] = i_i & {8{i_w[i]}};
+        end
+        for ( i=0 ; i<8 ; ++i)begin: Xnor_bit
+            XnorBit [i] = i_i[7-i] ~^ i_w[i];
+        end 
+        for ( i=0 ; i<4 ; ++i)begin: FlipBit_2b
+            FlipBit2b [i] = ~(AndPP [2*i] [7-2*i-:2]);
+        end
+        for ( i=0 ; i<2 ; ++i)begin: FlipBit_4b
+            FlipBit4b [i] = ~(AndPP [4*i] [7-4*i-:2]);
+        end
+        FlipBit8b = ~ AndPP [7] ; 
+    end
+/*
+    genvar j , k;
+    generate  
+        for ( j=0 ; j<8 ; ++j )begin: Sign_extension
+            if ( j== 0 )
+            else 
+        end
+        for ( j=0 ; j<8 ; ++j )begin: PP_row_right
+            localparam j7=7-j;
+            if ( j7[2] ) assign PP[j][ ( {j7[2],2'b0}-1 ) -:4] = ( i_cont.mode == M8 )? AndPP[j][ ( {j7[2],2'b0}-1 ) -:4] : 4'b0;
+            else ;
+            if ( j7[1] ) assign PP[j][ ( {j7[2:1],1'b0}-1 ) -:2] = ( i_cont.mode >= M4 )? AndPP[j][{j7[2:1],1'b0}-1 -:2] : 2'b0;
+            else ;
+            if ( j7[0] ) assign PP[j][ (j7-1) ] = ( i_cont.mode >= M2 )? AndPP[j][ (j7-1) ] : 1'b0;
+            else  // actually this part can be done in a for loop, but i_cont.mode selection is tricky 
+        end 
+        for ( j=0 ; j<8 ; ++j )begin:PP_row_left
+            localparam j1=j+1;
+            if ( j[2] )begin
+                if ( j1[1:0]==2'b0 ) assign PP[j][] = ()? FlipBit8b[] : ()? AndPP[j][] : PPSignExtend[j]  ;
+                else assign PP[j][] = ()? AndPP[j][]: PPSignExtend[j] ;
+            end else;
+            if ( j[1] )begin
+                if ( j1[0]==1'b0 ) assign PP[j][] = ()? FlipBit4b[] : ()? AndPP[j][] : PPSignExtend[j] ;
+                else assign PP[j][] = ()? AndPP[j] : PPSignExtend[j] ;
+            end else;
+            if ( j[0] ) assign PP[j][] = ()? FlipBit2b[] : ()? AndPP[j][] : PPSignExtend[j] ;    
+            else;    
+        end
+
+    endgenerate 
+*/
+endmodule
 
 module ADDT #(
-    parameter ODWd = 5,
-    parameter DWd = 1,
-    parameter Num = 16
+    parameter ODWd = 16,
+    parameter DWd =8,
+    parameter Num = 8
 )(
 input signed [DWd-1:0] i_in [Num],
 output signed [ODWd-1:0] o_out
@@ -183,8 +328,10 @@ output signed [ODWd-1:0] o_out
     always_comb  begin
         out = {ODWd{1'd0}};
             for ( i=0 ; i< Num ; i=i+1)begin
-                out = out + i_in[i]; 
+                out = out + (i_in[i]); 
             end
     end
 
 endmodule
+
+

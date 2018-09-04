@@ -30,7 +30,7 @@ package PECfg ;
         logic [TileConfDWd-1:0] Tw;
     } Conf ;
     typedef struct packed{
-        
+        logic                    start; 
     } Inst ; 
 
 
@@ -38,9 +38,12 @@ endpackage
 
 package PECtlCfg;
     import PECfg::*;
+    `define MULT8 
     `ifdef MULT8
-    parameter AuMultSize=4 
-   
+    parameter AuMultSize=4; 
+    //====================
+    //Aunit
+    //==================== 
     function automatic AuMask;
         input AuSel sel;
         case (sel)
@@ -49,13 +52,12 @@ package PECtlCfg;
             M2  :AuMask={ {32{1'b0}} , {16{1'b1}} , {16{1'b0}} };
             M4  :AuMask={ {16{1'b0}} , {16{1'b1}} , {32{1'b0}} };
             M8  :AuMask={ {16{1'b1}} , {48{1'b0}} };
-            default:64'b0;
+            default: AuMask=64'b0;
         endcase
     endfunction
     parameter AuODWd = 16;
     `else
     parameter AuMultSize=3;
-    typedef enum logic [1:0] { XNOR,M1,M2,M4 } AuSel;
     function automatic AuMask;
         input AuSel sel;
         case (sel)
@@ -69,6 +71,17 @@ package PECtlCfg;
     `endif
     parameter AuMaskWd = AuMultSize*DWd;
     typedef enum logic { SIGNED , UNSIGNED } NumT;
+    typedef struct packed{
+        AuSel mode;
+        logic valid;
+        logic reset;
+        logic work;
+        logic iNumT;
+        logic wNumT;       
+    } AuCtl;
+    //=================
+    //Datapath
+    //=================
     typedef enum logic [1:0]{ FSTPIX , FROMBUF , FROMBUFSHT } PsumInit;
     typedef enum logic [3:0]{ IDLE  , INIT , LOOP , POP  , OLAP 
                         }  IPadState ;  // pix r/w address overlapping handling   
@@ -95,9 +108,7 @@ package PECtlCfg;
         logic valid;
     } FSctl ;
     typedef struct packed{
-        logic valid;
-        NumT  xNumT;
-        NumT  wNumT;
+        AuCtl auctl;
     } MSctl ;
     typedef enum logic [1:0] { SHT1,SHT2,SHT4,SHT8 } ShtNum;
     typedef struct packed{

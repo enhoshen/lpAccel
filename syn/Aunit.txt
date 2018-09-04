@@ -1,0 +1,434 @@
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : Aunit
+Version: N-2017.09
+Date   : Fri Aug 31 08:40:19 2018
+****************************************
+
+Operating Conditions: slow   Library: slow
+Wire Load Model Mode: top
+
+  Startpoint: sum_rdy_reg
+              (rising edge-triggered flip-flop clocked by i_clk)
+  Endpoint: sum_r_reg[0]
+            (rising edge-triggered flip-flop clocked by i_clk)
+  Path Group: i_clk
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  Aunit              tsmc090_wl10          slow
+
+  Point                                    Incr       Path
+  -----------------------------------------------------------
+  clock i_clk (rise edge)                  0.00       0.00
+  clock network delay (ideal)              0.50       0.50
+  sum_rdy_reg/CK (DFFRX2)                  0.00       0.50 r
+  sum_rdy_reg/QN (DFFRX2)                  0.27       0.77 r
+  U212/Y (AOI31X1)                         0.16       0.93 f
+  U211/Y (NAND4BX2)                        0.21       1.14 f
+  U174/Y (CLKBUFX4)                        0.34       1.48 f
+  U226/Y (OAI2BB2X1)                       0.20       1.68 r
+  sum_r_reg[0]/D (DFFRQX2)                 0.00       1.68 r
+  data arrival time                                   1.68
+
+  clock i_clk (rise edge)                  2.50       2.50
+  clock network delay (ideal)              0.50       3.00
+  clock uncertainty                       -0.10       2.90
+  sum_r_reg[0]/CK (DFFRQX2)                0.00       2.90 r
+  library setup time                      -0.11       2.79
+  data required time                                  2.79
+  -----------------------------------------------------------
+  data required time                                  2.79
+  data arrival time                                  -1.68
+  -----------------------------------------------------------
+  slack (MET)                                         1.12
+
+
+1
+Information: Updating design information... (UID-85)
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : Aunit
+Version: N-2017.09
+Date   : Fri Aug 31 08:46:05 2018
+****************************************
+
+Operating Conditions: slow   Library: slow
+Wire Load Model Mode: top
+
+  Startpoint: sum_rdy_reg
+              (rising edge-triggered flip-flop clocked by i_clk)
+  Endpoint: sum_r_reg[0]
+            (rising edge-triggered flip-flop clocked by i_clk)
+  Path Group: i_clk
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  Aunit              tsmc090_wl10          slow
+
+  Point                                    Incr       Path
+  -----------------------------------------------------------
+  clock i_clk (rise edge)                  0.00       0.00
+  clock network delay (ideal)              0.50       0.50
+  sum_rdy_reg/CK (DFFRX2)                  0.00       0.50 r
+  sum_rdy_reg/QN (DFFRX2)                  0.27       0.77 r
+  U212/Y (AOI31X1)                         0.16       0.93 f
+  U211/Y (NAND4BX2)                        0.21       1.14 f
+  U174/Y (CLKBUFX4)                        0.34       1.48 f
+  U226/Y (OAI2BB2X1)                       0.20       1.68 r
+  sum_r_reg[0]/D (DFFRQX2)                 0.00       1.68 r
+  data arrival time                                   1.68
+
+  clock i_clk (rise edge)                  2.50       2.50
+  clock network delay (ideal)              0.50       3.00
+  clock uncertainty                       -0.10       2.90
+  sum_r_reg[0]/CK (DFFRQX2)                0.00       2.90 r
+  library setup time                      -0.11       2.79
+  data required time                                  2.79
+  -----------------------------------------------------------
+  data required time                                  2.79
+  data arrival time                                  -1.68
+  -----------------------------------------------------------
+  slack (MET)                                         1.12
+
+
+1
+ 
+****************************************
+Report : area
+Design : Aunit
+Version: N-2017.09
+Date   : Fri Aug 31 08:46:05 2018
+****************************************
+
+Library(s) Used:
+
+    typical (File: /opt/CAD/cell_lib/CBDK_TSMC90GUTM_Arm_f1.0/CIC/SynopsysDC/db/typical.db)
+
+Number of ports:                          453
+Number of nets:                           841
+Number of cells:                          393
+Number of combinational cells:            341
+Number of sequential cells:                42
+Number of macros/black boxes:               0
+Number of buf/inv:                         69
+Number of references:                      40
+
+Combinational area:               2862.619170
+Buf/Inv area:                      359.150402
+Noncombinational area:             438.177598
+Macro/Black Box area:                0.000000
+Net Interconnect area:           44520.227753
+
+Total cell area:                  3300.796768
+Total area:                      47821.024520
+1
+ 
+****************************************
+Report : cell
+Design : Aunit
+Version: N-2017.09
+Date   : Fri Aug 31 08:46:05 2018
+****************************************
+
+Attributes:
+    b - black box (unknown)
+    h - hierarchical
+    n - noncombinational
+    p - parameterized
+    r - removable
+    u - contains unmapped logic
+
+Cell                      Reference       Library             Area  Attributes
+--------------------------------------------------------------------------------
+AT1b                      ADDT_ODWd5_DWd1_Num16           656.207991
+                                                                    h, p
+AT2b                      ADDT_ODWd8_DWd5_Num8            837.547179
+                                                                    h, p
+AT4b                      ADDT_ODWd11_DWd9_Num4           522.143986
+                                                                    h, p
+U43                       OAI32X4         typical         10.584000 
+U93                       OAI32X4         typical         10.584000 
+U146                      NAND3X2         typical         4.233600  
+U147                      NAND2X2         typical         2.822400  
+U148                      CLKINVX1        typical         2.116800  
+U149                      INVX5           typical         3.528000  
+U150                      CLKBUFX20       typical         12.700800 
+U151                      CLKBUFX20       typical         12.700800 
+U152                      CLKBUFX20       typical         12.700800 
+U153                      CLKBUFX20       typical         12.700800 
+U154                      CLKBUFX20       typical         12.700800 
+U155                      CLKBUFX20       typical         12.700800 
+U156                      CLKBUFX20       typical         12.700800 
+U157                      CLKBUFX20       typical         12.700800 
+U158                      CLKBUFX20       typical         12.700800 
+U159                      CLKBUFX20       typical         12.700800 
+U160                      CLKBUFX20       typical         12.700800 
+U161                      CLKBUFX20       typical         12.700800 
+U162                      CLKBUFX20       typical         12.700800 
+U163                      CLKBUFX20       typical         12.700800 
+U164                      CLKBUFX20       typical         12.700800 
+U165                      CLKBUFX20       typical         12.700800 
+U166                      CLKINVX20       typical         9.878400  
+U167                      CLKBUFX20       typical         12.700800 
+U168                      CLKINVX20       typical         9.878400  
+U169                      INVX2           typical         2.116800  
+U170                      INVX2           typical         2.116800  
+U171                      INVX2           typical         2.116800  
+U172                      INVX2           typical         2.116800  
+U173                      CLKBUFX4        typical         3.528000  
+U174                      CLKBUFX4        typical         3.528000  
+U175                      INVX2           typical         2.116800  
+U176                      OAI32XL         typical         4.939200  
+U177                      INVX2           typical         2.116800  
+U178                      INVX2           typical         2.116800  
+U179                      AOI22X2         typical         4.939200  
+U180                      OAI32XL         typical         4.939200  
+U181                      INVX2           typical         2.116800  
+U182                      INVX2           typical         2.116800  
+U183                      NOR2BX2         typical         4.233600  
+U184                      OAI32XL         typical         4.939200  
+U185                      INVX2           typical         2.116800  
+U186                      INVX2           typical         2.116800  
+U187                      AND2X2          typical         3.528000  
+U188                      NAND2X2         typical         2.822400  
+U189                      AOI22XL         typical         4.233600  
+U190                      NAND2X2         typical         2.822400  
+U191                      AOI22XL         typical         4.233600  
+U192                      NAND2X2         typical         2.822400  
+U193                      AOI22XL         typical         4.233600  
+U194                      AOI222XL        typical         6.350400  
+U195                      NAND2X2         typical         2.822400  
+U196                      AOI22XL         typical         4.233600  
+U197                      AOI222XL        typical         6.350400  
+U198                      NAND2X2         typical         2.822400  
+U199                      AOI22XL         typical         4.233600  
+U200                      AOI222XL        typical         6.350400  
+U201                      NAND2X2         typical         2.822400  
+U202                      AOI22XL         typical         4.233600  
+U203                      AOI222XL        typical         6.350400  
+U204                      OAI2BB1X1       typical         4.233600  
+U205                      OAI2BB1X1       typical         4.233600  
+U206                      OAI2BB1X1       typical         4.233600  
+U207                      CLKBUFX4        typical         3.528000  
+U208                      NOR2X2          typical         2.822400  
+U209                      INVX2           typical         2.116800  
+U210                      NAND2BX2        typical         3.528000  
+U211                      NAND4BX2        typical         5.644800  
+U212                      AOI31X1         typical         4.233600  
+U213                      OAI2BB2X1       typical         5.644800  
+U214                      OAI2BB2X1       typical         5.644800  
+U215                      OAI2BB2X1       typical         5.644800  
+U216                      OAI2BB2X1       typical         5.644800  
+U217                      OAI2BB2X1       typical         5.644800  
+U218                      OAI2BB2X1       typical         5.644800  
+U219                      OAI2BB2X1       typical         5.644800  
+U220                      OAI2BB2X1       typical         5.644800  
+U221                      OAI2BB2X1       typical         5.644800  
+U222                      OAI2BB2X1       typical         5.644800  
+U223                      OR2X2           typical         3.528000  
+U224                      OAI211XL        typical         4.233600  
+U225                      NAND3XL         typical         3.528000  
+U226                      OAI2BB2X1       typical         5.644800  
+U227                      OAI2BB2X1       typical         5.644800  
+U228                      OAI2BB2X1       typical         5.644800  
+U229                      OAI2BB2X1       typical         5.644800  
+U230                      OAI2BB2X1       typical         5.644800  
+U231                      OAI2BB2X1       typical         5.644800  
+U232                      INVX2           typical         2.116800  
+U233                      AOI31X1         typical         4.233600  
+U234                      NOR2BXL         typical         3.528000  
+U235                      INVX2           typical         2.116800  
+U236                      INVX2           typical         2.116800  
+U237                      NAND2X2         typical         2.822400  
+U238                      INVX2           typical         2.116800  
+U239                      INVX2           typical         2.116800  
+U240                      NAND2X2         typical         2.822400  
+U241                      OAI32X2         typical         5.644800  
+U242                      INVX2           typical         2.116800  
+U243                      INVX2           typical         2.116800  
+U244                      NAND2X2         typical         2.822400  
+U245                      NOR2X4          typical         4.939200  
+U246                      OAI32X2         typical         5.644800  
+U247                      INVX2           typical         2.116800  
+U248                      INVX2           typical         2.116800  
+U249                      NAND2X2         typical         2.822400  
+U250                      OAI32X2         typical         5.644800  
+U251                      INVX2           typical         2.116800  
+U252                      INVX2           typical         2.116800  
+U253                      NAND2X2         typical         2.822400  
+U254                      OAI32X2         typical         5.644800  
+U255                      INVX2           typical         2.116800  
+U256                      INVX2           typical         2.116800  
+U257                      NAND2X2         typical         2.822400  
+U258                      OAI32X2         typical         5.644800  
+U259                      INVX2           typical         2.116800  
+U260                      INVX2           typical         2.116800  
+U261                      NAND2X2         typical         2.822400  
+U262                      OAI32X2         typical         5.644800  
+U263                      INVX2           typical         2.116800  
+U264                      INVX2           typical         2.116800  
+U265                      NAND2X2         typical         2.822400  
+U266                      OAI32X2         typical         5.644800  
+U267                      INVX2           typical         2.116800  
+U268                      INVX2           typical         2.116800  
+U269                      NAND2X2         typical         2.822400  
+U270                      OAI32X2         typical         5.644800  
+U271                      INVX2           typical         2.116800  
+U272                      INVX2           typical         2.116800  
+U273                      NAND2X2         typical         2.822400  
+U274                      OAI32X2         typical         5.644800  
+U275                      INVX2           typical         2.116800  
+U276                      INVX2           typical         2.116800  
+U277                      NAND2X2         typical         2.822400  
+U278                      OAI32X2         typical         5.644800  
+U279                      INVX2           typical         2.116800  
+U280                      INVX2           typical         2.116800  
+U281                      NAND2X2         typical         2.822400  
+U282                      OAI32X2         typical         5.644800  
+U283                      INVX2           typical         2.116800  
+U284                      INVX2           typical         2.116800  
+U285                      NAND2X2         typical         2.822400  
+U286                      NOR2X4          typical         4.939200  
+U287                      OAI2BB1X2       typical         4.939200  
+U288                      AOI21BX2        typical         5.644800  
+U289                      XOR2X1          typical         5.644800  
+U290                      NOR2X2          typical         2.822400  
+U291                      BUFX8           typical         6.350400  
+U292                      NAND2X2         typical         2.822400  
+U293                      AOI22XL         typical         4.233600  
+U294                      AOI222XL        typical         6.350400  
+U295                      INVX2           typical         2.116800  
+U296                      INVX2           typical         2.116800  
+U297                      NAND2X2         typical         2.822400  
+U298                      NAND2X2         typical         2.822400  
+U299                      NAND2X2         typical         2.822400  
+U300                      NAND2X2         typical         2.822400  
+U301                      NAND2X2         typical         2.822400  
+U302                      NAND2X2         typical         2.822400  
+U303                      NAND2X2         typical         2.822400  
+U304                      NAND2X2         typical         2.822400  
+U305                      NAND2X2         typical         2.822400  
+U306                      NAND2X2         typical         2.822400  
+U307                      NAND2X2         typical         2.822400  
+U308                      NAND2X2         typical         2.822400  
+U309                      NAND2X2         typical         2.822400  
+U310                      NAND2X2         typical         2.822400  
+U311                      NAND2X2         typical         2.822400  
+U312                      NAND2X2         typical         2.822400  
+U313                      NAND2X2         typical         2.822400  
+U314                      NAND2X2         typical         2.822400  
+U315                      NAND2X2         typical         2.822400  
+U316                      INVX20          typical         9.878400  
+U317                      XOR2X1          typical         5.644800  
+U318                      AND2X1          typical         3.528000  
+U319                      XOR2X1          typical         5.644800  
+U320                      AND2X1          typical         3.528000  
+U321                      XOR2X1          typical         5.644800  
+U322                      AND2X1          typical         3.528000  
+U323                      XOR2X1          typical         5.644800  
+U324                      CLKINVX1        typical         2.116800  
+sum_r_reg[0]              DFFRQX2         typical         15.523200 n
+sum_r_reg[1]              DFFRQX2         typical         15.523200 n
+sum_r_reg[2]              DFFRQX2         typical         15.523200 n
+sum_r_reg[3]              DFFRQX2         typical         15.523200 n
+sum_r_reg[4]              DFFRQX2         typical         15.523200 n
+sum_r_reg[5]              DFFRQX2         typical         15.523200 n
+sum_r_reg[6]              DFFRQX2         typical         15.523200 n
+sum_r_reg[7]              DFFRQX2         typical         15.523200 n
+sum_r_reg[8]              DFFRQX2         typical         15.523200 n
+sum_r_reg[9]              DFFRQX2         typical         15.523200 n
+sum_r_reg[10]             DFFRQX2         typical         15.523200 n
+sum_r_reg[11]             DFFRQX2         typical         15.523200 n
+sum_r_reg[12]             DFFRQX2         typical         15.523200 n
+sum_r_reg[13]             DFFRQX2         typical         15.523200 n
+sum_r_reg[14]             DFFRQX2         typical         15.523200 n
+sum_r_reg[15]             DFFRQX2         typical         15.523200 n
+sum_rdy_reg               DFFRX2          typical         17.639999 n
+sum_w_reg[0]              TLATNX2         typical         9.878400  n
+sum_w_reg[1]              TLATNX2         typical         9.878400  n
+sum_w_reg[2]              TLATNX2         typical         9.878400  n
+sum_w_reg[3]              TLATNX2         typical         9.878400  n
+sum_w_reg[4]              TLATNX2         typical         9.878400  n
+sum_w_reg[5]              TLATNX2         typical         9.878400  n
+sum_w_reg[6]              TLATNX2         typical         9.878400  n
+sum_w_reg[7]              TLATNX2         typical         9.878400  n
+sum_w_reg[8]              TLATNX2         typical         9.878400  n
+sum_w_reg[9]              TLATNX2         typical         9.878400  n
+sum_w_reg[10]             TLATNX2         typical         9.878400  n
+sum_w_reg[11]             TLATNX2         typical         9.878400  n
+sum_w_reg[12]             TLATNX2         typical         9.878400  n
+sum_w_reg[13]             TLATNX2         typical         9.878400  n
+sum_w_reg[14]             TLATNX2         typical         9.878400  n
+sum_w_reg[15]             TLATNX2         typical         9.878400  n
+sum_zero_reg              DFFSQXL         typical         14.112000 n
+--------------------------------------------------------------------------------
+Total 218 cells                                           3300.796768
+1
+Loading db file '/opt/CAD/cell_lib/CBDK_TSMC90GUTM_Arm_f1.0/CIC/SynopsysDC/db/typical.db'
+Information: Propagating switching activity (low effort zero delay simulation). (PWR-6)
+Warning: Design has unannotated primary inputs. (PWR-414)
+Warning: Design has unannotated sequential cell outputs. (PWR-415)
+ 
+****************************************
+Report : power
+        -analysis_effort low
+Design : Aunit
+Version: N-2017.09
+Date   : Fri Aug 31 08:46:06 2018
+****************************************
+
+
+Library(s) Used:
+
+    typical (File: /opt/CAD/cell_lib/CBDK_TSMC90GUTM_Arm_f1.0/CIC/SynopsysDC/db/typical.db)
+
+
+Operating Conditions: slow   Library: slow
+Wire Load Model Mode: top
+
+Design        Wire Load Model            Library
+------------------------------------------------
+Aunit                  tsmc090_wl10      slow
+
+
+Global Operating Voltage = 0.9  
+Power-specific unit information :
+    Voltage Units = 1V
+    Capacitance Units = 1.000000pf
+    Time Units = 1ns
+    Dynamic Power Units = 1mW    (derived from V,C,T units)
+    Leakage Power Units = 1pW
+
+
+  Cell Internal Power  = 158.2354 uW   (44%)
+  Net Switching Power  = 201.1158 uW   (56%)
+                         ---------
+Total Dynamic Power    = 359.3511 uW  (100%)
+
+Cell Leakage Power     =   6.8003 uW
+
+
+                 Internal         Switching           Leakage            Total
+Power Group      Power            Power               Power              Power   (   %    )  Attrs
+--------------------------------------------------------------------------------------------------
+io_pad             0.0000            0.0000            0.0000            0.0000  (   0.00%)
+memory             0.0000            0.0000            0.0000            0.0000  (   0.00%)
+black_box          0.0000            0.0000            0.0000            0.0000  (   0.00%)
+clock_network      0.0000            0.0000            0.0000            0.0000  (   0.00%)
+register       8.8555e-02        7.8104e-04        2.8048e+05        8.9617e-02  (  24.48%)
+sequential     6.6876e-03        2.1602e-03        3.3983e+05        9.1876e-03  (   2.51%)
+combinational  6.2992e-02            0.1982        6.1800e+06            0.2673  (  73.02%)
+--------------------------------------------------------------------------------------------------
+Total              0.1582 mW         0.2011 mW     6.8003e+06 pW         0.3662 mW
+1

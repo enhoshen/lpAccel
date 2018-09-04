@@ -37,9 +37,7 @@ output o_error,
     AuSel        Au_mde_w   , Au_mde_r;
     
     logic [PConfWd-1:0] 
-         //init  stage : prepare fetch stage's address
-    logic [PConfWd-1:0] ins_ipRaddr_w , ins_ipRaddr_r; // 
-    logic [PConfWd-1:0] ins_wpRaddr_w , ins_wpRaddr_r;
+         //init  stage : prepare fetch 
     logic [PConfWd-1:0] ins_forward_w , forward_r;
          //fetch Stage : prepare psum address, output input/weight data
    
