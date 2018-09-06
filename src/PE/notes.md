@@ -25,5 +25,27 @@ generate begin
         if( j7[0] ) // no complains finally
         //some code//
 ```
+* It seems that ncverilog complains about same integer used in multiple for loop at the same time
+, simple workaround would be multiple integer variables for sure, but there must be better ways...
+ However, a single genvar for multiple for loop in a generate block is fine.
+```verilog
+integer i;
+always_comb begin
+    for ( i=0 ; i<8 ; ++i) //sth//
+    for ( i=0 ; i<4 ; ++i) //sth// 
+end  // ncverilog multiple driver for output variable i error
+```
+```verilog
+integer i0, i1;
+always_comb begin
+    for ( i0=0 ; i0<8 ; ++i0) //sth//
+    for ( i1=0 ; i1<4 ; ++i1) //sth//
+end
+genvar j;
+generate begin
+    for ( j=0 ; j<8 ; ++j) //sth//
+    for ( j=0 ; j<4 ; ++j) //sth//
+endgenerate // both are fine
+```
 ## Architecture notes
 ![Aunit image](./images/aunit.png)

@@ -1,0 +1,204 @@
+Information: Updating design information... (UID-85)
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : MULT
+Version: N-2017.09
+Date   : Thu Sep  6 23:29:14 2018
+****************************************
+
+Operating Conditions: slow   Library: slow
+Wire Load Model Mode: top
+
+  Startpoint: i_in1[5] (input port clocked by i_clk)
+  Endpoint: o_out[6] (output port clocked by i_clk)
+  Path Group: i_clk
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  MULT               tsmc090_wl10          slow
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock i_clk (rise edge)                                 0.00       0.00
+  clock network delay (ideal)                             0.50       0.50
+  input external delay                                    0.01       0.51 f
+  i_in1[5] (in)                                           0.03       0.54 f
+  mult_17/a[5] (MULT_DW_mult_tc_1)                        0.00       0.54 f
+  mult_17/U723/Y (CLKBUFX40)                              0.08       0.62 f
+  mult_17/U1095/Y (XNOR2X2)                               0.11       0.73 r
+  mult_17/U770/Y (CLKBUFX40)                              0.10       0.83 r
+  mult_17/U793/Y (NAND2X8)                                0.03       0.86 f
+  mult_17/U853/Y (BUFX20)                                 0.09       0.95 f
+  mult_17/U768/Y (OR2XL)                                  0.14       1.09 f
+  mult_17/U757/Y (CLKNAND2X2)                             0.07       1.16 r
+  mult_17/U758/S (ADDHX1)                                 0.12       1.28 r
+  mult_17/U983/S (CMPR42X1)                               0.28       1.56 f
+  mult_17/U605/S (CMPR42X1)                               0.20       1.76 f
+  mult_17/U619/Y (NOR2X2)                                 0.25       2.01 r
+  mult_17/U777/Y (NOR2X6)                                 0.04       2.05 f
+  mult_17/U755/Y (AOI21X8)                                0.10       2.15 r
+  mult_17/U633/Y (INVX2)                                  0.10       2.25 f
+  mult_17/U625/Y (AOI21X1)                                0.13       2.38 r
+  mult_17/U644/Y (XNOR2X1)                                0.13       2.51 f
+  mult_17/U573/Y (INVX2)                                  0.09       2.60 r
+  mult_17/product[14] (MULT_DW_mult_tc_1)                 0.00       2.60 r
+  U2/Y (CLKBUFX24)                                        0.29       2.89 r
+  o_out[6] (out)                                          0.00       2.89 r
+  data arrival time                                                  2.89
+
+  clock i_clk (rise edge)                                 2.50       2.50
+  clock network delay (ideal)                             0.50       3.00
+  clock uncertainty                                      -0.10       2.90
+  output external delay                                  -0.01       2.89
+  data required time                                                 2.89
+  --------------------------------------------------------------------------
+  data required time                                                 2.89
+  data arrival time                                                 -2.89
+  --------------------------------------------------------------------------
+  slack (MET)                                                        0.00
+
+
+1
+ 
+****************************************
+Report : area
+Design : MULT
+Version: N-2017.09
+Date   : Thu Sep  6 23:29:14 2018
+****************************************
+
+Library(s) Used:
+
+    typical (File: /opt/CAD/cell_lib/CBDK_TSMC90GUTM_Arm_f1.0/CIC/SynopsysDC/db/typical.db)
+
+Number of ports:                          113
+Number of nets:                           741
+Number of cells:                          577
+Number of combinational cells:            576
+Number of sequential cells:                 0
+Number of macros/black boxes:               0
+Number of buf/inv:                         97
+Number of references:                      11
+
+Combinational area:               4274.524841
+Buf/Inv area:                      776.865593
+Noncombinational area:               0.000000
+Macro/Black Box area:                0.000000
+Net Interconnect area:           66593.663422
+
+Total cell area:                  4274.524841
+Total area:                      70868.188262
+1
+ 
+****************************************
+Report : cell
+Design : MULT
+Version: N-2017.09
+Date   : Thu Sep  6 23:29:14 2018
+****************************************
+
+Attributes:
+   BO - reference allows boundary optimization
+    b - black box (unknown)
+    h - hierarchical
+    n - noncombinational
+    r - removable
+    u - contains unmapped logic
+
+Cell                      Reference       Library             Area  Attributes
+--------------------------------------------------------------------------------
+U1                        CLKBUFX20       typical         12.700800 
+U2                        CLKBUFX24       typical         15.523200 
+U3                        INVX20          typical         9.878400  
+U4                        CLKINVX40       typical         17.639999 
+U5                        BUFX10          typical         7.761600  
+U6                        CLKBUFX32       typical         20.462400 
+U7                        CLKBUFX40       typical         24.695999 
+U8                        CLKBUFX40       typical         24.695999 
+U9                        CLKBUFX40       typical         24.695999 
+U10                       CLKBUFX4        typical         3.528000  
+U11                       BUFX5           typical         4.939200  
+U12                       BUFX5           typical         4.939200  
+U13                       BUFX5           typical         4.939200  
+U14                       BUFX5           typical         4.939200  
+U15                       BUFX5           typical         4.939200  
+U16                       BUFX5           typical         4.939200  
+U17                       BUFX8           typical         6.350400  
+U18                       BUFX5           typical         4.939200  
+U19                       BUFX5           typical         4.939200  
+U20                       CLKBUFX4        typical         3.528000  
+U21                       CLKBUFX4        typical         3.528000  
+U22                       CLKBUFX4        typical         3.528000  
+U23                       BUFX8           typical         6.350400  
+U24                       BUFX8           typical         6.350400  
+U25                       CLKBUFX20       typical         12.700800 
+U26                       CLKBUFX20       typical         12.700800 
+U27                       CLKBUFX20       typical         12.700800 
+U28                       CLKBUFX20       typical         12.700800 
+U29                       CLKBUFX20       typical         12.700800 
+U30                       CLKBUFX20       typical         12.700800 
+mult_17                   MULT_DW_mult_tc_1               3967.588844
+                                                                    BO, h
+--------------------------------------------------------------------------------
+Total 31 cells                                            4274.524841
+1
+Information: Propagating switching activity (low effort zero delay simulation). (PWR-6)
+Warning: Design has unannotated primary inputs. (PWR-414)
+ 
+****************************************
+Report : power
+        -analysis_effort low
+Design : MULT
+Version: N-2017.09
+Date   : Thu Sep  6 23:29:14 2018
+****************************************
+
+
+Library(s) Used:
+
+    typical (File: /opt/CAD/cell_lib/CBDK_TSMC90GUTM_Arm_f1.0/CIC/SynopsysDC/db/typical.db)
+
+
+Operating Conditions: slow   Library: slow
+Wire Load Model Mode: top
+
+Design        Wire Load Model            Library
+------------------------------------------------
+MULT                   tsmc090_wl10      slow
+
+
+Global Operating Voltage = 0.9  
+Power-specific unit information :
+    Voltage Units = 1V
+    Capacitance Units = 1.000000pf
+    Time Units = 1ns
+    Dynamic Power Units = 1mW    (derived from V,C,T units)
+    Leakage Power Units = 1pW
+
+
+  Cell Internal Power  = 759.9939 uW   (23%)
+  Net Switching Power  =   2.6116 mW   (77%)
+                         ---------
+Total Dynamic Power    =   3.3716 mW  (100%)
+
+Cell Leakage Power     =  10.4495 uW
+
+
+                 Internal         Switching           Leakage            Total
+Power Group      Power            Power               Power              Power   (   %    )  Attrs
+--------------------------------------------------------------------------------------------------
+io_pad             0.0000            0.0000            0.0000            0.0000  (   0.00%)
+memory             0.0000            0.0000            0.0000            0.0000  (   0.00%)
+black_box          0.0000            0.0000            0.0000            0.0000  (   0.00%)
+clock_network      0.0000            0.0000            0.0000            0.0000  (   0.00%)
+register           0.0000            0.0000            0.0000            0.0000  (   0.00%)
+sequential         0.0000            0.0000            0.0000            0.0000  (   0.00%)
+combinational      0.7600            2.6116        1.0450e+07            3.3821  ( 100.00%)
+--------------------------------------------------------------------------------------------------
+Total              0.7600 mW         2.6116 mW     1.0450e+07 pW         3.3821 mW
+1

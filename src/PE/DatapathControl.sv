@@ -2,15 +2,17 @@ module DataPathController
 import PECfg::*;
 import PECtlCfg::*;(
 `clk_input,
-input  PECfg::Conf     i_PEconf,
-input  PECfg::Inst     i_PEinst,
+input  Conf     i_PEconf,
+input  Inst     i_PEinst,
 output IPadAddr        o_IPctl,
 output WPadAddr        o_WPctl,
 output PPadAddr        o_PPctl,
 output FSctl           o_FSctl,
 output MSctl           o_MSctl,
 output SSctl           o_SSctl,
+`ifdef DEBUG
 output o_error,
+`endif
 `pbpix_input ( ipix ),
 `pbpix_input ( wpix )
 
