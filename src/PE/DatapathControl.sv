@@ -1,21 +1,19 @@
 module DataPathController
-import PECfg::*;
-import PECtlCfg::*;(
+import PECfg::*;(
 `clk_input,
 input  Conf     i_PEconf,
 input  Inst     i_PEinst,
-output IPadAddr        o_IPctl,
-output WPadAddr        o_WPctl,
-output PPadAddr        o_PPctl,
-output FSctl           o_FSctl,
-output MSctl           o_MSctl,
-output SSctl           o_SSctl,
-`ifdef DEBUG
-output o_error,
-`endif
-`pbpix_input ( ipix ),
-`pbpix_input ( wpix )
-
+`rdyack_port(Input),
+`rdyack_port(Weight),
+output PECtlCfg::IPadAddr        o_IPctl,
+output PECtlCfg::WPadAddr        o_WPctl,
+output PECtlCfg::PPadAddr        o_PPctl,
+output PECtlCfg::FSctl           o_FSctl,
+output PECtlCfg::MSctl           o_MSctl,
+output PECtlCfg::SSctl           o_SSctl
+//`ifdef DEBUG
+//output o_error
+//`endif
 );
     //==================
     //param
@@ -27,92 +25,75 @@ output o_error,
     //==================
     enum logic [3:0] { IDLE , INIT , WORK , STALL , STOP  }s_main , s_main_nxt ;     
 
-
     //==================
     // logic
     //==================
     logic ce;
-    logic [TileConfWd-1:0] width_idx_w, width_idx_r; // convolve width~width+S-1
-    logic [PConfWd-1:0]    pm_idx_w   , pm_idx_r;
-    logic [PConfWd-1:0]    xb_idx_w   , xb_idx_r;
-    logic [PConfWd-1:0]    pix_cnt_w  , pix_cnt_r;
-    AuSel        Au_mde_w   , Au_mde_r;
+    struct packed {
+        logic [3:0] ch;
+        logic [5:0] width;
+    } inidx_w , inidx_r;
+    struct packed {
+        logic [3:0] ch;
+        logic [3:0] width;
+        logic [3:0] filter;
+    } widx_w , widx_r;
+    struct packed {
+        logic [3:0] ch;
+        logic [5:0] width;
+        logic [3:0] filter;
+    } oidx_w , oidx_r;
     
-    logic [PConfWd-1:0] 
          //init  stage : prepare fetch 
-    logic [PConfWd-1:0] ins_forward_w , forward_r;
          //fetch Stage : prepare psum address, output input/weight data
+         //Mult Stage
+           // read next psum pix/reset from 0 / read and shift
    
-    logic [PConfWd-1:0] fs_psRaddr_w , fs_psRaddr_r; 
-    logic [PConfWd-1:0] fs_in_idx_w   , fs_in_idx_r;
-    logic [PConfWd-1:0] fs_w_idx_w    , fs_w_idx_r ;
-    logic               fs_forward_w  , fs_forward_r;     
-        //Mult Stage
-    PsumInit  ms_SwapPix_w  , ms_SwapPix_r; // read next psum pix/reset from 0 / read and shift
-    NumT      ms_MultNumT_w , ms_MultNumT_r; // 
-    logic [PConfWd-1:0] ms_SwapPix_w  , ms_SwapPix_r;
-    logic [PConfWd-1:0] ms_psum_idx_w , ms_psum_idx_r;
-    logic               ms_forward_w  , ms_forward_r;
-        //Sum Stage
-    logic [PConfWd-1:0] ss_SwapPix_w  , ss_SwapPix_r;
-    logic [PConfWd-1:0] ss_psum_idx_w , ss_psum_idx_r;
-    logic               ss_forward_w  , ss_forward_r ;
-    
-        //Input
-    //wtf is this section
-    //logic [TileWd-1:0]  inTw_idx_w   , inTw_idx_r;
-    //logic [PConfWd-1:0] inTch_idx_w  , inTch_idx_r;
-    //logic [PConfWd-1:0] inPm_idx_w   , inPm_idx_r;
-    //
-
-    //==================
-    // control
-    //==================
-
     //==================
     // comb
     //==================
-        
-
-
-
-
 always_comb begin
-    width_idx_w  =width_idx_r;   
-    tch_idx_w    =tch_idx_r;
-    pm_idx_w     =pm_idx_r;
-    xb_idx_w     =xb_idx_r;
-    s_idx_w      =s_idx_r;  
-                               
-                                
-    fs_psum_idx_w=fs_psum_idx_r; 
-    fs_in_idx_w  =fs_in_idx_r;   
-    fs_w_idx_w   =fs_w_idx_r ;   
-                                
-    ms_SwapPix_w =ms_SwapPix_r;  
-    ms_MultNumT_w=ms_MultNumT_r; 
-    ms_SwapPix_w =ms_SwapPix_r;  
-    ms_psum_idx_w=ms_psum_idx_r; 
-                                
-    ss_SwapPix_w =ss_SwapPix_r;  
-    ss_psum_idx_w=ss_psum_idx_r; 
-
-    case (s_main) begin
+    s_main_nxt = s_main;
+    case (s_main) 
         IDLE: begin
+            s_main_nxt = ( i_PEinst.start) ? INIT : IDLE;
         end 
-        STALL:begin 
+        STALL:begin
+            s_main_nxt = ( !i_PEinst.reset ) ? IDLE : (!i_PEinst.stall)? WORK : STALL;
         end
-
+        INIT: begin
+            s_main_nxt = ( !i_PEinst.reset ) ? IDLE : WORK ; 
+        end
+        WORK: begin
+            s_main_nxt = ( !i_PEinst.reset ) ? IDLE : (!i_PEinst.stall)? WORK : STALL;
+        end
+        default: begin
+        end   
+    endcase 
+end        
+always_comb begin
+    inidx_w = inidx_r;
+    widx_w = widx_r;
+    oidx_w = oidx_r;
+    
+    case (s_main)
+        IDLE: begin
+            inidx_w = inidx_r;
+            widx_w = widx_r;
+            oidx_w = oidx_r;
+        end 
+        STALL:begin
+            inidx_w = inidx_r;
+            widx_w = widx_r;
+            oidx_w = oidx_r;
+        end
         INIT: begin 
-            width_idx_w = 0;
-            tch_idx_w   = 0;
-            pm_idx_w    = 0;
-            xb_idx_w    = 0;
-            s_idx_w     = 0;
+            inidx_w = '{4'd1,6'd1};
+            widx_w = '0;
+            oidx_w = '0;
         end
         WORK: begin 
-        end
-                STOP: begin 
+            
         end
         default: begin
         end   

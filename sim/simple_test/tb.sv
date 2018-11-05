@@ -24,15 +24,11 @@ logic clk, rst;
 logic [3:0] a;
 logic [10:0] b [3][2][4];
 logic [10:0] c [2][4];
-logic [2:0] T [2] ;
 typedef struct packed{
     logic [2:0] i;
     logic [2:0] j;
 }mytype;
 mytype t;
-sif s();
-assign t.i = T[0];
-assign t.j = T[1];
 `Pos(rst_out, rst)
 `PosIf(ck_ev, clk, rst)
 
@@ -44,7 +40,6 @@ initial begin
 	$fsdbDumpvars("+all");
 	clk = 0;
 	rst = 1;
-    s.h = 1;
 	a = 0;
 	#1 $NicotbInit();
 	#10 rst = 0;

@@ -36,6 +36,16 @@ def clk_cb():
             yield clk        
             abus.Read()      
 ```
+* self defined packed struct signal can be directly controlled by its name
+```verilog
+structbus, abus = CreateBuses([
+        (  
+              (None, "mytype.member1", ),
+              (None, "mytype.member2", ),
+        ),
+        ("a",),
+])
+```
 ## nWave
 * If you have any self defined type, struct,`$fsdbDumpvars()` arguments should be `"+all"`..................
 ```verilog

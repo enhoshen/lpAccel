@@ -30,7 +30,9 @@ package PECfg ;
         logic [TileConfDWd-1:0] Tw;
     } Conf ;
     typedef struct packed{
-        logic                    start; 
+        logic start; 
+        logic stall;
+        logic reset;
     } Inst ; 
 
 
@@ -83,9 +85,6 @@ package PECtlCfg;
     //Datapath
     //=================
     typedef enum logic [1:0]{ FSTPIX , FROMBUF , FROMBUFSHT } PsumInit;
-    typedef enum logic [3:0]{ IDLE  , INIT , LOOP , POP  , OLAP 
-                        }  IPadState ;  // pix r/w address overlapping handling   
-    typedef enum logic [InstDWd-1:0] {STALL,RESET,START,WORK} PEiss ;  
     typedef struct packed{
         logic [PECfg::IPadAddrWd-1:0] raddr;
         logic [PECfg::IPadAddrWd-1:0] waddr;

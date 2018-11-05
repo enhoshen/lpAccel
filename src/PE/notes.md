@@ -47,5 +47,14 @@ generate begin
     for ( j=0 ; j<4 ; ++j) //sth//
 endgenerate // both are fine
 ```
+* packed array or struct assignment using `'`, be cautious where `'` (tick) is not back quote `` ` ``
+```verilog
+struct packed {
+    logic a;
+    logic b;
+} MyType; MyType foo;
+assign foo = '0; //assign every elements to 0
+assign foo = '{ 1'b1 , 1'b0 }; //packed elements assignments
+```
 ## Architecture notes
 ![Aunit image](./images/aunit.png)
