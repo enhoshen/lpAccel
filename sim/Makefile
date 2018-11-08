@@ -7,7 +7,7 @@ HOME=/home/enhoshen/research/lpAccel
 Top_syn:
 	make ARGS="+define+SDF=\\\"../$(SYN)/Top_syn.sdf\\\" +define+GATE_LEVEL +define+SRAM_GEN_MODE=SYNOPSYS32 +incdir+../$(SYN)/SAED32_EDK/lib/sram/verilog/ +incdir+../$(SYN)/SAED32_EDK/lib/stdcell_rvt/verilog/ +incdir+../$(SYN)/ +nowarn+SDFNCAP:SDFNDP:MACRDF:CUVWSP:SDFNSB:SDFNL1 " Top_test
 
-%: %.sv
+%: $(if $(SV),$(SV).sv,%.sv)
 	GLOG_logtostderr=1 \
 	TEST=$(if $(TEST),$(TEST),$@) \
 	TOPMODULE=$(if $(TOPMODULE),$(TOPMODULE),$@) \
@@ -17,8 +17,8 @@ Top_syn:
 	+incdir+$(HOME)/src \
 	+incdir+$(HOME)/include \
 	+incdir+/opt/CAD/synopsys/synthesis/2017.09/dw/sim_ver \
-	$(ARGS) $(NICOTB)/verilog/Utils.sv $<
-
+	$(ARGS) $(NICOTB)/verilog/Utils.sv $< \
+	+sv
 # dump_scoreboard help you recording the lastest run time and result
 dump_scoreboard:
 	@echo -e \

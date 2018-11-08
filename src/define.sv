@@ -18,7 +18,7 @@
 
 // modified by En-ho Shen
 
-
+`define cycle 2.5
 `define pbpix_input(name) output logic name``_ack, input name``_rdy , input name``_zero
 `define pbpix_output(name) output logic name``_rdy, input name``_ack , output logic name``_zero
 `define pbpix_logic(name) logic name``_rdy, name``_ack ,name``_zero
@@ -42,6 +42,7 @@
 `define clk_port i_clk, i_rstn
 `define clk_connect .i_clk(i_clk), .i_rstn(i_rstn)
 `define clk_input input i_clk , input i_rstn
+`define clk_logic logic i_clk ; logic i_rstn
 
 `define ff_rstn always_ff @(posedge i_clk or negedge i_rstn)if (!i_rstn)begin
 `define ff_cg(cg) end else if (cg) begin

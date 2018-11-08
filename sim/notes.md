@@ -4,7 +4,7 @@
 ## nicotb
 ### createbuses
 * bus of 1D array signal shape should be tailed with a comma `,`...\
-see the signal t from the following code:
+see the signal `t` from the following code:
 
 tb.py:
 ```python
@@ -54,3 +54,12 @@ inital begin
     $fsdbDumpvars("+all"); // rather than something like $fsdbDumpvars(0,tb,'+mda');
 end
 ```
+
+## Makefile
+* See for the [GNU make documentation](http://www.gnu.org/software/make/manual/make.html#Goals) for elaborated information
+* Automatic variables : `%` `<` `@` 
+## MISC
+* I came across this issue where I create a file named `struct.py`, which appears to be a built-in file(?) for 
+python to read, resulting constant compile error within this file even if I were just testing stuff using the python console!  
+**Careful naming excluding any built-in names is a must, be more specific**, for example this file has something to do with systemverilog,
+so I should have used name like `SVstruct.py` or so.

@@ -1,0 +1,250 @@
+Information: Updating design information... (UID-85)
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : LoopCounter
+Version: O-2018.06
+Date   : Mon Nov  5 17:34:35 2018
+****************************************
+
+Operating Conditions: slow   Library: slow
+Wire Load Model Mode: top
+
+  Startpoint: loopIdx_r_reg[1][0]
+              (rising edge-triggered flip-flop clocked by i_clk)
+  Endpoint: loopIdx_r_reg[1][4]
+            (rising edge-triggered flip-flop clocked by i_clk)
+  Path Group: i_clk
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  LoopCounter        tsmc090_wl10          slow
+
+  Point                                    Incr       Path
+  -----------------------------------------------------------
+  clock i_clk (rise edge)                  0.00       0.00
+  clock network delay (ideal)              0.50       0.50
+  loopIdx_r_reg[1][0]/CK (DFFSQX2)         0.00       0.50 r
+  loopIdx_r_reg[1][0]/Q (DFFSQX2)          0.25       0.75 r
+  U67/Y (XOR2X1)                           0.14       0.88 f
+  U92/Y (OR3X2)                            0.11       0.99 f
+  U89/Y (OR3X2)                            0.15       1.14 f
+  U56/Y (CLKINVX32)                        0.21       1.35 r
+  U59/Y (NAND2X4)                          0.12       1.48 f
+  U58/Y (OAI21X1)                          0.15       1.63 r
+  U63/Y (NAND2X2)                          0.13       1.76 f
+  U62/Y (INVX2)                            0.20       1.97 r
+  U37/Y (AOI31X4)                          0.13       2.10 f
+  U71/Y (NOR2X4)                           0.27       2.37 r
+  U65/Y (NOR2BX1)                          0.22       2.58 r
+  U101/Y (AOI21X1)                         0.09       2.68 f
+  U100/Y (OAI2BB1XL)                       0.11       2.79 r
+  loopIdx_r_reg[1][4]/D (DFFRQX2)          0.00       2.79 r
+  data arrival time                                   2.79
+
+  clock i_clk (rise edge)                  2.50       2.50
+  clock network delay (ideal)              0.50       3.00
+  clock uncertainty                       -0.10       2.90
+  loopIdx_r_reg[1][4]/CK (DFFRQX2)         0.00       2.90 r
+  library setup time                      -0.09       2.81
+  data required time                                  2.81
+  -----------------------------------------------------------
+  data required time                                  2.81
+  data arrival time                                  -2.79
+  -----------------------------------------------------------
+  slack (MET)                                         0.02
+
+
+1
+ 
+****************************************
+Report : area
+Design : LoopCounter
+Version: O-2018.06
+Date   : Mon Nov  5 17:34:35 2018
+****************************************
+
+Library(s) Used:
+
+    typical (File: /opt/CAD/cell_lib/CBDK_TSMC90GUTM_Arm_f1.0/CIC/SynopsysDC/db/typical.db)
+
+Number of ports:                           41
+Number of nets:                            99
+Number of cells:                           80
+Number of combinational cells:             69
+Number of sequential cells:                11
+Number of macros/black boxes:               0
+Number of buf/inv:                         13
+Number of references:                      41
+
+Combinational area:                337.982406
+Buf/Inv area:                       60.681601
+Noncombinational area:             170.049601
+Macro/Black Box area:                0.000000
+Net Interconnect area:            9380.047089
+
+Total cell area:                   508.032007
+Total area:                       9888.079096
+1
+ 
+****************************************
+Report : cell
+Design : LoopCounter
+Version: O-2018.06
+Date   : Mon Nov  5 17:34:35 2018
+****************************************
+
+Attributes:
+    b - black box (unknown)
+    h - hierarchical
+   mo - map_only
+    n - noncombinational
+    r - removable
+    u - contains unmapped logic
+
+Cell                      Reference       Library             Area  Attributes
+--------------------------------------------------------------------------------
+U37                       AOI31X4         typical         8.467200  
+U56                       CLKINVX32       typical         15.523200 
+U57                       XOR2X1          typical         5.644800  
+U58                       OAI21X1         typical         3.528000  
+U59                       NAND2X4         typical         4.939200  
+U60                       CLKINVX1        typical         2.116800  
+U61                       INVX4           typical         2.822400  
+U62                       INVX2           typical         2.116800  
+U63                       NAND2X2         typical         2.822400  
+U64                       NOR2BX1         typical         3.528000  
+U65                       NOR2BX1         typical         3.528000  
+U66                       XOR2X1          typical         5.644800  
+U67                       XOR2X1          typical         5.644800  
+U68                       OAI21XL         typical         3.528000  
+U69                       CLKINVX2        typical         2.116800  
+U70                       AOI21XL         typical         3.528000  
+U71                       NOR2X4          typical         4.939200  
+U72                       INVX20          typical         9.878400  
+U73                       BUFX2           typical         2.822400  
+U74                       OAI2B2XL        typical         5.644800  
+U75                       AOI211XL        typical         4.233600  
+U76                       NOR4XL          typical         4.233600  
+U77                       OAI21X1         typical         3.528000  
+U78                       CLKBUFX20       typical         12.700800 
+U79                       AND3X2          typical         4.233600  
+U80                       NOR3X2          typical         4.233600  
+U81                       NAND2XL         typical         2.822400  
+U82                       OAI211XL        typical         4.233600  
+U83                       INVX2           typical         2.116800  
+U84                       INVX2           typical         2.116800  
+U85                       INVX2           typical         2.116800  
+U86                       XNOR2X1         typical         5.644800  
+U87                       XOR2X1          typical         5.644800  
+U88                       XOR2X1          typical         5.644800  
+U89                       OR3X2           typical         4.233600  
+U90                       XOR2X1          typical         5.644800  
+U91                       XOR2X1          typical         5.644800  
+U92                       OR3X2           typical         4.233600  
+U93                       INVX2           typical         2.116800  
+U94                       OAI22X1         typical         4.233600  
+U95                       AOI31X1         typical         4.233600  
+U96                       OR3X2           typical         4.233600  
+U97                       XOR2X1          typical         5.644800  
+U98                       XOR2X1          typical         5.644800  
+U99                       XOR2X1          typical         5.644800  
+U100                      OAI2BB1XL       typical         4.233600  
+U101                      AOI21X1         typical         3.528000  
+U102                      AO21X2          typical         4.939200  
+U103                      AO21X2          typical         4.939200  
+U104                      OAI2BB1X1       typical         4.233600  
+U105                      AOI21X1         typical         3.528000  
+U106                      OAI2BB1X1       typical         4.233600  
+U107                      AOI21X1         typical         3.528000  
+U108                      AO21X2          typical         4.939200  
+U109                      AOI31X1         typical         4.233600  
+U110                      AND2X2          typical         3.528000  
+U111                      AND2X2          typical         3.528000  
+U112                      AO22X1          typical         5.644800  
+U113                      XNOR2X1         typical         5.644800  
+U114                      AO22X1          typical         5.644800  
+U115                      XOR2X1          typical         5.644800  
+U116                      AND2XL          typical         3.528000  
+U117                      AND2X2          typical         3.528000  
+U118                      AO22X2          typical         5.644800  
+U119                      INVX2           typical         2.116800  
+U120                      ADDHX1          typical         10.584000 mo, r
+U121                      ADDHX1          typical         10.584000 mo, r
+U122                      ADDHX1          typical         10.584000 mo, r
+U123                      XOR2X1          typical         5.644800  
+loopIdx_r_reg[0][0]       DFFSQX2         typical         14.817600 n
+loopIdx_r_reg[0][1]       DFFRQX2         typical         15.523200 n
+loopIdx_r_reg[0][2]       DFFRQX2         typical         15.523200 n
+loopIdx_r_reg[1][0]       DFFSQX2         typical         14.817600 n
+loopIdx_r_reg[1][1]       DFFRQX2         typical         15.523200 n
+loopIdx_r_reg[1][2]       DFFRQX2         typical         15.523200 n
+loopIdx_r_reg[1][3]       DFFRQX2         typical         15.523200 n
+loopIdx_r_reg[1][4]       DFFRQX2         typical         15.523200 n
+loopIdx_r_reg[2][0]       DFFSQXL         typical         14.112000 n
+loopIdx_r_reg[2][1]       DFFRX2          typical         17.639999 n
+loopIdx_r_reg[2][2]       DFFRQX2         typical         15.523200 n
+--------------------------------------------------------------------------------
+Total 80 cells                                            508.032007
+1
+Loading db file '/opt/CAD/cell_lib/CBDK_TSMC90GUTM_Arm_f1.0/CIC/SynopsysDC/db/typical.db'
+Information: Propagating switching activity (low effort zero delay simulation). (PWR-6)
+Warning: Design has unannotated primary inputs. (PWR-414)
+Warning: Design has unannotated sequential cell outputs. (PWR-415)
+ 
+****************************************
+Report : power
+        -analysis_effort low
+Design : LoopCounter
+Version: O-2018.06
+Date   : Mon Nov  5 17:34:36 2018
+****************************************
+
+
+Library(s) Used:
+
+    typical (File: /opt/CAD/cell_lib/CBDK_TSMC90GUTM_Arm_f1.0/CIC/SynopsysDC/db/typical.db)
+
+
+Operating Conditions: slow   Library: slow
+Wire Load Model Mode: top
+
+Design        Wire Load Model            Library
+------------------------------------------------
+LoopCounter            tsmc090_wl10      slow
+
+
+Global Operating Voltage = 0.9  
+Power-specific unit information :
+    Voltage Units = 1V
+    Capacitance Units = 1.000000pf
+    Time Units = 1ns
+    Dynamic Power Units = 1mW    (derived from V,C,T units)
+    Leakage Power Units = 1pW
+
+
+  Cell Internal Power  =  61.3783 uW   (55%)
+  Net Switching Power  =  51.1665 uW   (45%)
+                         ---------
+Total Dynamic Power    = 112.5448 uW  (100%)
+
+Cell Leakage Power     = 828.0541 nW
+
+
+                 Internal         Switching           Leakage            Total
+Power Group      Power            Power               Power              Power   (   %    )  Attrs
+--------------------------------------------------------------------------------------------------
+io_pad             0.0000            0.0000            0.0000            0.0000  (   0.00%)
+memory             0.0000            0.0000            0.0000            0.0000  (   0.00%)
+black_box          0.0000            0.0000            0.0000            0.0000  (   0.00%)
+clock_network      0.0000            0.0000            0.0000            0.0000  (   0.00%)
+register       5.4680e-02        8.9881e-04        1.7550e+05        5.5754e-02  (  49.18%)
+sequential         0.0000            0.0000            0.0000            0.0000  (   0.00%)
+combinational  6.6987e-03        5.0268e-02        6.5255e+05        5.7619e-02  (  50.82%)
+--------------------------------------------------------------------------------------------------
+Total          6.1378e-02 mW     5.1167e-02 mW     8.2805e+05 pW         0.1134 mW
+1
