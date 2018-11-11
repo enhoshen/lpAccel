@@ -17,7 +17,7 @@
 
 from nicotb import *
 import numpy as np
-
+from util import *
 def rst_out_cb1():
 	print("reset wait")
 	yield rst_out
@@ -31,29 +31,34 @@ def rst_out_cb2():
 
 def clk_cb():
         cbbus.SetToX()
-        cbbus[0].x[1,1] = 0
-        cbbus[2].x = 0
+        print ( type (cbbus) )
+        cbbus[0].x = 0
+        cbbus[2][0].value[0] = 0
         yield rst_out
         while True:
             yield clk
             abus.Read()
-            cbbus[2].value = abus[0].value[0]    
+            cbbus[1].value = abus[0].value[0]    
             if abus.is_number:
-                cbbus[0].value[1,1] = abus[0].value[0]
-                cbbus[2].value = abus[0].value[0]
-                cbbus[1].value[1,1,2] = abus[0].value[0]
+                cbbus[0].value[0] = abus[0].value[0]
+                cbbus[1].value[0] = abus[0].value[0]
             else:
                 cbbus.SetToX()
             cbbus.Write()
-
+mytype2 = StructBusCreator('mytype2' , ['l','m']  )
+mytype = StructBusCreator ( 'mytype' ,  ['i','j','k'] , [3,3,6] , [(1,),(1,),(1,)] , ['logic','logic','mytype2'] )
+cbbus = mytype.CreateStructBus('t')
+abus = CreateBus( ('a',) )
+'''
 cbbus, abus = CreateBuses([
 	(
 		(""  , "c", (2,4)),
 		(None, "b", (3,2,4)),
-                (None, "t.k.l", ),
+                (None, "t.i", ),
 	),
 	("a",),
 ])
+'''
 rst_out, clk = CreateEvents(["rst_out", "ck_ev"])
 
 RegisterCoroutines([
@@ -61,3 +66,5 @@ RegisterCoroutines([
 	rst_out_cb1(),
 	rst_out_cb2(),
 ])
+
+

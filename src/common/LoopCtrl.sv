@@ -67,27 +67,30 @@ endmodule
 
 module Loop;
    
-    parameter depth = 3;
+    parameter NDepth = 3;
+    parameter IdxMaxDW = 11;
+    parameter int IdxDW [NDepth] = {3,5,3};
     LpCtl i_ctl;
-    logic [depth-1:0] loopend;
-    `clk_logic
-
+    logic [NDepth-1:0] o_loopEnd;
+    logic [IdxMaxDW-1:0] i_loopSize [NDepth]; 
+        assign i_loopSize = {11'd5,11'd30,11'd7};
+    `clk_logic;
     `Pos(rst_out , i_rstn)
     `PosIf(ck_ev, i_clk, i_rstn)
     `WithFinish    
-
 LoopCounter #(
-.NDepth( 3) .IdxDW( '{3,5,3}), .IdxMaxDW ( 11)
+.NDepth(NDepth), .IdxDW(IdxDW), .IdxMaxDW(IdxMaxDW)
 ) dut(
-`clk_connect,
-.i_loopSize('{3'd5,5'd30,3'd7}),
-.i_ctl(i_ctl), 
-.o_loopEnd(loopend)
+.*
+//`clk_connect,
+//.i_loopSize({11'd5,11'd30,11'd7}),
+//.i_ctl(i_ctl), 
+//.o_loopEnd(loopend)
 );
 always #(`cycle/2) i_clk = ~i_clk;
 initial begin
     $fsdbDumpfile("loop.fsdb");
-    $fsdbDumpvars(0, loop , "+all");
+    $fsdbDumpvars(0, Loop, "+all");
     i_clk =0;
     i_rstn=1;
     #(`cycle/2) $NicotbInit();
@@ -99,3 +102,4 @@ initial begin
 end
 
 endmodule
+

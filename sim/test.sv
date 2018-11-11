@@ -25,13 +25,8 @@ logic [3:0] a;
 logic [10:0] b [3][2][4];
 logic [10:0] c [2][4];
 typedef struct packed{
-    logic  l;
-    logic [2:0] m;
-}mytype2;
-typedef struct packed{
     logic [2:0] i;
     logic [2:0] j;
-    mytype2 k;
 }mytype;
 mytype t;
 `Pos(rst_out, rst)

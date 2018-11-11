@@ -40,12 +40,19 @@ def clk_cb():
 ```verilog
 structbus, abus = CreateBuses([
         (  
-              (None, "mytype.member1", ),
+              ("", "mytype.member1", ),
               (None, "mytype.member2", ),
         ),
         ("a",),
 ])
 ```
+* 1 bit signal dimension should not be of `(1,)`, instead a empty tuple `tuple()`
+```python
+bitbus1 = CreateBus( ("" , "bitSignal" )
+bitbus2 = CreateBus( ("" , "bitSignal2" , tuple() )
+bitbus3 = CreateBus( ("" , "bitSignal3" , () )
+```
+
 ## nWave
 * If you have any self defined type, struct,`$fsdbDumpvars()` arguments should be `"+all"`..................
 ```verilog

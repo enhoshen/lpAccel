@@ -17,7 +17,9 @@ Top_syn:
 	+incdir+$(HOME)/src \
 	+incdir+$(HOME)/include \
 	+incdir+/opt/CAD/synopsys/synthesis/2017.09/dw/sim_ver \
-	$(ARGS) $(NICOTB)/verilog/Utils.sv $< \
+	$(ARGS) $(NICOTB)/verilog/Utils.sv \
+	$(HOME)/src/define.sv \
+	$< \
 	+sv
 # dump_scoreboard help you recording the lastest run time and result
 dump_scoreboard:
