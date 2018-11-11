@@ -29,8 +29,10 @@ logic [3:0] t [2] ;
 ```verilog
 def clk_cb():                
         cbbus.SetToX()       
-        cbbus[0].x[1,1] = 0  
-        cbbus[2].x = 0       
+        //cbbus[0].x[1,1] = 0  don't use x ! it is 4-valued encoding of x
+        //cbbus[2].x = 0       
+        cbbus[0].value[1,1]= 0
+        cbbus[2].value[0] = 0
         yield rst_out        
         while True:          
             yield clk        
