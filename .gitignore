@@ -6,6 +6,7 @@
 *nWaveLog/
 *nLintDB/
 *nLintLog/
+.simvision/
 *.swo
 novas*
 verdiLog/
