@@ -13,7 +13,7 @@ def test():
     ctlbus , obus = BusInit()
     ctlbus.SetTo(0)
     for i in range ( 1000): 
-        ctlbus[0].value = np.random.randint(0,high=2)
+        ctlbus[0].value = 1 if np.random.randint(0,high=11) > 1 else 0;
         ctlbus[1].value = 1
         obus.Read()
         ctlbus.Write()

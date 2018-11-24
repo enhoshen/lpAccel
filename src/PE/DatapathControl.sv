@@ -29,20 +29,14 @@ output PECtlCfg::SSctl           o_SSctl
     // logic
     //==================
     logic ce;
-    struct packed {
-        logic [3:0] ch;
-        logic [5:0] width;
-    } inidx_w , inidx_r;
-    struct packed {
-        logic [3:0] ch;
-        logic [3:0] width;
-        logic [3:0] filter;
-    } widx_w , widx_r;
-    struct packed {
-        logic [3:0] ch;
-        logic [5:0] width;
-        logic [3:0] filter;
-    } oidx_w , oidx_r;
+    LpCtl in_idx_ctl , w_idx_ctl , o_idx_ctl ;
+    LoopCounter #( 
+    .NDepth(2) , .IdxDW({4,6}) , .IdxMaxDW(6)
+    ) InIDX( .*
+    .i_loopSize(
+    .i_ctl(in_idx_ctl),
+    .o_loopEnd()
+    );
     
          //init  stage : prepare fetch 
          //fetch Stage : prepare psum address, output input/weight data
@@ -52,66 +46,53 @@ output PECtlCfg::SSctl           o_SSctl
     //==================
     // comb
     //==================
-always_comb begin
-    s_main_nxt = s_main;
-    case (s_main) 
-        IDLE: begin
-            s_main_nxt = ( i_PEinst.start) ? INIT : IDLE;
-        end 
-        STALL:begin
-            s_main_nxt = ( !i_PEinst.reset ) ? IDLE : (!i_PEinst.stall)? WORK : STALL;
-        end
-        INIT: begin
-            s_main_nxt = ( !i_PEinst.reset ) ? IDLE : WORK ; 
-        end
-        WORK: begin
-            s_main_nxt = ( !i_PEinst.reset ) ? IDLE : (!i_PEinst.stall)? WORK : STALL;
-        end
-        default: begin
-        end   
-    endcase 
-end        
-always_comb begin
-    inidx_w = inidx_r;
-    widx_w = widx_r;
-    oidx_w = oidx_r;
-    
-    case (s_main)
-        IDLE: begin
-            inidx_w = inidx_r;
-            widx_w = widx_r;
-            oidx_w = oidx_r;
-        end 
-        STALL:begin
-            inidx_w = inidx_r;
-            widx_w = widx_r;
-            oidx_w = oidx_r;
-        end
-        INIT: begin 
-            inidx_w = '{4'd1,6'd1};
-            widx_w = '0;
-            oidx_w = '0;
-        end
-        WORK: begin 
-            
-        end
-        default: begin
-        end   
-    endcase 
+    always_comb begin
+        s_main_nxt = s_main;
+        case (s_main) 
+            IDLE: begin
+                s_main_nxt = ( i_PEinst.start) ? INIT : IDLE;
+            end 
+            STALL:begin
+                s_main_nxt = ( !i_PEinst.reset ) ? IDLE : (!i_PEinst.stall)? WORK : STALL;
+            end
+            INIT: begin
+                s_main_nxt = ( !i_PEinst.reset ) ? IDLE : WORK ; 
+            end
+            WORK: begin
+                s_main_nxt = ( !i_PEinst.reset ) ? IDLE : (!i_PEinst.stall)? WORK : STALL;
+            end
+            default: begin
+            end   
+        endcase 
+    end        
+    always_comb begin
+        
+        case (s_main)
+            IDLE: begin
+            end 
+            STALL:begin
+            end
+            INIT: begin 
+            end
+            WORK: begin 
+                
+            end
+            default: begin
+            end   
+        endcase 
 
 
-end
-
+    end
 
    //==================
    //sequential
    //==================
-`ff_rstn
-`ff_cg(ce)
-`ff_end
+    `ff_rstn
+    `ff_cg(ce)
+    `ff_end
 
-`ff_rstn
-`ff_nocg
-`ff_end
+    `ff_rstn
+    `ff_nocg
+    `ff_end
 
 endmodule

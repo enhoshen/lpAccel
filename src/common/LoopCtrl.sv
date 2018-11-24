@@ -16,7 +16,10 @@ output [NDepth-1:0] o_loopEnd
     //================
     //parameter
     //================
-   
+  
+ 
+
+
     //=================
     //logic
     //=================
@@ -47,7 +50,7 @@ output [NDepth-1:0] o_loopEnd
                     if(i_ctl.reset)
                         loopIdx_w `MSKIDX = 1 ;
                     else if (i_ctl.inc) 
-                        loopIdx_w `MSKIDX = (&loopEnd[i:0])? '1 : (&loopEnd[i-1:0])? loopIdx_r `MSKIDX +1'b1 : loopIdx_r `MSKIDX ;  
+                        loopIdx_w `MSKIDX = (&loopEnd[i:0])? 1 : (&loopEnd[i-1:0])? loopIdx_r `MSKIDX +1'b1 : loopIdx_r `MSKIDX ;  
                     else
                         loopIdx_w `MSKIDX = loopIdx_r `MSKIDX ;   
                 end        
@@ -69,22 +72,22 @@ module Loop;
    
     parameter NDepth = 3;
     parameter IdxMaxDW = 11;
-    parameter int IdxDW [NDepth] = {3,5,3};
+    //parameter int IdxDW [NDepth] = {3,5,3};
     LpCtl i_ctl;
     logic [NDepth-1:0] o_loopEnd;
     logic [IdxMaxDW-1:0] i_loopSize [NDepth]; 
-        assign i_loopSize = {11'd5,11'd30,11'd7};
+        assign i_loopSize = {11'd5,11'd20,11'd7};
     `clk_logic;
     `Pos(rst_out , i_rstn)
     `PosIf(ck_ev, i_clk, i_rstn)
     `WithFinish    
 LoopCounter #(
-.NDepth(NDepth), .IdxDW(IdxDW), .IdxMaxDW(IdxMaxDW)
+.NDepth(NDepth), .IdxDW( {10'd3,10'd5,10'd3} ), .IdxMaxDW(IdxMaxDW)
 ) dut(
 .*
 //`clk_connect,
 //.i_loopSize({11'd5,11'd30,11'd7}),
-//.i_ctl(i_ctl), 
+//.i_ctl(i_ctl)
 //.o_loopEnd(loopend)
 );
 always #(`cycle/2) i_clk = ~i_clk;
@@ -100,6 +103,7 @@ initial begin
     $NicotbFinal();
     $finish;
 end
+
 
 endmodule
 

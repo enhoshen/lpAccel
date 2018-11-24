@@ -37,13 +37,13 @@
       "options": {
         "automatic-rename": "off"
       },
-      "window_name": "MEM",
+      "window_name": "dev2",
       "layout": "3d64,207x58,0,0{103x58,0,0,2,103x58,104,0,5}",
       "panes": [
         {} ,
         {}      
       ],
-      "start_directory": "/home/enhoshen/research/lpAccel/src/MEM",
+      "start_directory": "/home/enhoshen/research/lpAccel/src/",
       "focus": false,
       "window_index":2
     },
@@ -70,7 +70,7 @@
         "tool 1",
         "tool 2" 
       ],
-      "start_directory": "/home/enhoshen/research/lpAccel/include",
+      "start_directory": "/home/enhoshen/research/sim",
       "window_index":4
     },
     {

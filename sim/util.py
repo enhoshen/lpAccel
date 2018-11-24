@@ -1,4 +1,4 @@
-from nicotb import *
+#from nicotb import *
 import itertools
 import numpy as np
 class StructBus:
@@ -58,5 +58,4 @@ def clk_cnt():
     while(1):
         yield ck_ev
         n_clk+=1    
-
 

@@ -63,12 +63,24 @@ inital begin
     $fsdbDumpvars("+all"); // rather than something like $fsdbDumpvars(0,tb,'+mda');
 end
 ```
-
+* You can configure toolbar, making constantly used function more easily accessible.
+![toolbar](images/nWave_Custom_toolbar.png)
 ## Makefile
 * See for the [GNU make documentation](http://www.gnu.org/software/make/manual/make.html#Goals) for elaborated information
 * Automatic variables : `%` `<` `@` 
+* I encounter this problem where `$@` becomes `Makefile` rather than the target input from command line if the Makefile looks like this:
+    ```Makefile
+    %: if($(SV),$(SV).sv,%.sv)
+    TEST=if($(TEST),$(TEST),%@)\
+    TOPMODULE=if($(TOPMODULE),$(TOPMODULE),%@)\
+    ...\
+    ```
+    so whenever the file `$(SV).sv` changed ( it's a prerequisite, makefile checks it), variables `TEST` and `TOPMODULE` get flushed to "Makefile".
+I can fix this by update the Makefile to the drive, but I remove the prerequisite list so far so I don't have to bother with this issue. Note that
+`%` target is related to ``pattern rules``, find out more for the section.
 ## MISC
 * I came across this issue where I create a file named `struct.py`, which appears to be a built-in file(?) for 
 python to read, resulting constant compile error within this file even if I were just testing stuff using the python console!  
 **Careful naming excluding any built-in names is a must, be more specific**, for example this file has something to do with systemverilog,
 so I should have used name like `SVstruct.py` or so.
+
