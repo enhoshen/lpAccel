@@ -14,7 +14,7 @@
 
 # You should have received a copy of the GNU General Public License
 # along with Nicotb.  If not, see <http://www.gnu.org/licenses/>.
-
+from os import environ
 from nicotb import *
 import numpy as np
 from util import *
@@ -31,6 +31,7 @@ def rst_out_cb2():
 
 def clk_cb():
         cbbus.SetToX()
+        print( environ.get("TOPMODULE") )
         print ( type (cbbus) )
         cbbus[0].x = 0
         cbbus[2][0].value[0] = 0

@@ -27,7 +27,7 @@ package PECfg ;
         logic                   PixReuse;// R<U or fully connected
         logic [PConfDWd-1:0]    Xb; // *b is the bit channel        
         logic [PConfDWd-1:0]    Wb;
-        logic [TileConfDWd-1:0] Tw;
+        logic [TileConfDWd-1:0] Tw; // tile width, feature map width tile
     } Conf ;
     typedef struct packed{
         logic start; 

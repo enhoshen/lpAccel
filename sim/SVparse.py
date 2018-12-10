@@ -1,57 +1,174 @@
 import numpy as np
+import parser as ps
+import re
+from os import environ
+from collections import namedtuple
+from collections import deque
+class SVhier ():
+    def __init__(self,name,scope):
+        self.hier= name
+        self.params = {}
+        self.types = {'logic':None}
+        self.child = {}
+        self._scope = scope
+        if scope != None:
+            scope.child[name] = self
+    @property
+    def scope(self):
+        return self._scope
+    @scope.setter
+    def scope(self,scope):
+        self._scope=scope
+    @property
+    def Params(self):
+        if self._scope == None:
+            return deque([h.params for _ , h in self.child.items()]) 
+        else:
+            _l = self._scope.Params
+            _l.appendleft(self.params)
+            return _l
+    @property
+    def Types(self):
+        if self._scope == None:
+            return deque([h.types for _ , h in self.child.items()]) 
+        else:
+            _l = self._scope.Types
+            _l.appendleft(self.types)
+            return _l
+    def __repr__(self):
+        return 'name:'+self.hier+'\n'+' params:{:}\n'.format(self.params.__repr__(),align='^')+'\n'+' scope:'+self._scope.hier+\
+                ' types:{:}\n'.format([x for x in self.types].__repr__(),align='^')+ ' child:{:}\n'.format( [x for x in self.child].__repr__(),align='^')
 class SVparse():
     package = {}
-    parameter = {}
-    typeName = {'logic'}
-    def __init__(self):
-        self.base_path = '/home/enhoshen/research/lpAccel/'
-        self.queue  = []
+    gb_hier = SVhier('files',None)
+    cur_scope = ''
+    base_path = '/home/enhoshen/research/lpAccel/'
+   
+    def __init__(self,name,scope):
+        self.cur_hier = SVhier(name,scope) if scope != None else SVhier(name,self.gb_hier) 
+        self.cur_key = ''
         self.keyword = { 'logic':self.LogicParse , 'parameter':self.ParamParse, 'localparam':self.ParamParse,\
-                        'typedef':['ID'] , 'struct':self.StructParse , 'packed':[] , 'package':['ID' ,'endpackage'] ,}
+                        'typedef':self.TypeParse , 'struct':self.StructParse  , 'package':self.HierParse , 'enum': self.EnumParse,\
+                        'import':self.ImportParse}
+    @classmethod
+    def ParseFiles(cls , paths ):
+        _top =  environ.get("TOPMODULE") 
+        _top = _top if _top != None else ''
+        for p in paths:
+            cur_parse = SVparse( p , cls.gb_hier)
+            cur_parse.Readfile(p) 
     def Readfile(self , path):
-        self.f = open(base_path+path)
-        self.lines = iter(f.readlines(),None)
-    def LogicParse(self, s ):
+        self.f = open(self.base_path+path)
+        self.lines = iter(self.f.readlines())
+        _s = self.Rdline(self.lines)
+        while(1):
+            _w = ''
+            if _s == None:
+                return
+            if _s.End():
+                _s=self.Rdline(self.lines)
+                continue 
+            _w = _s.lsplit()
+            _catch = None
+            if _w in self.keyword:
+                self.cur_key = _w
+                _catch = self.keyword[_w](_s,self.lines) 
+    def LogicParse(self, s ,lines):
         bw = s.BracketParse()
         bw = SVstr(''if bw == () else bw[0])
         name = s.IDParse()
         dim = s.BracketParse()  
-        return (name,bw.Slice2num(),self.Tuple2num(dim),'logic')
-    def ParamParse(self, s):
+        return (name,bw.Slice2num(self.cur_hier.Params),self.Tuple2num(dim),'logic')
+    def ParamParse(self, s ,lines):
         name = s.IDParse()
+        dim = s.BracketParse()
         s.rstrip().rstrip(';')
-        _n=self.parameter[name]=s.lstrip('=').S2num()
+        _n=self.cur_hier.params[name]=s.lstrip('=').S2num(self.cur_hier.Params)
         return name,_n
-    def StructParse(self, lines):
-        _step = 0
+    def EnumParse(self, s , lines):
+        if 'logic' in s:
+            s.lsplit()
+            bw = s.BracketParse()
+            bw = SVstr('' if bw==() else bw[0])
+        _s = s.lsplit('}')
+        _enum = SVstr(_s).ReplaceSplit(['{',','] )
+        name = s.IDParse()
+        return ( name ,bw.Slice2num(self.cur_hier.Params),(1,) , 'enum' , _enum  )
+    def ImportParse(self, s , lines):
+        _pkg , _param = s.rstrip().split('::')
+        if _param == '*':
+            for k,v in self.package[_pkg].params.items():
+                self.cur_hier.params[k] = v
+        else:
+            self.cur_hier.params[_param] = self.package[_pkg].params
+    def StructParse(self ,s ,lines ):
+        _step = 0      
         rule = [ '{' , '}' ]
         attrlist = []
-        _s = SVstr(next(lines).lstrip().split('//')[0].rstrip(';'))
+        _s = s
         while(1):
             _w = ''
             if _step == 2:
                 name = _s.IDParse()
-                return (name,attrlist), _s
+                return (name,attrlist)
             if _s.End():
-                _s = SVstr(next(lines,'OutofEdge').lstrip().split('//')[0].rstrip(';'))
-            _w = _s.lsplit() 
-            if _w == rule[_step]:
+                _s=self.Rdline(lines)
+                continue
+            _w = _s.lsplit()
+            if _w == rule[_step]:     
                 _step = _step+1
                 continue
-            _catch = self.keyword[_w](_s) 
-            if _w in self.typeName:
-                attrlist.append(_catch) 
-    def CleanParse(self, s):
-        return s.split('//')[0]
-    def Parsefile(self):
-        pass                   
-    def Tuple2num(self, t):
-        return tuple(map(lambda x : int(x),t))
-
+            if _w in self.keyword:
+                _catch = self.keyword[_w](_s,lines)
+                attrlist.append(_catch)
+                continue
+            for t in self.cur_hier.Types:
+                if _w in t :
+                    _n = _s.IDParse()
+                    dim = s.BracketParse()
+                    attrlist.append( ( _n , np.sum([x[1] for x in t[_w] ]) ,self.Tuple2num(dim) , _w) )
+                    break
+    def TypeParse(self, s , lines):
+        _w = s.lsplit()
+        _catch = self.keyword[_w](s , lines)
+        if _w == 'struct':
+            self.cur_hier.types[_catch[0]] = _catch[1]
+        else :
+            self.cur_hier.types[_catch[0]] = [_catch] 
+    def HierParse(self,  s , lines):
+        name = s.IDParse()
+        new_hier = SVhier(name, self.cur_hier)
+        self.cur_hier = new_hier
+        _end = {'package':'endpackage' , 'module':'endmodule'}[self.cur_key]
+        if self.cur_key == 'package':
+            self.package[name] = new_hier
+        while(1):
+            _w=''
+            if s.End():
+                s = self.Rdline(lines)
+                continue
+            _w = s.lsplit()
+            if _w == _end:
+                print("break")
+                break 
+            if _w in self.keyword:
+                _k = self.cur_key
+                self.cur_key = _w
+                _catch = self.keyword[_w](s,lines)
+                self.cur_key = _k
+        self.cur_hier = self.cur_hier.scope   
+    def Rdline(self, lines):
+        s = next(lines,None) 
+        return SVstr(s.lstrip().split('//')[0].rstrip().strip(';')) if s != None else None
+    def Tuple2num(self, t ):
+        return tuple(map(lambda x : SVstr(x).S2num(params=self.cur_hier.Params) ,t))
 class SVstr():
-    sp_chars = ['=','{','}','[',']','::' ]
+    sp_chars = ['=','{','}','[',']','::']
+    op_chars = ['+','-','*','/','(',')']
     def __init__(self,s):
         self.s = s
+    def __repr__(self):
+        return self.s
     def split( self, sep=None, maxsplit=-1):
         return self.s.split(sep=sep,maxsplit=maxsplit)
     def lstrip(self,chars=None):
@@ -63,13 +180,27 @@ class SVstr():
     def lsplit(self,sep=None):    
         #split sep or any special chars from the start
         self.lstrip()
-        _s = ''
-        if self.s[0] in self.sp_chars:
-            _s = self.s[0]
-            self.s = self.s[1:]
+        _s = self.s
+        if sep == None:    
+            _idx = SVstr(_s).FirstSPchar()
+            _spidx = _s.find(' ')
+            if _idx != -1 and (_idx < _spidx or _spidx == -1):
+                if _idx == 0:
+                    _s , self.s = _s[0] , _s[1:]
+                else:
+                    _s , self.s = _s[0:_idx] , _s[_idx:]
+            else:
+                _s  = _s.split(maxsplit=1)
+                self.s = _s[1] if len(_s)>1 else ''
+                _s = _s[0]
             return _s
-        _s = self.s.split(sep,maxsplit=1)
-        self.s , _s = (_s[1] , _s[0]) if len(_s) != 1 else ('', _s[0][0])
+        _s = _s.split(sep,maxsplit=1)
+        if len(_s)!=0:
+            self.s=_s[1]
+            _s = _s[0]
+        else:
+            _s = ''
+            self.s=''
         return _s
     def FirstSPchar(self):
         # FUCKING cool&concise implementation:
@@ -108,25 +239,34 @@ class SVstr():
             return
     def Arit2num(self, s):
         pass
-    def S2num(self,parameters=SVparse.parameter):
-        _lflag = False
-        if '$clog2' in self.s:
-            _lflag=True
-            self.s = self.s.split('(')[1].split(')')[0] 
-        #TODO package import :: symbol
-        if self.s in parameters:
-            self.s = parameters[self.s]
-        _n = int(self.s)
-        self.s = ''
-        return int(np.log2(_n)) if _lflag==True else _n
-    def Slice2num(self,parameters=SVparse.parameter):
+    def S2num(self,params):
+        _s = self.s.lstrip()
+        if '$clog2' in _s:
+            _temp = self.s.split('(')[1].split(')')[0] 
+            _s = _s.replace( _s[_s.find('$'):_s.find(')')+1] , 'int(np.log2('+ _temp + '))')
+        _s_no_op = SVstr(_s).ReplaceSplit(self.op_chars)
+        #TODO package import :: symbol  , white spaces around '::' not handled
+        for w in _s_no_op:
+            if '::' in w:
+                _pkg , _param = w.split('::')
+                _s = _s.replace(_pkg+'::'+_param,str(SVparse.package[_pkg].params[_param]) )
+            for p in params:    
+                if w in p:
+                    _s = _s.replace( w , str(p[w]) )
+                    break
+        return eval(ps.expr(_s).compile('file.py'))
+    def Slice2num(self,params):
         if self.s == '':
             return 1
-        self.s,_e = self.s.split(':')
-        if self.s in parameters:
-            return parameters[self.s]-SVstr(_e).S2num(parameters)+1
-        else:
-            return self.S2num(parameters)-SVstr(_e).S2num(parameters)+1
+        _temp = self.s.replace('::','  ')
+        _idx = _temp.find(':')
+        _s,_e = self.s[0:_idx] , self.s[_idx+1:]
+        return SVstr(_s).S2num(params)-SVstr(_e).S2num(params)+1
+    def ReplaceSplit(self, clist):
+        _s = self.s
+        for c in clist:
+            _s = _s.replace(c, ' ')
+        return _s.split()
     def __len__(self):
         return len(self.s)
     def __contains__(self,st):
@@ -135,14 +275,16 @@ class SVstr():
         return self.s==''
 if __name__ == '__main__':
 
-    sv = SVparse()
-    ss = SVstr
-    print(ss('[3]').BracketParse() )
-    print(sv.ParamParse(ss('DW  =4;'))  )
+    #sv = SVparse('SVparse',None)
+    #print (sv.gb_hier.child)
+    #ss = SVstr
+    #print(ss('[3]').BracketParse() )
+    #print(sv.ParamParse(ss('DW  =4;'))  )
     #print(ss(' happy=4;').IDParse())
     #print(sv.parameter)
     #print(ss('waddr;\n').IDParse() )
     #print(sv.LogicParse(ss(' [ $clog2(DW):0]waddr[3] [2][1];')) )
   #  print(sv.Slice2num(' 13:0 '))
-    print(sv.StructParse(iter([' {logic a [2];','parameter sex =5;',' logic b [3];', '} mytype;',' logic x;'])))
-    print(sv.parameter)
+    #print(sv.StructParse(iter([' {logic a [2];','parameter sex =5;',' logic b [3];', '} mytype;',' logic x;'])))
+    SVparse.ParseFiles(['src/PE/PEdefine.sv'])
+    print(SVparse.gb_hier.child['src/PE/PEdefine.sv'].child)

@@ -18,7 +18,7 @@ output PECtlCfg::SSctl           o_SSctl
     //==================
     //param
     //==================
-
+    localparam 
 
     //==================
     //state
@@ -30,13 +30,35 @@ output PECtlCfg::SSctl           o_SSctl
     //==================
     logic ce;
     LpCtl in_idx_ctl , w_idx_ctl , o_idx_ctl ;
+        assign 
+    logic [1:0] in_end;
+    logic [2:0] w_end;
+    logic [2:0] o_end;
     LoopCounter #( 
-    .NDepth(2) , .IdxDW({4,6}) , .IdxMaxDW(6)
+    .NDepth(2) , .IdxDW({4,4}) , .IdxMaxDW(6)
     ) InIDX( .*
-    .i_loopSize(
+    .i_loopSize({i_PEconf.Pch , i_PEconf.R}),
     .i_ctl(in_idx_ctl),
-    .o_loopEnd()
+    .o_loopEnd(in_end)
     );
+    LoopCounter #( 
+    .NDepth(3) , .IdxDW({4,4,4}) , .IdxMaxDW(6)
+    ) WIDX( .*
+    .i_loopSize( {i_PEconf.Pch , i_PEconf.R , i_PEconf.Pm}),
+    .i_ctl(w_idx_ctl),
+    .o_loopEnd(w_end)
+    );
+    LoopCounter #( 
+    .NDepth(2) , .IdxDW({4,4,4,7}) , .IdxMaxDW(6)
+    ) OIDX( .*
+    .i_loopSize( {i_PEconf.Pch , i_PEconf.R, i_PEconf.Pm , i_PEconf.Tw}),
+    .i_ctl(o_idx_ctl),
+    .o_loopEnd(o_end)
+    );
+
+
+
+
     
          //init  stage : prepare fetch 
          //fetch Stage : prepare psum address, output input/weight data
