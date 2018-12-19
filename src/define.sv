@@ -27,8 +27,8 @@
 `define pbpix_unconnect(port_name) .port_name``_rdy(), .port_name``_ack() , .port_name``_zero()
 
 
-`define rdyack_input(name) output logic name``_ack; input name``_rdy
-`define rdyack_output(name) output logic name``_rdy; input name``_ack
+`define rdyack_input(name) output logic name``_ack, input name``_rdy
+`define rdyack_output(name) output logic name``_rdy, input name``_ack
 `define rdyack_logic(name) logic name``_rdy, name``_ack
 `define rdyack_port(name) name``_rdy, name``_ack
 `define rdyack_connect(port_name, logic_name) .port_name``_rdy(logic_name``_rdy), .port_name``_ack(logic_name``_ack)
@@ -55,6 +55,25 @@
 `define deffsm5(N,n,f1,f2,f3,f4,f5   ) typedef enum {f1,f2,f3,f4,f5,   N``_N}N;logic[N``_N-1:0]n``_r,n``_w;always_ff@(posedge i_clk or negedge i_rst)if(!i_rst)n``_r<='b1<<f1;else n``_r<=n``_w;
 `define deffsm6(N,n,f1,f2,f3,f4,f5,f6) typedef enum {f1,f2,f3,f4,f5,f6,N``_N}N;logic[N``_N-1:0]n``_r,n``_w;always_ff@(posedge i_clk or negedge i_rst)if(!i_rst)n``_r<='b1<<f1;else n``_r<=n``_w;
 `define fsm_to(n,f) n``_w[f] = 1'b1
+`define default_define \
+    `clk_logic;\
+    `Pos(rst_out , i_rstn)\
+    `PosIf(ck_ev, i_clk, i_rstn)\
+    `WithFinish    
+`define default_init_block(name,end_cycle) \
+    always #(`cycle/2) i_clk = ~i_clk;\
+    initial begin\
+        $fsdbDumpfile("name``.fsdb");\
+        $fsdbDumpvars(0, name, "+all");\
+        i_clk =0;\
+        i_rstn=1;\
+        #(`cycle/2) $NicotbInit();\
+        #11 i_rstn = 0;\
+        #10 i_rstn = 1;\
+        #(`cycle*end_cycle) $display("timeout");\
+        $NicotbFinal();\
+        $finish;\
+    end
 
 package SramCfg;
 	typedef enum {BEHAVIOUR} GenerateMode;

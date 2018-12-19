@@ -1,11 +1,10 @@
 import numpy as np
 from nicotb import *
 from util import *
-def loopCtlType():
-    LpCtl =  StructBusCreator( 'LpCtl' , ['dval','inc','reset'] )
-    return LpCtl
 def BusInit():
-    ctlbus = loopCtlType().CreateStructBus('i_ctl')
+    SBC = StructBusCreator
+    SBC.Alltypes(inc=False)
+    ctlbus = SBC.Get('LpCtl','i_ctl')
     obus = CreateBus( ('o_loopEnd',) )
     return ctlbus, obus
 def test():

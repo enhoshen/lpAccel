@@ -8,7 +8,7 @@ class SVhier ():
     def __init__(self,name,scope):
         self.hier= name
         self.params = {}
-        self.types = {'logic':None}
+        self.types = {}
         self.child = {}
         self._scope = scope
         if scope != None:
@@ -36,29 +36,47 @@ class SVhier ():
             _l.appendleft(self.types)
             return _l
     def __repr__(self):
-        return 'name:'+self.hier+'\n'+' params:{:}\n'.format(self.params.__repr__(),align='^')+'\n'+' scope:'+self._scope.hier+\
-                ' types:{:}\n'.format([x for x in self.types].__repr__(),align='^')+ ' child:{:}\n'.format( [x for x in self.child].__repr__(),align='^')
+        return '\n=====name=====:'+self.hier+'\n'+'=====params=====:{:}\n'.format(self.params.__repr__(),align='^')+\
+                '=====scope=====:{:}\n'.format(self._scope.hier)+\
+                '=====types=====:{:}\n'.format([x for x in self.types].__repr__(),align='^')+ \
+                '=====child=====:{:}\n'.format( [x for x in self.child].__repr__(),align='^')
 class SVparse():
     package = {}
+    hiers = {}
     gb_hier = SVhier('files',None)
+    gb_hier.types =  {'integer':None,'int':None,'logic':None}
     cur_scope = ''
     base_path = '/home/enhoshen/research/lpAccel/'
-   
+    include_path = '/home/enhoshen/research/lpAccel/include/' 
     def __init__(self,name,scope):
         self.cur_hier = SVhier(name,scope) if scope != None else SVhier(name,self.gb_hier) 
+        SVparse.hiers[name]= self.cur_hier
         self.cur_key = ''
         self.keyword = { 'logic':self.LogicParse , 'parameter':self.ParamParse, 'localparam':self.ParamParse,\
                         'typedef':self.TypeParse , 'struct':self.StructParse  , 'package':self.HierParse , 'enum': self.EnumParse,\
-                        'import':self.ImportParse}
+                        'module':self.HierParse , 'import':self.ImportParse}
     @classmethod
-    def ParseFiles(cls , paths ):
+    def ParseFiles(cls , path , inc=True ):
         _top =  environ.get("TOPMODULE") 
         _top = _top if _top != None else ''
-        for p in paths:
-            cur_parse = SVparse( p , cls.gb_hier)
-            cur_parse.Readfile(p) 
+        paths = cls.IncludeFileParse(path) if inc == True else path
+        for p in  paths:
+            print(p)
+            n = p.rsplit('/',maxsplit=1)[1]
+            cur_parse = SVparse( n , cls.gb_hier)
+            cur_parse.Readfile(p)
+    @classmethod 
+    def IncludeFileParse(cls , path):
+        f = open(cls.include_path+path)
+        paths = []
+        for line in f.readlines():
+            line = line.split('//')[0]
+            if '`include' in line:
+                line = line.split('`include')[1].split()[0].replace('"','')
+                paths.append( cls.include_path+line)
+        return paths
     def Readfile(self , path):
-        self.f = open(self.base_path+path)
+        self.f = open(path)
         self.lines = iter(self.f.readlines())
         _s = self.Rdline(self.lines)
         while(1):
@@ -70,7 +88,7 @@ class SVparse():
                 continue 
             _w = _s.lsplit()
             _catch = None
-            if _w in self.keyword:
+            if _w in {'typedef','package','import','module'}:
                 self.cur_key = _w
                 _catch = self.keyword[_w](_s,self.lines) 
     def LogicParse(self, s ,lines):
@@ -80,27 +98,35 @@ class SVparse():
         dim = s.BracketParse()  
         return (name,bw.Slice2num(self.cur_hier.Params),self.Tuple2num(dim),'logic')
     def ParamParse(self, s ,lines):
+        #TODO type parse (in SVstr) , array parameter 
         name = s.IDParse()
         dim = s.BracketParse()
-        s.rstrip().rstrip(';')
+        s.rstrip().rstrip(';').rstrip(',')
         _n=self.cur_hier.params[name]=s.lstrip('=').S2num(self.cur_hier.Params)
         return name,_n
     def EnumParse(self, s , lines):
+        
         if 'logic' in s:
             s.lsplit()
-            bw = s.BracketParse()
-            bw = SVstr('' if bw==() else bw[0])
+        bw = s.BracketParse()
+        bw = SVstr('' if bw==() else bw[0])    
         _s = s.lsplit('}')
         _enum = SVstr(_s).ReplaceSplit(['{',','] )
+        for i,p in enumerate(_enum):
+            self.cur_hier.params[p]= i
         name = s.IDParse()
-        return ( name ,bw.Slice2num(self.cur_hier.Params),(1,) , 'enum' , _enum  )
+        return ( name ,bw.Slice2num(self.cur_hier.Params),() , 'enum' , _enum  )
     def ImportParse(self, s , lines):
+        s = s.split(';')[0]
         _pkg , _param = s.rstrip().split('::')
         if _param == '*':
             for k,v in self.package[_pkg].params.items():
                 self.cur_hier.params[k] = v
+            for k,v in self.package[_pkg].types.items():
+                self.cur_hier.types[k] = v
         else:
-            self.cur_hier.params[_param] = self.package[_pkg].params
+            self.cur_hier.params[_param] = self.package[_pkg].params[_param]
+            self.cur_hier.types[_param] = self.package[_pkg].types[_param]
     def StructParse(self ,s ,lines ):
         _step = 0      
         rule = [ '{' , '}' ]
@@ -138,6 +164,7 @@ class SVparse():
     def HierParse(self,  s , lines):
         name = s.IDParse()
         new_hier = SVhier(name, self.cur_hier)
+        SVparse.hiers[name] = new_hier        
         self.cur_hier = new_hier
         _end = {'package':'endpackage' , 'module':'endmodule'}[self.cur_key]
         if self.cur_key == 'package':
@@ -149,7 +176,6 @@ class SVparse():
                 continue
             _w = s.lsplit()
             if _w == _end:
-                print("break")
                 break 
             if _w in self.keyword:
                 _k = self.cur_key
@@ -163,7 +189,7 @@ class SVparse():
     def Tuple2num(self, t ):
         return tuple(map(lambda x : SVstr(x).S2num(params=self.cur_hier.Params) ,t))
 class SVstr():
-    sp_chars = ['=','{','}','[',']','::']
+    sp_chars = ['=','{','}','[',']','::',';']
     op_chars = ['+','-','*','/','(',')']
     def __init__(self,s):
         self.s = s
@@ -180,6 +206,8 @@ class SVstr():
     def lsplit(self,sep=None):    
         #split sep or any special chars from the start
         self.lstrip()
+        if self.End():
+            return ''
         _s = self.s
         if sep == None:    
             _idx = SVstr(_s).FirstSPchar()
@@ -230,6 +258,8 @@ class SVstr():
             num.append(self.s[1:rbrack] )
             self.s=self.s[rbrack+1:].lstrip()
         return tuple(num)
+    def TypeParse(self , params):
+        pass
     def KeywordParse(self, key , rules ):
         _step = 0
         self.s = self.s.lsplit()
@@ -254,6 +284,7 @@ class SVstr():
                 if w in p:
                     _s = _s.replace( w , str(p[w]) )
                     break
+        _s = _s.replace('{','[').replace('}',']').replace('\'','')
         return eval(ps.expr(_s).compile('file.py'))
     def Slice2num(self,params):
         if self.s == '':
@@ -286,5 +317,20 @@ if __name__ == '__main__':
     #print(sv.LogicParse(ss(' [ $clog2(DW):0]waddr[3] [2][1];')) )
   #  print(sv.Slice2num(' 13:0 '))
     #print(sv.StructParse(iter([' {logic a [2];','parameter sex =5;',' logic b [3];', '} mytype;',' logic x;'])))
-    SVparse.ParseFiles(['src/PE/PEdefine.sv'])
-    print(SVparse.gb_hier.child['src/PE/PEdefine.sv'].child)
+    SVparse.ParseFiles('PE_compile.sv')
+    '''
+    print('typedef \'Conf\' under PECfg:')
+    for i in ['name','BW','dimension' , 'type']:
+        print('{:{width}}'.format(i,width=10) , end=' ')
+    print('\n{0:{fill}{align}40}'.format('',align='<',fill='=')  )
+    for i in l:
+        for x in i:
+            print ('{:{width}}'.format(x.__repr__(),width=10) , end=' ')
+        print()
+    '''
+    SVparse.IncludeFileParse('PE_compile.sv')
+    for i in SVparse.gb_hier.child['DatapathControl.sv'].Types:
+        print(i)
+    for i in SVparse.hiers.keys():
+        print (i)
+    print(SVparse.gb_hier.child['DatapathControl.sv'].Types)

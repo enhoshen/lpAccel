@@ -33,6 +33,7 @@ package PECfg ;
         logic start; 
         logic stall;
         logic reset;
+        logic dval ;
     } Inst ; 
 
 

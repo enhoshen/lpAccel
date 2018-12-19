@@ -3,8 +3,8 @@ import PECfg::*;(
 `clk_input,
 input  Conf     i_PEconf,
 input  Inst     i_PEinst,
-`rdyack_port(Input),
-`rdyack_port(Weight),
+`rdyack_input(Input),
+`rdyack_input(Weight),
 output PECtlCfg::IPadAddr        o_IPctl,
 output PECtlCfg::WPadAddr        o_WPctl,
 output PECtlCfg::PPadAddr        o_PPctl,
@@ -18,7 +18,7 @@ output PECtlCfg::SSctl           o_SSctl
     //==================
     //param
     //==================
-    localparam 
+     
 
     //==================
     //state
@@ -30,32 +30,44 @@ output PECtlCfg::SSctl           o_SSctl
     //==================
     logic ce;
     LpCtl in_idx_ctl , w_idx_ctl , o_idx_ctl ;
-        assign 
+        assign in_idx_ctl.reset = i_PEinst.reset;
+        assign w_idx_ctl.reset = i_PEinst.reset;
+        assign o_idx_ctl.reset = i_PEinst.reset;
+    logic [5:0] in_loopSize [2] ;
+    logic [5:0] w_loopSize[3];
+    logic [7:0] o_loopSize[4]; 
+        assign in_loopSize = {i_PEconf.Pch, i_PEconf.R};
+        assign w_loopSize = {i_PEconf.Pch , i_PEconf.R , i_PEconf.Pm} ;
+        assign o_loopSize = {i_PEconf.Pch , i_PEconf.R , i_PEconf.Pm , i_PEconf.Tw};
     logic [1:0] in_end;
     logic [2:0] w_end;
-    logic [2:0] o_end;
+    logic [3:0] o_end;
     LoopCounter #( 
-    .NDepth(2) , .IdxDW({4,4}) , .IdxMaxDW(6)
-    ) InIDX( .*
-    .i_loopSize({i_PEconf.Pch , i_PEconf.R}),
+    .NDepth(2) , .IdxDW({6'd4,6'd4}) , .IdxMaxDW(6)
+    ) InIDX(
+    `clk_connect,
+    .i_loopSize( in_loopSize ),
     .i_ctl(in_idx_ctl),
     .o_loopEnd(in_end)
     );
+    
     LoopCounter #( 
-    .NDepth(3) , .IdxDW({4,4,4}) , .IdxMaxDW(6)
-    ) WIDX( .*
-    .i_loopSize( {i_PEconf.Pch , i_PEconf.R , i_PEconf.Pm}),
+    .NDepth(3) , .IdxDW({6'd4,6'd4,6'd4}) , .IdxMaxDW(6)
+    ) WIDX( 
+    `clk_connect,
+    .i_loopSize(w_loopSize),
     .i_ctl(w_idx_ctl),
     .o_loopEnd(w_end)
     );
+    
     LoopCounter #( 
-    .NDepth(2) , .IdxDW({4,4,4,7}) , .IdxMaxDW(6)
-    ) OIDX( .*
-    .i_loopSize( {i_PEconf.Pch , i_PEconf.R, i_PEconf.Pm , i_PEconf.Tw}),
+    .NDepth(4) , .IdxDW({8'd4,8'd4,7'd4,8'd7}) , .IdxMaxDW(8)
+    ) OIDX( 
+    `clk_connect,
+    .i_loopSize( o_loopSize ),
     .i_ctl(o_idx_ctl),
     .o_loopEnd(o_end)
     );
-
 
 
 
@@ -118,3 +130,48 @@ output PECtlCfg::SSctl           o_SSctl
     `ff_end
 
 endmodule
+
+module DataFlowCtrl 
+import PECfg::*;
+;
+    logic a;
+    Conf i_PEconf;
+    Inst i_PEinst;
+    `rdyack_logic(Input);
+    `rdyack_logic(Weight);
+    `default_define
+DataPathController dut(
+`clk_connect,
+.i_PEconf,
+.i_PEinst,
+`rdyack_connect(Input,Input),
+`rdyack_connect(Weight,Weight),
+.o_IPctl(),
+.o_WPctl(),
+.o_PPctl(),
+.o_FSctl(),
+.o_MSctl(),
+.o_SSctl()
+//`ifdef DEBUG
+//output o_error
+//`endif
+);
+parameter EndCycle = 10000;
+parameter Top = "DataFlowCtrl";
+`default_init_block(Top,EndCycle)
+/*
+always #(`cycle/2) i_clk = ~i_clk;         
+initial begin                              
+    $fsdbDumpfile(Top+".fsdb");            
+    $fsdbDumpvars(0, Top, "+all");        
+    i_clk =0;                              
+    i_rstn=1;                              
+    #(`cycle/2) $NicotbInit();             
+    #11 i_rstn = 0;                        
+    #10 i_rstn = 1;                        
+    #(`cycle*EndCycle) $display("timeout");   
+    $NicotbFinal();                        
+    $finish;                               
+end
+*/                                        
+endmodule 
