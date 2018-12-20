@@ -43,27 +43,27 @@ output PECtlCfg::SSctl           o_SSctl
     logic [2:0] w_end;
     logic [3:0] o_end;
     LoopCounter #( 
-    .NDepth(2) , .IdxDW({6'd4,6'd4}) , .IdxMaxDW(6)
+    .NDepth(2) , .IdxDW({3'd4,3'd4}) , .IdxMaxDW(6)
     ) InIDX(
-    `clk_connect,
+    .*,
     .i_loopSize( in_loopSize ),
     .i_ctl(in_idx_ctl),
     .o_loopEnd(in_end)
     );
     
     LoopCounter #( 
-    .NDepth(3) , .IdxDW({6'd4,6'd4,6'd4}) , .IdxMaxDW(6)
+    .NDepth(3) , .IdxDW({3'd4,3'd4,3'd4}) , .IdxMaxDW(6)
     ) WIDX( 
-    `clk_connect,
+    .*,
     .i_loopSize(w_loopSize),
     .i_ctl(w_idx_ctl),
     .o_loopEnd(w_end)
     );
     
     LoopCounter #( 
-    .NDepth(4) , .IdxDW({8'd4,8'd4,7'd4,8'd7}) , .IdxMaxDW(8)
+    .NDepth(4) , .IdxDW({3'd4,3'd4,3'd4,3'd7}) , .IdxMaxDW(8)
     ) OIDX( 
-    `clk_connect,
+    .*,
     .i_loopSize( o_loopSize ),
     .i_ctl(o_idx_ctl),
     .o_loopEnd(o_end)
@@ -139,13 +139,9 @@ import PECfg::*;
     Inst i_PEinst;
     `rdyack_logic(Input);
     `rdyack_logic(Weight);
-    `default_define
+    `default_Nico_define
 DataPathController dut(
-`clk_connect,
-.i_PEconf,
-.i_PEinst,
-`rdyack_connect(Input,Input),
-`rdyack_connect(Weight,Weight),
+.*,
 .o_IPctl(),
 .o_WPctl(),
 .o_PPctl(),
@@ -156,22 +152,5 @@ DataPathController dut(
 //output o_error
 //`endif
 );
-parameter EndCycle = 10000;
-parameter Top = "DataFlowCtrl";
-`default_init_block(Top,EndCycle)
-/*
-always #(`cycle/2) i_clk = ~i_clk;         
-initial begin                              
-    $fsdbDumpfile(Top+".fsdb");            
-    $fsdbDumpvars(0, Top, "+all");        
-    i_clk =0;                              
-    i_rstn=1;                              
-    #(`cycle/2) $NicotbInit();             
-    #11 i_rstn = 0;                        
-    #10 i_rstn = 1;                        
-    #(`cycle*EndCycle) $display("timeout");   
-    $NicotbFinal();                        
-    $finish;                               
-end
-*/                                        
+`default_Nico_init_block(DataFlowCtrl,10000)
 endmodule 

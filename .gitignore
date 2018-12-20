@@ -7,6 +7,7 @@
 *nLintDB/
 *nLintLog/
 .simvision/
+BSSLib.lib++/
 *.swo
 novas*
 verdiLog/

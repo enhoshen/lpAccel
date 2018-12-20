@@ -55,16 +55,17 @@
 `define deffsm5(N,n,f1,f2,f3,f4,f5   ) typedef enum {f1,f2,f3,f4,f5,   N``_N}N;logic[N``_N-1:0]n``_r,n``_w;always_ff@(posedge i_clk or negedge i_rst)if(!i_rst)n``_r<='b1<<f1;else n``_r<=n``_w;
 `define deffsm6(N,n,f1,f2,f3,f4,f5,f6) typedef enum {f1,f2,f3,f4,f5,f6,N``_N}N;logic[N``_N-1:0]n``_r,n``_w;always_ff@(posedge i_clk or negedge i_rst)if(!i_rst)n``_r<='b1<<f1;else n``_r<=n``_w;
 `define fsm_to(n,f) n``_w[f] = 1'b1
-`define default_define \
+`define default_Nico_define \
     `clk_logic;\
     `Pos(rst_out , i_rstn)\
     `PosIf(ck_ev, i_clk, i_rstn)\
-    `WithFinish    
-`define default_init_block(name,end_cycle) \
+    `WithFinish\
+    logic dummy ;
+`define default_Nico_init_block(name,end_cycle) \
     always #(`cycle/2) i_clk = ~i_clk;\
     initial begin\
-        $fsdbDumpfile("name``.fsdb");\
-        $fsdbDumpvars(0, name, "+all");\
+        $fsdbDumpfile(`"name.fsdb`");\
+        $fsdbDumpvars( "+all");\
         i_clk =0;\
         i_rstn=1;\
         #(`cycle/2) $NicotbInit();\

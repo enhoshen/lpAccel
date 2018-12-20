@@ -67,7 +67,7 @@ output [NDepth-1:0] o_loopEnd
     `ff_end
 
 endmodule
-
+`ifdef Loop
 module Loop;
    
     parameter NDepth = 3;
@@ -102,8 +102,9 @@ initial begin
     #(`cycle*10000) $display("timeout");
     $NicotbFinal();
     $finish;
+    $fsdbDumpoff();
 end
 
 
 endmodule
-
+`endif
