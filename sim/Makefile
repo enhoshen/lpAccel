@@ -20,7 +20,7 @@ PRE := $(if$(SV),$(SV).sv, %.sv )
 	+incdir+$(HOME)/src \
 	+incdir+$(HOME)/include \
 	+incdir+/opt/CAD/synopsys/synthesis/2017.09/dw/sim_ver \
-	+define+$(TEST)\
+	+define+$@\
 	$(ARGS) $(NICOTB)/verilog/Utils.sv \
 	$(HOME)/src/define.sv \
 	$(if $(SV),$(SV) , $@.sv) \

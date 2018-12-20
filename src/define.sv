@@ -65,7 +65,7 @@
     always #(`cycle/2) i_clk = ~i_clk;\
     initial begin\
         $fsdbDumpfile(`"name.fsdb`");\
-        $fsdbDumpvars( "+all");\
+        $fsdbDumpvars( 0 , name , "+all");\
         i_clk =0;\
         i_rstn=1;\
         #(`cycle/2) $NicotbInit();\

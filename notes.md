@@ -13,4 +13,7 @@ change tab:
 Besides `*args` and `**kwargs`, additional positional and keyword arguments are all allowed, but watch out for their order
 * All positional argument and expression `*args` should be before any keyword arguments and `**kwargs`
 * Additional positional arguments should be before `*args`, likewise additional keyword arguments should be before `**kwargs`
-
+## Environment
+### Grep
+Basic uses:
+* ```$grep 'pattern' * -r```: search for pattern string in every files recursively under current working directory.

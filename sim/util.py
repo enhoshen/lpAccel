@@ -92,16 +92,18 @@ class ProtoBus ():
         # args[0] is the data bus, it could be a list, ex: [hrdata,hwdata] in AHB
         # portCallback should return list of buses for protocl buses
         # protoCallback should create the protocal object, ex: TwoWire.Master
+        kw = dict(kwargs)
         if len(args) == 0:
-            self.data = kwargs['data']
+            self.data = kw['data']
         else:
             self.data = args[0]
 
         if len(args)==1:
-            protolist =  portCallback( kwargs['name'] )
-            self.proto = protoCallback( *(protolist+self.data) ,clk=clk)
+            protolist =  portCallback( kw['name'] )
+            kw.pop('name')
+            self.proto = protoCallback( *(protolist+self.data) ,clk=clk ,**kw)
         else:
-            self.proto = protoCallback( *args , clk=clk )
+            self.proto = protoCallback( *args , clk=clk ,**kw)
     def SideChoose (self, side='master'):
         if side == 'master':
             self.master = self.proto

@@ -130,7 +130,7 @@ output PECtlCfg::SSctl           o_SSctl
     `ff_end
 
 endmodule
-
+`ifdef DataFlowCtrl
 module DataFlowCtrl 
 import PECfg::*;
 ;
@@ -154,3 +154,4 @@ DataPathController dut(
 );
 `default_Nico_init_block(DataFlowCtrl,10000)
 endmodule 
+`endif

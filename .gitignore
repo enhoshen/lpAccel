@@ -1,5 +1,6 @@
 *.swp
 *.swn
+*.swo
 *.log
 *__pycache__/
 *INCA_libs/
@@ -8,10 +9,10 @@
 *nLintLog/
 .simvision/
 BSSLib.lib++/
-*.swo
 novas*
 verdiLog/
 ncverilog*
+*.key
 .diagnose.oneSearch
 *.alib
 *pvl
