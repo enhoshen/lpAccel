@@ -12,6 +12,7 @@ parameter IdxMaxDW = 11
 input  [IdxMaxDW-1:0] i_loopSize [NDepth],
 input  LpCtl i_ctl, 
 output [NDepth-1:0] o_loopEnd
+//TODO idx > 1 ? idx output ?
 );
     //================
     //parameter
@@ -77,10 +78,7 @@ module Loop;
     logic [NDepth-1:0] o_loopEnd;
     logic [IdxMaxDW-1:0] i_loopSize [NDepth]; 
         assign i_loopSize = {11'd5,11'd20,11'd7};
-    `clk_logic;
-    `Pos(rst_out , i_rstn)
-    `PosIf(ck_ev, i_clk, i_rstn)
-    `WithFinish    
+    `default_Nico_define
 LoopCounter #(
 .NDepth(NDepth), .IdxDW( {10'd3,10'd5,10'd3} ), .IdxMaxDW(IdxMaxDW)
 ) dut(
@@ -90,21 +88,6 @@ LoopCounter #(
 //.i_ctl(i_ctl)
 //.o_loopEnd(loopend)
 );
-always #(`cycle/2) i_clk = ~i_clk;
-initial begin
-    $fsdbDumpfile("loop.fsdb");
-    $fsdbDumpvars(0, Loop, "+all");
-    i_clk =0;
-    i_rstn=1;
-    #(`cycle/2) $NicotbInit();
-    #11 i_rstn = 0;
-    #10 i_rstn = 1;
-    #(`cycle*10000) $display("timeout");
-    $NicotbFinal();
-    $finish;
-    $fsdbDumpoff();
-end
-
-
+`default_Nico_init_block(Loop,10000)
 endmodule
 `endif

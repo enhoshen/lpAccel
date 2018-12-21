@@ -34,7 +34,35 @@ class SVhier ():
         else:
             _l = self._scope.Types
             _l.appendleft(self.types)
-            return _l
+        return _l
+    @property
+    def ShowTypes(self):
+        for k,v in self.types.items():
+            self.TypeStr(k,v)
+    @property
+    def ShowParams(self):
+        self.ParamStr()
+    def TypeStr(self,n,l,w=13):
+        print('{0:{fill}{align}{width}}'.format(self.hier+'.'+n,width=4*w,align='^',fill='-'))
+        for i in ['name','BW','dimension' , 'type']:
+            print('{:{width}}'.format(i,width=w) , end=' ')
+        print('\n{0:{fill}{align}{width}}'.format('',width=4*w,align='<',fill='=') )
+        for i in l:
+            for idx,x in enumerate(i):
+                if idx < 4:
+                    print ('{:{width}}'.format(x.__repr__(),width=w) , end=' ')
+                else:
+                    print('\n{:{align}{width}}'.format(x.__repr__(),width=4*w,align='^'))
+            print()
+    def ParamStr(self,w=13):
+        for i in ['name','value']:
+            print('{:{width}}'.format(i,width=w) , end=' ')
+        print('\n{0:{fill}{align}{width}}'.format('',width=2*w,align='<',fill='=')  )
+        l = self.params
+        for k,v in l.items():
+            print ('{:{width}}{:{width}}'.format(k,v.__repr__(),width=w) , end=' ')
+            print()
+       
     def __repr__(self):
         return '\n=====name=====:'+self.hier+'\n'+'=====params=====:{:}\n'.format(self.params.__repr__(),align='^')+\
                 '=====scope=====:{:}\n'.format(self._scope.hier)+\
@@ -315,22 +343,15 @@ if __name__ == '__main__':
     #print(sv.parameter)
     #print(ss('waddr;\n').IDParse() )
     #print(sv.LogicParse(ss(' [ $clog2(DW):0]waddr[3] [2][1];')) )
-  #  print(sv.Slice2num(' 13:0 '))
+    #print(sv.Slice2num(' 13:0 '))
     #print(sv.StructParse(iter([' {logic a [2];','parameter sex =5;',' logic b [3];', '} mytype;',' logic x;'])))
-    SVparse.ParseFiles('PE_compile.sv')
-    '''
-    print('typedef \'Conf\' under PECfg:')
-    for i in ['name','BW','dimension' , 'type']:
-        print('{:{width}}'.format(i,width=10) , end=' ')
-    print('\n{0:{fill}{align}40}'.format('',align='<',fill='=')  )
-    for i in l:
-        for x in i:
-            print ('{:{width}}'.format(x.__repr__(),width=10) , end=' ')
-        print()
-    '''
-    SVparse.IncludeFileParse('PE_compile.sv')
-    for i in SVparse.gb_hier.child['DatapathControl.sv'].Types:
-        print(i)
-    for i in SVparse.hiers.keys():
-        print (i)
-    print(SVparse.gb_hier.child['DatapathControl.sv'].Types)
+    import sys
+    SVparse.ParseFiles(sys.argv[1])
+    #
+    #print('typedef \'Conf\' under PECfg:')
+    #    #SVparse.IncludeFileParse('PE_compile.sv')
+    #for i in SVparse.gb_hier.child['DatapathControl.sv'].Types:
+    #    print(i)
+    #for i in SVparse.hiers.keys():
+    #    print (i)
+    #print(SVparse.hiers['PECtlCfg'])

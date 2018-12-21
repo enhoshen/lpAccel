@@ -18,64 +18,78 @@ output PECtlCfg::SSctl           o_SSctl
     //==================
     //param
     //==================
-     
+    localparam INPUTDIM = 2;
+    localparam WEIGHTDIM = 3;
+    localparam OUTDIM = 4;
+    localparam MAXPCH = $clog2(12);
+    localparam MAXR = $clog(12);
+    localparam MAXPM = $clog2(16);
+    localparam MAXTW = $clog2(64);
 
     //==================
     //state
     //==================
-    enum logic [3:0] { IDLE , INIT , WORK , STALL , STOP  }s_main , s_main_nxt ;     
+    enum logic [3:0] { IDLE , INIT , WORK , STALL  }s_main , s_main_nxt ;     
 
     //==================
     // logic
     //==================
+        //==============
+        //looping
+        //==============
     logic ce;
-    LpCtl in_idx_ctl , w_idx_ctl , o_idx_ctl ;
+        assign ce = s_main==WORK ;
+    LpCtl in_idx_ctl , wt_idx_ctl , out_idx_ctl ;
         assign in_idx_ctl.reset = i_PEinst.reset;
-        assign w_idx_ctl.reset = i_PEinst.reset;
-        assign o_idx_ctl.reset = i_PEinst.reset;
-    logic [5:0] in_loopSize [2] ;
-    logic [5:0] w_loopSize[3];
-    logic [7:0] o_loopSize[4]; 
-        assign in_loopSize = {i_PEconf.Pch, i_PEconf.R};
-        assign w_loopSize = {i_PEconf.Pch , i_PEconf.R , i_PEconf.Pm} ;
-        assign o_loopSize = {i_PEconf.Pch , i_PEconf.R , i_PEconf.Pm , i_PEconf.Tw};
-    logic [1:0] in_end;
-    logic [2:0] w_end;
-    logic [3:0] o_end;
+        assign wt_idx_ctl.reset = i_PEinst.reset;
+        assign out_idx_ctl.reset = i_PEinst.reset;
+            assign in_idx_ctl.dval = ce ;
+            assign wt_idx_ctl.dval = ce ;
+            assign out_idx_ctl.dval = ce ; 
+            assign in_idx_ctl.inc = Input_rdy &&;
+            assign wt_idx_ctl.inc = Weight_rdy &&;
+            assign out_idx_ctl.inc = ;
+    logic [] in_idx_cnt;
+    logic [] wt_idx_cnt;
+    logic [] out_idx_cnt;
+    logic [MAXTW-1:0] in_loopSize [INPUTDIM] ;
+    logic [MAXPM-1:0] wt_loopSize[WEIGHTDIM];
+    logic [MAXTW-1:0] out_loopSize[OUTDIM]; 
+        assign in_loopSize = {i_PEconf.Pch ,  i_PEconf.Tw};
+        assign wt_loopSize = {i_PEconf.Pch , i_PEconf.R , i_PEconf.Pm} ;
+        assign out_loopSize = {i_PEconf.Pch , i_PEconf.R , i_PEconf.Pm , i_PEconf.Tw};
+    logic [INPUTDIM-1:0] in_end;
+    logic [WEIGHTDIM-1:0] wt_end;
+    logic [OUTDIM-1:0] out_end;
     LoopCounter #( 
-    .NDepth(2) , .IdxDW({3'd4,3'd4}) , .IdxMaxDW(6)
-    ) InIDX(
+    .NDepth(INPUTDIM) , .IdxDW({MAXPCH, MAXR, MAXTW }) , .IdxMaxDW(MAXTW)
+    ) INLp(
     .*,
     .i_loopSize( in_loopSize ),
     .i_ctl(in_idx_ctl),
-    .o_loopEnd(in_end)
+    .out_loopEnd(in_end)
+    ); 
+    LoopCounter #( 
+    .NDepth(WEIGHTDIM) , .IdxDW({MAXPCH, MAXR, MAXPM}) , .IdxMaxDW(MAXPM)
+    ) WLp( 
+    .*,
+    .i_loopSize(wt_loopSize),
+    .i_ctl(wt_idx_ctl),
+    .out_loopEnd(wt_end)
     );
     
     LoopCounter #( 
-    .NDepth(3) , .IdxDW({3'd4,3'd4,3'd4}) , .IdxMaxDW(6)
-    ) WIDX( 
+    .NDepth(OUTDIM) , .IdxDW({MAXPCH, MAXR, MAXPM, MAXTW}) , .IdxMaxDW(MAXTW)
+    ) OLp( 
     .*,
-    .i_loopSize(w_loopSize),
-    .i_ctl(w_idx_ctl),
-    .o_loopEnd(w_end)
+    .i_loopSize( out_loopSize ),
+    .i_ctl(out_idx_ctl),
+    .out_loopEnd(out_end)
     );
-    
-    LoopCounter #( 
-    .NDepth(4) , .IdxDW({3'd4,3'd4,3'd4,3'd7}) , .IdxMaxDW(8)
-    ) OIDX( 
-    .*,
-    .i_loopSize( o_loopSize ),
-    .i_ctl(o_idx_ctl),
-    .o_loopEnd(o_end)
-    );
-
-
-
-    
-         //init  stage : prepare fetch 
-         //fetch Stage : prepare psum address, output input/weight data
-         //Mult Stage
-           // read next psum pix/reset from 0 / read and shift
+        //init  stage : prepare fetch 
+        //fetch Stage : prepare psum address, output input/weight data
+        //Mult Stage
+        // read next psum pix/reset from 0 / read and shift
    
     //==================
     // comb
@@ -100,7 +114,6 @@ output PECtlCfg::SSctl           o_SSctl
         endcase 
     end        
     always_comb begin
-        
         case (s_main)
             IDLE: begin
             end 
@@ -130,11 +143,11 @@ output PECtlCfg::SSctl           o_SSctl
     `ff_end
 
 endmodule
+
 `ifdef DataFlowCtrl
 module DataFlowCtrl 
 import PECfg::*;
 ;
-    logic a;
     Conf i_PEconf;
     Inst i_PEinst;
     `rdyack_logic(Input);

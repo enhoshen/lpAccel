@@ -8,11 +8,23 @@ Under johnjohnlin's `.vim` folder, copy `ftplugin/` ( short for file type plugin
 change tab:
 * `ctrl`+`pgup/pgdn` 
 * number +`g`+`t`
+### Copy, paste, cut, delete 
+* `yy` to copy a line
+* `p` to paste a line in the next line from the current cursor
+* **`dd`** beside delete current line, it actually **cut the current line to clipboard**!
+* Add number before the shortcut to specify number of lines to perform the action ex: `3`+`dd` to cut 3 lines from the current cursor
+### Shortcut: `A` `$`
+* Jump to the end of the line, `A` would enter insert mode afterward
 ## Python
 ### Flexible function arguments
 Besides `*args` and `**kwargs`, additional positional and keyword arguments are all allowed, but watch out for their order
 * All positional argument and expression `*args` should be before any keyword arguments and `**kwargs`
 * Additional positional arguments should be before `*args`, likewise additional keyword arguments should be before `**kwargs`
+### **Interactive Shell after executing a script**
+Use `-i` argument **before** the script to enter interactive shell after executing the file!  
+```shell
+$python -i file.py
+```
 ## Environment
 ### Grep
 Basic uses:
