@@ -20,6 +20,12 @@ change tab:
 Besides `*args` and `**kwargs`, additional positional and keyword arguments are all allowed, but watch out for their order
 * All positional argument and expression `*args` should be before any keyword arguments and `**kwargs`
 * Additional positional arguments should be before `*args`, likewise additional keyword arguments should be before `**kwargs`
+```python
+def func(a,b,c,*args,d,e,*kwargs):
+  #....
+func(1,2,3,4,5,6,d=7,f=9,e=8)
+# a=1,b=2,c=3,args=[4,5,6],kwargs={f:9}
+```
 ### **Interactive Shell after executing a script**
 Use `-i` argument **before** the script to enter interactive shell after executing the file!  
 ```shell
