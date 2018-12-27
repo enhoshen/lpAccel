@@ -94,7 +94,7 @@ class ProtoBus ():
         # protoCallback should create the protocal object, ex: TwoWire.Master
         kw = dict(kwargs)
         if len(args) == 0:
-            self.data = kw['data']
+            self.data = kw['data'] 
         else:
             self.data = args[0]
 
@@ -145,4 +145,5 @@ def clk_cnt():
     while(1):
         yield ck_ev
         n_clk+=1    
-
+if __name__=='__main__':
+    ParseFirstArgument()

@@ -41,36 +41,41 @@ class SVhier ():
             self.TypeStr(k,v)
     @property
     def ShowParams(self):
-        self.ParamStr()
+        w=17
+        print(f'{self.hier+" Parameters":-^{2*w}}' )
+        self.ParamStr(w)
     def TypeStr(self,n,l,w=13):
-        print('{0:{fill}{align}{width}}'.format(self.hier+'.'+n,width=4*w,align='^',fill='-'))
+        print(f'{self.hier+"."+n:-^{4*w}}' )
         for i in ['name','BW','dimension' , 'type']:
-            print('{:{width}}'.format(i,width=w) , end=' ')
-        print('\n{0:{fill}{align}{width}}'.format('',width=4*w,align='<',fill='=') )
+            print(f'{i:{w}}', end=' ')
+        print( f' \n{"":=<{4*w}}')
         for i in l:
             for idx,x in enumerate(i):
                 if idx < 4:
-                    print ('{:{width}}'.format(x.__repr__(),width=w) , end=' ')
+                    print (f'{x.__repr__():{w}}' , end=' ')
                 else:
-                    print('\n{:{align}{width}}'.format(x.__repr__(),width=4*w,align='^'))
+                    print(f'\n{x.__repr__():^{4*w}}',end=' ')
             print()
     def ParamStr(self,w=13):
         for i in ['name','value']:
-            print('{:{width}}'.format(i,width=w) , end=' ')
-        print('\n{0:{fill}{align}{width}}'.format('',width=2*w,align='<',fill='=')  )
+            print(f'{i:{w}}' , end=' ')
+        print(f'\n{"":=<{2*w}}')
         l = self.params
         for k,v in l.items():
-            print ('{:{width}}{:{width}}'.format(k,v.__repr__(),width=w) , end=' ')
+            print (f'{k:^{w}}'f'{v.__repr__():^{w}}', end=' ')
             print()
        
     def __repr__(self):
-        return '\n=====name=====:'+self.hier+'\n'+'=====params=====:{:}\n'.format(self.params.__repr__(),align='^')+\
-                '=====scope=====:{:}\n'.format(self._scope.hier)+\
-                '=====types=====:{:}\n'.format([x for x in self.types].__repr__(),align='^')+ \
-                '=====child=====:{:}\n'.format( [x for x in self.child].__repr__(),align='^')
+        sc = self._scope.hier if self._scope!=None else None
+        return f'\n{self.hier:-^52}\n'+\
+                f'{"params":^15}:{[x for x in self.params] !r:^}\n'+\
+                f'{"scope":^15}:{sc !r:^}\n'+\
+                f'{"types":^15}:{[x for x in self.types] !r:^}\n'+\
+                f'{"child":^15}:{[x for x in self.child] !r:^}\n'
 class SVparse():
     package = {}
     hiers = {}
+    paths = []
     gb_hier = SVhier('files',None)
     gb_hier.types =  {'integer':None,'int':None,'logic':None}
     cur_scope = ''
@@ -88,7 +93,8 @@ class SVparse():
         _top =  environ.get("TOPMODULE") 
         _top = _top if _top != None else ''
         paths = cls.IncludeFileParse(path) if inc == True else path
-        for p in  paths:
+        cls.paths += paths
+        for p in paths:
             print(p)
             n = p.rsplit('/',maxsplit=1)[1]
             cur_parse = SVparse( n , cls.gb_hier)
@@ -332,6 +338,18 @@ class SVstr():
         return st in self.s
     def End(self):
         return self.s==''
+def ParseFirstArgument():
+    import sys
+    SVparse.ParseFiles(sys.argv[1])
+def ShowFile(n,start=0,end=None):
+    f=open(SVparse.paths[n])
+    l=f.readlines()
+    end = start+40 if end==None else end
+    for i,v in enumerate([ x+start for x in range(end-start)]):
+        print(f'{i+start:<4}|',l[v],end='')
+def ShowPaths():
+    for i,v in enumerate(SVparse.paths):
+        print (i ,':  ',v)
 if __name__ == '__main__':
 
     #sv = SVparse('SVparse',None)
@@ -345,8 +363,8 @@ if __name__ == '__main__':
     #print(sv.LogicParse(ss(' [ $clog2(DW):0]waddr[3] [2][1];')) )
     #print(sv.Slice2num(' 13:0 '))
     #print(sv.StructParse(iter([' {logic a [2];','parameter sex =5;',' logic b [3];', '} mytype;',' logic x;'])))
-    import sys
-    SVparse.ParseFiles(sys.argv[1])
+    #import sys
+    #SVparse.ParseFiles(sys.argv[1])
     #
     #print('typedef \'Conf\' under PECfg:')
     #    #SVparse.IncludeFileParse('PE_compile.sv')
@@ -355,3 +373,4 @@ if __name__ == '__main__':
     #for i in SVparse.hiers.keys():
     #    print (i)
     #print(SVparse.hiers['PECtlCfg'])
+    ParseFirstArgument()

@@ -1,0 +1,34 @@
+{
+  "session_name": "XS",
+  "shell_command_before":[
+      "tool 2",
+      "tool 1"
+    ],
+  "windows": [
+    {
+      "options": {
+        "automatic-rename": "off"
+      },
+      "window_name": "notes",
+      "_comment": " layout: 3cc8,207x58,0,0{103x58,0,0,1,103x58,104,0[103x29,104,0,2,103x28,104,30,9]}  ",
+      "shell_command":      "grip -b",
+      "panes": [
+        "grip -b"
+      ],
+      "start_directory": "/home/enhoshen/research/lpAccel/",
+      "focus": true,
+      "window_index":1
+    },
+    {
+      "options": {
+        "automatic-rename": "off"
+      },
+      "window_name": "nWave",
+      "panes":[
+        "nWave &"
+      ],
+      "start_directory": "/home/enhoshen/research/lpAccel/sim",
+      "window_index":2
+    }
+  ]
+}

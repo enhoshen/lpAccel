@@ -18,7 +18,8 @@
 
 // modified by En-ho Shen
 
-`define cycle 2.5
+`define CLK 2.5
+`define HCLK 1.25
 `define pbpix_input(name) output logic name``_ack, input name``_rdy , input name``_zero
 `define pbpix_output(name) output logic name``_rdy, input name``_ack , output logic name``_zero
 `define pbpix_logic(name) logic name``_rdy, name``_ack ,name``_zero
@@ -60,18 +61,21 @@
     `Pos(rst_out , i_rstn)\
     `PosIf(ck_ev, i_clk, i_rstn)\
     `WithFinish\
-    logic dummy ;
+    logic dummy;\
+    integer clk_cnt;
 `define default_Nico_init_block(name,end_cycle) \
-    always #(`cycle/2) i_clk = ~i_clk;\
+    always #`HCLK i_clk = ~i_clk;\
+    always #`CLK clk_cnt = clk_cnt+1;\
     initial begin\
         $fsdbDumpfile(`"name.fsdb`");\
         $fsdbDumpvars( 0 , name , "+all");\
         i_clk =0;\
         i_rstn=1;\
-        #(`cycle/2) $NicotbInit();\
+        #(`CLK) $NicotbInit();\
         #11 i_rstn = 0;\
         #10 i_rstn = 1;\
-        #(`cycle*end_cycle) $display("timeout");\
+        clk_cnt = 0;\
+        #(`CLK*end_cycle) $display("timeout");\
         $NicotbFinal();\
         $finish;\
     end
