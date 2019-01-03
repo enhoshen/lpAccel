@@ -14,3 +14,10 @@ MD dut(
 ```
 * `.*` automated connection for all name matched port-logic pairs, use with care
 * ref:[Systemverilog Implicit name connection](http://www.sunburst-design.com/papers/CummingsDesignCon2005_SystemVerilog_ImplicitPorts.pdf)
+### Assignment pattern
+Assignment pattern `'{}` is used for array or self defined struct
+```verilog
+typedef struct packed { logic a , logic b } mytype;
+mytype t;
+    assign t = '{a:1 , b:0} ;
+```

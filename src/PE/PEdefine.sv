@@ -1,34 +1,35 @@
 package PECfg ;   
     //`define MULT8
-    parameter PConfDWd = 6; 
-    parameter TileConfDWd=10; 
-    parameter DWd  = 16;     // data bit width , fixed
-    parameter PsumDWd  = 16;
-    parameter InstDWd  = 3;   // 
-    parameter PEcol =16;
-    parameter IPadSize =12;
-    parameter WPadSize =48; 
-    parameter PPadSize =64;
-    parameter IPadAddrWd=$clog2(IPadSize);
-    parameter WPadAddrWd=$clog2(WPadSize);
-    parameter PPadAddrWd=$clog2(PPadSize);
+    parameter PCONFDWD = 6; 
+    parameter TILECONFDWD=10; 
+    parameter DWD  = 16;     // data bit width , fixed
+    parameter PSUMDWD  = 16;
+    parameter INSTDWD  = 3;   // 
+    parameter PECOL =16;
+    parameter IPADSIZE =12;
+    parameter WPADSIZE =48; 
+    parameter PPADSIZE =64;
+    parameter IPADADDRWD=$clog2(IPADSIZE);
+    parameter WPADADDRWD=$clog2(WPADSIZE);
+    parameter PPADADDRWD=$clog2(PPADSIZE);
     typedef enum logic [2:0] { XNOR,M1,M2,M4,M8 } AuSel;
     typedef struct packed{
         logic [3:0]             Pch;  // channel number to b   
         logic [4:0]             Pm; // filters number to be 
         AuSel                   Au; // Aunit bit used
-        logic [PConfDWd-1:0]    Tb;// batch tile
+        logic [2:0]             Tb;// batch tile
         logic [2:0]             U ;// stride spatially
         logic [3:0]             R ;// filter width
         logic [3:0]             S ;// filter height
-        logic [PConfDWd-1:0]    wpad_size; // pch*pm*R
-        logic [PConfDWd-1:0]    ipad_size; // pch*R
-        logic [6:0]             ppad_size; // pm*Tw
-        logic [PConfDWd-1:0]    Upix;// stride used, U*pch
+        logic [WPADADDRWD:0]    wpad_size; // pch*pm*R
+        logic [IPADADDRWD:0]    ipad_size; // pch*R
+        logic [PPADADDRWD:0]    ppad_size; // pm*Tw
+        logic [IPADADDRWD:0]    Upix;// stride used, U*pch
         logic                   PixReuse;// R<U or fully connected
-        logic [PConfDWd-1:0]    Xb; // *b is the bit channel        
-        logic [PConfDWd-1:0]    Wb;
-        logic [6:0]             Tw; //feature map width tile, for 
+        logic [4:0]             Xb; // *b is the bit channel        
+        logic [4:0]             Wb; 
+        logic [4:0]             wb_idx;
+        logic [6:0]             Tw; //feature map width tile, for
     } Conf ;
     typedef struct packed{
         logic start; 
@@ -36,7 +37,10 @@ package PECfg ;
         logic reset;
         logic dval ;
     } Inst ; 
-
+    typedef struct packed{
+        logic lastPix;
+        logic confEnd;
+    } DFStatus;
 
 endpackage
 `timescale 1ns/1ps
@@ -73,7 +77,7 @@ package PECtlCfg;
     endfunction
     parameter AuODWd = 11;
     `endif
-    parameter AuMaskWd = AuMultSize*DWd;
+    parameter AuMaskWd = AuMultSize*DWD;
     typedef enum logic { SIGNED , UNSIGNED } NumT;
     typedef struct packed{
         AuSel mode;
@@ -88,20 +92,20 @@ package PECtlCfg;
     //=================
     typedef enum logic [1:0]{ FSTPIX , FROMBUF , FROMBUFSHT } PsumInit;
     typedef struct packed{
-        logic [PECfg::IPadAddrWd-1:0] raddr;
-        logic [PECfg::IPadAddrWd-1:0] waddr;
+        logic [PECfg::IPADADDRWD-1:0] raddr;
+        logic [PECfg::IPADADDRWD-1:0] waddr;
         logic                          read;
         logic                         write; 
     } IPadAddr ;
     typedef struct packed{
-        logic [PECfg::WPadAddrWd-1:0] raddr;
-        logic [PECfg::WPadAddrWd-1:0] waddr;
+        logic [PECfg::WPADADDRWD-1:0] raddr;
+        logic [PECfg::WPADADDRWD-1:0] waddr;
         logic                          read;
         logic                         write; 
     } WPadAddr ;
     typedef struct packed{
-        logic [PECfg::PPadAddrWd-1:0] raddr;
-        logic [PECfg::PPadAddrWd-1:0] waddr;
+        logic [PECfg::PPADADDRWD-1:0] raddr;
+        logic [PECfg::PPADADDRWD-1:0] waddr;
         logic                          read;
         logic                         write; 
     } PPadAddr ;

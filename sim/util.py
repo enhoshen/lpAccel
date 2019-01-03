@@ -5,6 +5,7 @@ import itertools
 import numpy as np
 from nicotb.protocol import TwoWire
 from nicotb.protocol import OneWire 
+from nicotb.utils import RandProb
 TOP = os.environ.get("TOPMODULE")
 TEST = os.environ.get("TEST")
 SV = os.environ.get("SV")
@@ -114,13 +115,15 @@ class ProtoBus ():
     def SendIter(self,it):
         yield from self.master.SendIter(it)
     def Monitor(self):
-        self.slave.Monitor()
+        yield from self.slave.Monitor()
+    def MyMonitor(self,n):
+        yield from self.slave.MyMonitor(n)
     @property
     def values(self):
         return [ x.values for x in self.data]
 class TwoWireBus ( ProtoBus):
     def __init__( self , *args ,clk , side='master' , **kwargs ):
-        protoCallback = TwoWire.Master if side == 'master' else TwoWire.Slave
+        protoCallback = TwoWire.Master if side == 'master' else MySlaveTwoWire
         self.ArgParse(protoCallback, self.PortParse, *args, clk=clk, **kwargs)
         self.SideChoose(side)
     def PortParse(self, name):
@@ -134,6 +137,36 @@ class OneWireBus ( ProtoBus):
     def PortParse(self,name):
         self.dval = CreateBus( (name+'_dval',))
         return [self.dval]
+class MySlaveTwoWire(TwoWire.Slave):
+    def __init__(
+            self, rdy: Bus, ack: Bus, data: Bus,
+            clk: int, A=1, B=5, callbacks=list()
+    ):
+        super(TwoWire.Slave, self).__init__(callbacks)
+        self.rdy = GetBus(rdy)
+        self.ack = GetBus(ack)
+        self.data = GetBus(data)
+        self.clk = GetEvent(clk)
+        self.A = A
+        self.B = B
+        self.ack.value[0] = RandProb(self.A, self.B)
+        self.ack.Write()
+    def MyMonitor(self,n):
+        for i in range(n):
+            while True:
+                yield self.clk
+                self.rdy.Read()
+                if self.rdy.x[0] != 0 or self.rdy.value[0] == 0:
+                    continue
+                if self.ack.value[0] != 0:
+                    self.data.Read()
+                    super(TwoWire.Slave, self).Get(self.data)
+                    break
+                self.ack.value[0] = RandProb(self.A, self.B)
+                self.ack.Write()            
+        self.ack.value[0]=0
+        self.ack.Write()
+        yield self.clk
 def FileParse(inc=True):
     p = SV if inc == True else [SV]
     SVparse.ParseFiles(p,inc)
