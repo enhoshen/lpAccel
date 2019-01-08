@@ -106,7 +106,7 @@ output PECtlCfg::SSctl           o_SSctl
         assign psum_raddr_ctl.dval  =ce;
             assign psum_waddr_ctl.inc = out_end[OUTPCH] && out_end[OUTR] && out_idx_ctl.inc;
             assign psum_raddr_ctl.inc = out_loopIdx[OUTPCH]==1 && out_loopIdx[OUTR]==1 && out_idx_ctl.inc;
-        assign in_raddr_ctl = '{dval:ce , reset:i_PEinst.reset, inc:out_idx_ctl.inc, strideCond: i_PEconf.PixReuse && (&out_end[OUTPM:OUTR] ) };
+        assign in_raddr_ctl = '{dval:ce , reset:i_PEinst.reset, inc:out_idx_ctl.inc, strideCond: i_PEconf.PixReuse && (&out_end[OUTPM:OUTR] && !out_end[OUTTW]) };
     assign o_IPctl.raddr = in_raddra1 -1'd1;
     assign o_IPctl.waddr = in_waddra1 -1'd1;
     assign o_WPctl.raddr = wt_raddra1 -1'd1;
