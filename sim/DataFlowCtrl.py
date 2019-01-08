@@ -18,7 +18,7 @@ def test():
     conf ,inst , inbus ,wbus ,obus ,dummy = BusInit()
     conf.SetTo(0)
     inst.SetTo(0)
-    config = [ ( 4,4,1,1,1,3,3,48,12,64,12,1,2,1,1,13),\
+    config = [ ( 4,4,1,1,1,3,3,48,12,64,4,1,2,1,1,13),\
                 ( 4,4,1,1,4,3,3,48,12,64,12,0,2,1,1,13) ]
 
     def it(i):
@@ -31,12 +31,20 @@ def test():
         j.append( JoinableFork( inbus.SendIter(it(2*15*4)) ) )
         j.append( JoinableFork( wbus.SendIter(it(48)) ) )
         j.append( JoinableFork( obus.MyMonitor(13*2*48) ) )
+        inst.reset.value =1
+        inst.Write()
+        yield ck_ev
+        yield ck_ev
+        inst.reset.value =0
         inst.start.value =1
         inst.dval.value =1
         inst.Write()
+        yield ck_ev
+        inst.reset.value =0
+        inst.start.value =0
+        inst.Write()
         for jj in j:
             yield from jj.Join()
-        yield ck_ev
             
         [jj.Destroy() for jj in j]
         yield from repeat(ck_ev,100)

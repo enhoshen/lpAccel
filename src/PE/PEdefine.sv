@@ -9,9 +9,9 @@ package PECfg ;
     parameter IPADSIZE =12;
     parameter WPADSIZE =48; 
     parameter PPADSIZE =64;
-    parameter IPADADDRWD=$clog2(IPADSIZE);
-    parameter WPADADDRWD=$clog2(WPADSIZE);
-    parameter PPADADDRWD=$clog2(PPADSIZE);
+    parameter IPADADDRWD=$clog2(IPADSIZE)+1;
+    parameter WPADADDRWD=$clog2(WPADSIZE)+1;
+    parameter PPADADDRWD=$clog2(PPADSIZE)+1;
     typedef enum logic [2:0] { XNOR,M1,M2,M4,M8 } AuSel;
     typedef struct packed{
         logic [3:0]             Pch;  // channel number to b   
@@ -21,10 +21,10 @@ package PECfg ;
         logic [2:0]             U ;// stride spatially
         logic [3:0]             R ;// filter width
         logic [3:0]             S ;// filter height
-        logic [WPADADDRWD:0]    wpad_size; // pch*pm*R
-        logic [IPADADDRWD:0]    ipad_size; // pch*R
-        logic [PPADADDRWD:0]    ppad_size; // pm*Tw
-        logic [IPADADDRWD:0]    Upix;// stride used, U*pch
+        logic [WPADADDRWD-1:0]    wpad_size; // pch*pm*R
+        logic [IPADADDRWD-1:0]    ipad_size; // pch*R
+        logic [PPADADDRWD-1:0]    ppad_size; // pm*Tw
+        logic [IPADADDRWD-1:0]    Upix;// stride used, U*pch
         logic                   PixReuse;// R<U or fully connected
         logic [4:0]             Xb; // *b is the bit channel        
         logic [4:0]             Wb; 
@@ -96,19 +96,19 @@ package PECtlCfg;
         logic [PECfg::IPADADDRWD-1:0] waddr;
         logic                          read;
         logic                         write; 
-    } IPadAddr ;
+    } IPctl;
     typedef struct packed{
         logic [PECfg::WPADADDRWD-1:0] raddr;
         logic [PECfg::WPADADDRWD-1:0] waddr;
         logic                          read;
         logic                         write; 
-    } WPadAddr ;
+    } WPctl ;
     typedef struct packed{
         logic [PECfg::PPADADDRWD-1:0] raddr;
         logic [PECfg::PPADADDRWD-1:0] waddr;
         logic                          read;
         logic                         write; 
-    } PPadAddr ;
+    } PPctl ;
     typedef struct packed{
         logic valid;
     } FSctl ;

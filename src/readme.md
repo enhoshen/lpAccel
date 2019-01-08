@@ -1,2 +1,2 @@
-#Low precision accelerator system verilog implementation
+# Low precision accelerator system verilog implementation
 

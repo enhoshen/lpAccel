@@ -72,6 +72,119 @@ output [NDEPTH-1:0] o_loopEnd
     `ff_end
 
 endmodule
+module LoopCounterD1 #(
+parameter IDXDW = 3,
+parameter STARTPOINT = 0
+)(
+`clk_input,
+input  [IDXDW-1:0] i_loopSize, 
+output [IDXDW-1:0] o_loopIdx,
+input  LpCtl i_ctl, 
+output o_loopEnd
+//TODO idx > 1 ? idx output ?
+);
+    //=================
+    //logic
+    //=================
+    logic loopEnd ;
+        assign o_loopEnd = loopEnd;
+    logic [IDXDW-1:0] loopIdx_r ,loopIdx_w; 
+
+
+    assign loopEnd =  loopIdx_r == i_loopSize  || i_loopSize == '0;
+    assign o_loopIdx = loopIdx_r;
+    always_comb begin
+        loopIdx_w=loopIdx_r;
+        if(i_ctl.reset)
+            loopIdx_w = STARTPOINT;
+        else if (i_ctl.inc)
+            loopIdx_w = (loopEnd)? 1 : loopIdx_r + 1'b1; 
+        else
+            loopIdx_w = loopIdx_r ;
+    end
+       
+            
+
+    `ff_rstn
+        loopIdx_r <= STARTPOINT;
+    `ff_cg(i_ctl.dval)
+        loopIdx_r <= loopIdx_w;
+    `ff_end
+
+endmodule
+typedef struct packed{
+    logic dval;
+    logic inc;
+    logic strideCond;
+    logic reset;
+} LpSSCtl;
+module LoopCounterStrideStart #(
+parameter IDXDW = 3,
+parameter STARTPOINT=0
+)(
+`clk_input,
+input  [IDXDW-1:0] i_loopSize, 
+input  [IDXDW-1:0] i_stride,
+output [IDXDW-1:0] o_loopIdx,
+output [IDXDW-1:0] o_loopStrideIdx,
+input  LpSSCtl i_ctl, 
+output o_loopEnd
+);
+    //=================
+    //logic
+    //=================
+    logic loopEnd ;
+        assign o_loopEnd = loopEnd;
+    logic [IDXDW-1:0] loopIdx_r ,loopIdx_w; 
+    logic [IDXDW-1:0] loopStrideIdx_r , loopStrideIdx_w;
+    logic [IDXDW-1:0] loopStart_r , loopStart_w;
+    logic [IDXDW-1:0] nxtLoopStart;
+        assign nxtLoopStart = ( i_stride+loopStart_r > i_loopSize) ? i_stride+loopStart_r-i_loopSize : i_stride+loopStart_r;
+        assign o_loopStrideIdx = loopStrideIdx_r; 
+    assign loopEnd =  loopIdx_r == i_loopSize  || i_loopSize == '0;
+    assign o_loopIdx = loopIdx_r;
+    always_comb begin
+        loopIdx_w=loopIdx_r;
+        loopStart_w = loopStart_r;
+        loopStrideIdx_w = loopStrideIdx_r;
+        if(i_ctl.reset)
+            loopIdx_w = STARTPOINT;
+        else if (i_ctl.inc)
+            loopIdx_w = (loopEnd)? 1 : loopIdx_r + 1'b1; 
+        else
+            loopIdx_w = loopIdx_r ;
+
+        if(i_ctl.reset) 
+            loopStart_w = STARTPOINT;
+        else if(i_ctl.inc && i_ctl.strideCond && loopEnd ) 
+            loopStart_w = nxtLoopStart;
+        else 
+            loopStart_w = loopStart_r;
+        
+        if(i_ctl.reset)
+            loopStrideIdx_w = STARTPOINT;
+        else if (i_ctl.strideCond && loopEnd && i_ctl.inc)
+            loopStrideIdx_w = nxtLoopStart;
+        else if (i_ctl.inc)
+            loopStrideIdx_w = (loopStrideIdx_r==i_loopSize)? 1 : loopStrideIdx_r + 1'b1;
+        else
+            loopStrideIdx_w = loopStrideIdx_r;
+    end
+       
+            
+
+    `ff_rstn
+        loopIdx_r <= STARTPOINT;
+        loopStart_r <= STARTPOINT;
+        loopStrideIdx_r <= STARTPOINT;
+    `ff_cg(i_ctl.dval)
+        loopIdx_r <= loopIdx_w;
+        loopStart_r <= loopStart_w;
+        loopStrideIdx_r <= loopStrideIdx_w;
+    `ff_end
+
+endmodule
+
 `ifdef Loop
 module Loop;
    

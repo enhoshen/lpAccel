@@ -6,9 +6,9 @@ input  Inst     i_PEinst,
 `rdyack_input(Input),
 `rdyack_input(Weight),
 `rdyack_output(Psum),
-output PECtlCfg::IPadAddr        o_IPctl,
-output PECtlCfg::WPadAddr        o_WPctl,
-output PECtlCfg::PPadAddr        o_PPctl,
+output PECtlCfg::IPctl           o_IPctl,
+output PECtlCfg::WPctl           o_WPctl,
+output PECtlCfg::PPctl           o_PPctl,
 output PECtlCfg::FSctl           o_FSctl,
 output PECtlCfg::MSctl           o_MSctl,
 output PECtlCfg::SSctl           o_SSctl
@@ -46,19 +46,15 @@ output PECtlCfg::SSctl           o_SSctl
         assign ce = s_main==WORK ;
     LpCtl in_idx_ctl , wt_idx_ctl , out_idx_ctl ;
         assign in_idx_ctl = '{reset:i_PEinst.reset,dval:ce,inc:Input_rdy&&Input_ack};
-        assign wt_idx_ctl.reset = i_PEinst.reset;
-        assign out_idx_ctl.reset = i_PEinst.reset;
-            assign wt_idx_ctl.dval = ce ;
-            assign out_idx_ctl.dval = ce ; 
-            assign wt_idx_ctl.inc = Weight_rdy && Weight_ack;
-            assign out_idx_ctl.inc = Psum_rdy && Psum_ack; 
+        assign wt_idx_ctl = '{reset:i_PEinst.reset,dval:ce,inc:Weight_rdy&&Weight_ack};
+        assign out_idx_ctl ='{reset:i_PEinst.reset,dval:ce,inc:Psum_rdy&&Psum_ack};
     logic [MAXROWW-1:0] in_loopSize [INPUTDIM] ;
+    logic [MAXPM-1:0] wt_loopSize[WEIGHTDIM];
+    logic [MAXTW-1:0] out_loopSize[OUTDIM]; 
         logic [MAXTW-1:0] in_row_tile;
         logic [3:0] in_real_stride;
             assign in_real_stride = (i_PEconf.PixReuse)? i_PEconf.U : i_PEconf.R;
             assign in_row_tile = i_PEconf.Tw * in_real_stride + i_PEconf.R - 1'b1;
-    logic [MAXPM-1:0] wt_loopSize[WEIGHTDIM];
-    logic [MAXTW-1:0] out_loopSize[OUTDIM]; 
         assign in_loopSize = {i_PEconf.Pch ,  in_row_tile};
         assign wt_loopSize = {i_PEconf.Pch , i_PEconf.R , i_PEconf.Pm} ;
         assign out_loopSize = {i_PEconf.Pch , i_PEconf.R , i_PEconf.Pm , i_PEconf.Tw, i_PEconf.Xb};
@@ -83,7 +79,7 @@ output PECtlCfg::SSctl           o_SSctl
     logic prefetch_in_end;
     logic curfetch_in_end;
         assign prefetch_in_end = in_loopIdx[INTW]==prefetchEndPix && in_end[INPCH] && out_end[OUTPM] ;
-        assign curfetch_in_end = in_end[INPCH] && in_loopIdx[INTW]==endPix && !out_end[OUTPM]; 
+        assign curfetch_in_end = in_end[INPCH] && in_loopIdx[INTW]==endPix && !out_end[OUTPM] ; 
     logic waitInput ;
     logic waitWeight;
         assign waitInput =  in_out_catchup && !( curfetch_in_end || prefetch_in_end);
@@ -98,9 +94,34 @@ output PECtlCfg::SSctl           o_SSctl
         //==============
         //Address
         //==============
-    //==================
-    // comb
-    //==================
+    logic [IPADADDRWD-1:0]  in_raddra1 , in_waddra1;
+    logic [WPADADDRWD-1:0]  wt_raddra1 , wt_waddra1;
+    logic [PPADADDRWD-1:0]  ps_raddra1 , ps_waddra1;
+    logic in_raddr_end , in_waddr_end , wt_raddr_end , wt_waddr_end , ps_waddr_end,ps_raddr_end;
+    LpCtl psum_waddr_ctl , psum_raddr_ctl;
+    LpSSCtl in_raddr_ctl;
+        assign psum_waddr_ctl.reset =i_PEinst.reset;
+        assign psum_raddr_ctl.reset =i_PEinst.reset;
+        assign psum_waddr_ctl.dval  =ce; 
+        assign psum_raddr_ctl.dval  =ce;
+            assign psum_waddr_ctl.inc = out_end[OUTPCH] && out_end[OUTR] && out_idx_ctl.inc;
+            assign psum_raddr_ctl.inc = out_loopIdx[OUTPCH]==1 && out_loopIdx[OUTR]==1 && out_idx_ctl.inc;
+        assign in_raddr_ctl = '{dval:ce , reset:i_PEinst.reset, inc:out_idx_ctl.inc, strideCond: i_PEconf.PixReuse && (&out_end[OUTPM:OUTR] ) };
+    assign o_IPctl.raddr = in_raddra1 -1'd1;
+    assign o_IPctl.waddr = in_waddra1 -1'd1;
+    assign o_WPctl.raddr = wt_raddra1 -1'd1;
+    assign o_WPctl.waddr = wt_waddra1 -1'd1;
+    assign o_PPctl.raddr = ps_raddra1 -1'd1;
+    assign o_PPctl.waddr = ps_waddra1 -1'd1;
+        assign o_IPctl.read = out_idx_ctl.inc;
+        assign o_IPctl.write= in_idx_ctl.inc;
+        assign o_WPctl.read = out_idx_ctl.inc;
+        assign o_WPctl.write= wt_idx_ctl.inc;
+        assign o_PPctl.read = psum_raddr_ctl.inc;
+        assign o_PPctl.write= psum_waddr_ctl.inc;
+   //==================
+   // comb
+   //==================
         //==================
         //data transfer control
         //==================
@@ -139,32 +160,40 @@ output PECtlCfg::SSctl           o_SSctl
         //===================
         //Address conversion
         //=================== 
-        /*
-    LoopCounter #( 
-    .NDEPTH(1) , .IDXDW({IPADADDRWD}) , .IDXMAXDW(IPADADDRWD)
-    ) IPWADDR( .*, .i_loopSize({i_PEconf.ipad_size}), .i_ctl(), .o_loopIdx()
+    LoopCounterD1 #(
+    .IDXDW(IPADADDRWD), .STARTPOINT(1'b1) 
+    ) IPWADDR( .*, .i_loopSize(i_PEconf.ipad_size), .i_ctl(in_idx_ctl), 
+                .o_loopIdx(in_waddra1), .o_loopEnd(in_waddr_end)
     ); 
-    LoopCounter #( 
-    .NDEPTH(1) , .IDXDW({IPADADDRWD}) , .IDXMAXDW(IPADADDRWD)
-    ) IPRADDR( .*, .i_loopSize({i_PEconf.ipad_size}), .i_ctl(), .o_loopIdx()
+    //TODO input read address is tricky for pixel reuses, so a simple
+    //loopcounter is insufficient
+    LoopCounterStrideStart #(
+    .IDXDW(IPADADDRWD), .STARTPOINT(1'b1) 
+    ) IPRADDR( .*, .i_loopSize(i_PEconf.ipad_size), .i_ctl(in_raddr_ctl), 
+                 .o_loopEnd(in_raddr_end) , .i_stride(i_PEconf.Upix) , .o_loopStrideIdx(in_raddra1)
     ); 
-    LoopCounter #( 
-    .NDEPTH(1) , .IDXDW({WPADADDRWD}) , .IDXMAXDW(WPADADDRWD)
-    ) WPWADDR( .*, .i_loopSize({i_PEconf.wpad_size}), .i_ctl(), .o_loopIdx()
+   
+    LoopCounterD1 #(
+    .IDXDW(WPADADDRWD), .STARTPOINT(1'b1) 
+    ) WPWADDR( .*, .i_loopSize(i_PEconf.wpad_size), .i_ctl(wt_idx_ctl), 
+                .o_loopIdx(wt_waddra1), .o_loopEnd(wt_waddr_end)
     ); 
-    LoopCounter #( 
-    .NDEPTH(1) , .IDXDW({WPADADDRWD}) , .IDXMAXDW(WPADADDRWD)
-    ) WPRADDR( .*, .i_loopSize({i_PEconf.wpad_size}), .i_ctl(), .o_loopIdx()
+    LoopCounterD1 #(
+    .IDXDW(WPADADDRWD), .STARTPOINT(1'b1) 
+    ) WPRADDR( .*, .i_loopSize(i_PEconf.wpad_size), .i_ctl(out_idx_ctl), 
+                .o_loopIdx(wt_raddra1), .o_loopEnd(wt_raddr_end)
     ); 
-    LoopCounter #( 
-    .NDEPTH(1) , .IDXDW({PPADADDRWD}) , .IDXMAXDW(PPADADDRWD)
-    ) PPWADDR( .*, .i_loopSize({i_PEconf.ppad_size}), .i_ctl(), .o_loopIdx()
+    LoopCounterD1 #(
+    .IDXDW(PPADADDRWD), .STARTPOINT(1'b1)
+    ) PPWADDR( .*, .i_loopSize(i_PEconf.ppad_size), .i_ctl(psum_waddr_ctl),
+                .o_loopIdx(ps_waddra1), .o_loopEnd(ps_waddr_end)
     ); 
-    LoopCounter #( 
-    .NDEPTH(1) , .IDXDW({PPADADDRWD}) , .IDXMAXDW(PPADADDRWD)
-    ) PPRADDR( .*, .i_loopSize({i_PEconf.ppad_size}), .i_ctl(), .o_loopIdx()
+    LoopCounterD1 #(
+    .IDXDW(PPADADDRWD), .STARTPOINT(1'b1)
+    ) PPRADDR( .*, .i_loopSize(i_PEconf.ppad_size), .i_ctl(psum_waddr_ctl), 
+                .o_loopIdx(ps_raddra1), .o_loopEnd(ps_raddr_end)
     ); 
-*/
+
     always_comb begin
         s_main_nxt = s_main;
         case (s_main) 
