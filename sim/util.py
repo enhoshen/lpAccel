@@ -11,8 +11,9 @@ TEST = os.environ.get("TEST")
 SV = os.environ.get("SV")
 class StructBus:
     "name , bw , dim , type , enum literals"
-    def __init__ (self, structName,attrs, buses):
+    def __init__ (self, structName,signalName,attrs, buses):
         self.structName= structName
+        self.signalName= signalName
         self.attrs = attrs
         self.namelist = {v[0]:i for i,v in enumerate(self.attrs)}
         self.buses = buses
@@ -20,7 +21,7 @@ class StructBus:
         return self.buses[i]
     @property
     def values(self):
-        return [ x.values for x in self.buses]
+        return [ x.values if isinstance(x,StructBus) else x.values[0] for x in self.buses]
     @values.setter
     def values(self, v):
         for bb,vv in zip(self.buses,v):
@@ -48,6 +49,18 @@ class StructBus:
             self.buses[i].value = x
     def __getattr__(self,k):
         return self.buses[self.namelist[k]]
+    def __repr__(self,indent=13,top=True):
+        w=13
+        s=''
+        if top:
+            s=f'{self.signalName:=^{3*w}}\n'
+        for a,v,b in zip(self.attrs,self.values,self.buses):
+            if isinstance(b,StructBus):
+                s+=f'{a[0]:<{w}}\n'
+                s+=b.__repr__(indent+13,False)
+            else:
+                s+=f'{"":<{indent-13}}'f'{a[0]:<{w}}'f'{list(v) if len(a)!=5 else [a[4][i] for i in v] !r:<{w}}\n'
+        return s 
 class StructBusCreator():
     structlist = {'logic':[],'enum':[]}
     def __init__ ( self, structName , attrs):
@@ -72,19 +85,19 @@ class StructBusCreator():
     @classmethod
     def Get(cls,i,name):
         return cls.structlist[i].CreateStructBus(name)
-    def CreateStructBus (self, signalName):
+    def CreateStructBus (self, signalName , DIM=() ):
         #buses = {'logic' :  CreateBus( self.createTuple(signalName) )}
         buses = []
         attrs = self.structlist[self.structName].attrs
         for  n , bw, dim ,t ,*_ in attrs :
             
             if t=='logic':
-                buses.append ( CreateBus( ((None, signalName+'.'+n ,dim),) ) )
+                buses.append ( CreateBus( ((None, signalName+'.'+n ,DIM+dim),) ) )
             elif t == 'enum':
-                buses.append ( CreateBus( ((None, signalName , dim ),) ) )
+                buses.append ( CreateBus( ((None, signalName , DIM+dim ),) ) )
             else:
-                buses.append ( self.structlist[t].CreateStructBus( signalName+'.'+n ) )
-        return StructBus(self.structName,attrs,buses)
+                buses.append ( self.structlist[t].CreateStructBus( signalName+'.'+n , DIM+dim ) )
+        return StructBus(self.structName,signalName,attrs,buses)
 global ck_ev
 class ProtoBus ():
     def __init__(self):

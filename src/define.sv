@@ -26,8 +26,8 @@
 `define pbpix_port(name) name``_rdy, name``_ack , name``_zero
 `define pbpix_connect(port_name, logic_name) .port_name``_rdy(logic_name``_rdy), .port_name``_ack(logic_name``_ack), .port_name``_zero(logic_name``_zero)
 `define pbpix_unconnect(port_name) .port_name``_rdy(), .port_name``_ack() , .port_name``_zero()
-
-
+`define rdyNack(name) name``_rdy && name``_ack
+// =======by JohnJohnLin ==========
 `define rdyack_input(name) output logic name``_ack, input name``_rdy
 `define rdyack_output(name) output logic name``_rdy, input name``_ack
 `define rdyack_logic(name) logic name``_rdy, name``_ack

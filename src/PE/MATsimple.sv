@@ -6,10 +6,7 @@ module AunitPacked16 (
 input           AuCtl     i_ctl,
 input           [15:0] i_ipix,
 input           [15:0] i_wpix,
-`pbpix_input(ipix),
-`pbpix_input(wpix),
 output logic    [15:0] o_sum,
-`pbpix_output(sum)
 );
 
     //================
@@ -42,21 +39,6 @@ output logic    [15:0] o_sum,
     //================
     //seq
     //================
-    
-    `ff_rstn 
-        o_sum <= '0; 
-    `ff_cg( ce  )
-        o_sum <= sum_w; 
-    `ff_end
-
-    `ff_rstn
-        sum_rdy <= 1'b0;
-        sum_zero<= 1'b1;
-    `ff_cg( i_ctl.work )
-        sum_rdy <= sum_rdy_w;
-        sum_zero<= sum_zero_w;
-    `ff_end
-
 endmodule
 
 module ADTMult8 (

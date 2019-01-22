@@ -1,16 +1,16 @@
-`define RF2PIf_logic(logname , wordWd , DWd , AWd)\
+`define RF2PIf_logic(logname , WORDWD , DWD , AWD)\
     logic logname``_read;\
     logic logname``_write;\
-    logic [AWd-1:0] logname``_raddr;\
-    logic [AWd-1:0] logname``_waddr;\
-    logic [DWd-1:0] logname``_rdata;\
-    logic [DWd-1:0] logname``_wdata;\
+    logic [AWD-1:0] logname``_raddr;\
+    logic [AWD-1:0] logname``_waddr;\
+    logic [DWD-1:0] logname``_rdata;\
+    logic [DWD-1:0] logname``_wdata;\
     logic           logname``_rvalid;
-`define RF2PIf_sharedCtl_logic( logname , wordWd , DWd , AWd)\
+`define RF2PIf_sharedCtl_logic( logname , WORDWD , DWD , AWD)\
     logic logname``_read;\
     logic logname``_write;\
-    logic [AWd-1:0] logname``_raddr;\
-    logic [AWd-1:0] logname``_waddr;\
+    logic [AWD-1:0] logname``_raddr;\
+    logic [AWD-1:0] logname``_waddr;\
     logic           logname``_rvalid;
 `define RF2PIf_pc_rf(logname)\
     .i_read(logname``_read),\

@@ -16,16 +16,16 @@ signalSpacing 5
 
 ; windowTimeUnit is used for zoom, cursor & marker
 ; waveform viewport range
-zoom 664972.539556 753552.442053
-cursor 701250.000000
+zoom 262144.000000 393216.000000
+cursor 3118750.000000
 marker 0.000000
 
 ; user define markers
 ; userMarker time_pos marker_name color linestyle
 ; visible top row signal index
-top 20
+top 0
 ; marker line index
-markerPos 47
+markerPos 32
 
 ; event list
 ; addEvent event_name event_expression
@@ -58,42 +58,27 @@ addSignal -h 15 -holdScope i_PEinst
 addSignal -h 15 -UNSIGNED -holdScope s_main[3:0]
 addSignal -h 15 -holdScope i_clk
 addSignal -h 15 -UNSIGNED -UDEC /DataFlowCtrl/clk_cnt[31:0]
-addSignal -expanded -h 15 -UNSIGNED -HEX /DataFlowCtrl/dut/in_loopIdx[0:1]
-addSignal -h 15 -UNSIGNED -HEX -holdScope in_loopIdx[0][7:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope in_loopIdx[1][7:0]
-addSignal -expanded -h 15 -UNSIGNED -HEX -holdScope wt_loopIdx[0:2]
-addSignal -h 15 -UNSIGNED -HEX -holdScope wt_loopIdx[0][3:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope wt_loopIdx[1][3:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope wt_loopIdx[2][3:0]
-addSignal -expanded -h 15 -UNSIGNED -HEX -holdScope out_loopIdx[0:4]
+addSignal -expanded -h 15 -UNSIGNED -HEX /DataFlowCtrl/dut/out_loopIdx[0:4]
 addSignal -h 15 -UNSIGNED -HEX -holdScope out_loopIdx[0][5:0]
 addSignal -h 15 -UNSIGNED -HEX -holdScope out_loopIdx[1][5:0]
 addSignal -h 15 -UNSIGNED -HEX -holdScope out_loopIdx[2][5:0]
 addSignal -h 15 -UNSIGNED -HEX -holdScope out_loopIdx[3][5:0]
 addSignal -h 15 -UNSIGNED -HEX -holdScope out_loopIdx[4][5:0]
 addSignal -expanded -h 15 -holdScope o_IPctl
-addSignal -h 15 -UNSIGNED -UDEC -holdScope o_IPctl.raddr[4:0]
-addSignal -h 15 -UNSIGNED -UDEC -holdScope o_IPctl.waddr[4:0]
+addSignal -h 15 -UNSIGNED -UDEC -holdScope o_IPctl.raddr[3:0]
+addSignal -h 15 -UNSIGNED -UDEC -holdScope o_IPctl.waddr[3:0]
 addSignal -h 15 -holdScope o_IPctl.read
 addSignal -h 15 -holdScope o_IPctl.write
 addSignal -expanded -h 15 -holdScope o_PPctl
-addSignal -h 15 -UNSIGNED -HEX -holdScope o_PPctl.raddr[6:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope o_PPctl.waddr[6:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope o_PPctl.raddr[5:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope o_PPctl.waddr[5:0]
 addSignal -h 15 -holdScope o_PPctl.read
 addSignal -h 15 -holdScope o_PPctl.write
-addSignal -h 15 -holdScope o_WPctl
-addSignal -expanded -h 15 -holdScope in_raddr_ctl
-addSignal -h 15 -holdScope in_raddr_ctl.dval
-addSignal -h 15 -holdScope in_raddr_ctl.inc
-addSignal -h 15 -holdScope in_raddr_ctl.strideCond
-addSignal -h 15 -holdScope in_raddr_ctl.reset
-addSignal -h 15 -UNSIGNED -HEX /DataFlowCtrl/dut/IPRADDR/loopStart_r[4:0]
-addGroup "G3"
-addSignal -h 15 -UNSIGNED -HEX /DataFlowCtrl/dut/IPRADDR/loopStart_w[4:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope loopIdx_w[4:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope i_stride[4:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope nxtLoopStart[4:0]
-addSignal -h 15 -UNSIGNED -UDEC -holdScope loopIdx_r[4:0]
+addSignal -expanded -h 15 -holdScope o_WPctl
+addSignal -h 15 -UNSIGNED -HEX -holdScope o_WPctl.raddr[5:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope o_WPctl.waddr[5:0]
+addSignal -h 15 -holdScope o_WPctl.read
+addSignal -h 15 -holdScope o_WPctl.write
 addGroup "G4"
 
 ; getSignalForm Scope Hierarchy Status

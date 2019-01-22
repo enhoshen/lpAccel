@@ -6,12 +6,13 @@ package PECfg ;
     parameter PSUMDWD  = 16;
     parameter INSTDWD  = 3;   // 
     parameter PECOL =16;
+    parameter PEROW =16;
     parameter IPADSIZE =12;
     parameter WPADSIZE =48; 
     parameter PPADSIZE =64;
-    parameter IPADADDRWD=$clog2(IPADSIZE)+1;
-    parameter WPADADDRWD=$clog2(WPADSIZE)+1;
-    parameter PPADADDRWD=$clog2(PPADSIZE)+1;
+    parameter IPADADDRWD=$clog2(IPADSIZE);
+    parameter WPADADDRWD=$clog2(WPADSIZE);
+    parameter PPADADDRWD=$clog2(PPADSIZE);
     typedef enum logic [2:0] { XNOR,M1,M2,M4,M8 } AuSel;
     typedef struct packed{
         logic [3:0]             Pch;  // channel number to b   
@@ -21,10 +22,11 @@ package PECfg ;
         logic [2:0]             U ;// stride spatially
         logic [3:0]             R ;// filter width
         logic [3:0]             S ;// filter height
-        logic [WPADADDRWD-1:0]    wpad_size; // pch*pm*R
-        logic [IPADADDRWD-1:0]    ipad_size; // pch*R
-        logic [PPADADDRWD-1:0]    ppad_size; // pm*Tw
-        logic [IPADADDRWD-1:0]    Upix;// stride used, U*pch
+        logic [3:0]             s_idx ;
+        logic [WPADADDRWD:0]    wpad_size; // pch*pm*R
+        logic [IPADADDRWD:0]    ipad_size; // pch*R
+        logic [PPADADDRWD:0]    ppad_size; // pm*Tw
+        logic [IPADADDRWD:0]    Upix;// stride used, U*pch
         logic                   PixReuse;// R<U or fully connected
         logic [4:0]             Xb; // *b is the bit channel        
         logic [4:0]             Wb; 
@@ -37,18 +39,17 @@ package PECfg ;
         logic reset;
         logic dval ;
     } Inst ; 
-    typedef struct packed{
-        logic lastPix;
-        logic confEnd;
-    } DFStatus;
 
 endpackage
 `timescale 1ns/1ps
 package PECtlCfg;
     import PECfg::*;
+    typedef enum { MUX , BOOTH , SIMPLE }AUNITTYPE;
+    parameter AUNITTYPE ATYPE = MUX;
+        parameter MSK = 1;
     `define MULT8 
     `ifdef MULT8
-    parameter AuMultSize=4; 
+    parameter AUMULTSIZE=4; 
     //====================
     //Aunit
     //==================== 
@@ -63,9 +64,9 @@ package PECtlCfg;
             default: AuMask=64'b0;
         endcase
     endfunction
-    parameter AuODWd = 16;
+    parameter AUODWD = 16;
     `else
-    parameter AuMultSize=3;
+    parameter AUMULTSIZE=3;
     function automatic AuMask;
         input AuSel sel;
         case (sel)
@@ -75,12 +76,20 @@ package PECtlCfg;
             M4  :AuMask={ {16{1'b1}} , {32{1'b0}} };
         endcase
     endfunction
-    parameter AuODWd = 11;
+    parameter AUODWD = 11;
     `endif
-    parameter AuMaskWd = AuMultSize*DWD;
+    parameter AUMASKWD = AUMULTSIZE*DWD;
     typedef enum logic { SIGNED , UNSIGNED } NumT;
     typedef struct packed{
+        logic lastPix;
+        logic confEnd;
+    } DPstatus;
+
+    typedef struct packed{
         AuSel mode;
+        `ifdef MSK
+        logic [AUMASKWD-1:0] mask;
+        `endif
         logic valid;
         logic reset;
         logic work;

@@ -10,6 +10,7 @@ class SVhier ():
         self.params = {}
         self.types = {}
         self.child = {}
+        self.ports = []
         self._scope = scope
         if scope != None:
             scope.child[name] = self
@@ -44,6 +45,19 @@ class SVhier ():
         w=17
         print(f'{self.hier+" Parameters":-^{2*w}}' )
         self.ParamStr(w)
+    @property
+    def ShowPorts(self):
+        w=17
+        for i in ['type' , 'name' , 'dim']:
+            print(f'{i:{w}}' , end=' ')
+        print(f'\n{"":=<{3*w}}')
+        for io , n ,dim in self.ports:
+            print(f'{io:<{w}}'f'{n:<{w}}'f'{dim.__repr__():<{w}}', end=' ')
+            print()
+    def ShowPortsConnect(self,*conf):
+        print('.*,')
+        for _ , n ,dim in self.ports:
+            print('.'+n+'(),')
     def TypeStr(self,n,l,w=13):
         print(f'{self.hier+"."+n:-^{4*w}}' )
         for i in ['name','BW','dimension' , 'type']:
@@ -71,7 +85,8 @@ class SVhier ():
                 f'{"params":^15}:{[x for x in self.params] !r:^}\n'+\
                 f'{"scope":^15}:{sc !r:^}\n'+\
                 f'{"types":^15}:{[x for x in self.types] !r:^}\n'+\
-                f'{"child":^15}:{[x for x in self.child] !r:^}\n'
+                f'{"child":^15}:{[x for x in self.child] !r:^}\n'+\
+                f'{"ports":^15}:{[io[0]+" "+n for io,n,dim in self.ports] !r:^}\n'
 class SVparse():
     package = {}
     hiers = {}
@@ -87,7 +102,7 @@ class SVparse():
         self.cur_key = ''
         self.keyword = { 'logic':self.LogicParse , 'parameter':self.ParamParse, 'localparam':self.ParamParse,\
                         'typedef':self.TypeParse , 'struct':self.StructParse  , 'package':self.HierParse , 'enum': self.EnumParse,\
-                        'module':self.HierParse , 'import':self.ImportParse}
+                        'module':self.HierParse , 'import':self.ImportParse, 'input':self.PortParse , 'output':self.PortParse}
     @classmethod
     def ParseFiles(cls , path , inc=True ):
         _top =  environ.get("TOPMODULE") 
@@ -138,6 +153,16 @@ class SVparse():
         s.rstrip().rstrip(';').rstrip(',')
         _n=self.cur_hier.params[name]=s.lstrip('=').S2num(self.cur_hier.Params)
         return name,_n
+    def PortParse(self, s , lines):
+        bw = s.BracketParse()
+        temp = s.lsplit()
+        types = [ x for i in self.cur_hier.Types for x in i.keys() ]
+        if temp in types or '::' in temp :
+            name = s.lsplit()
+        else:
+            name = temp
+        dim = self.Tuple2num(s.BracketParse())
+        self.cur_hier.ports.append( (self.cur_key,name,dim) )
     def EnumParse(self, s , lines):
         
         if 'logic' in s:
@@ -159,8 +184,10 @@ class SVparse():
             for k,v in self.package[_pkg].types.items():
                 self.cur_hier.types[k] = v
         else:
-            self.cur_hier.params[_param] = self.package[_pkg].params[_param]
-            self.cur_hier.types[_param] = self.package[_pkg].types[_param]
+            if _param in self.package[_pkg].params:
+                self.cur_hier.params[_param] = self.package[_pkg].params[_param]  
+            if _param in self.package[_pkg].types:
+                self.cur_hier.types[_param] = self.package[_pkg].types[_param] 
     def StructParse(self ,s ,lines ):
         _step = 0      
         rule = [ '{' , '}' ]
@@ -185,7 +212,7 @@ class SVparse():
             for t in self.cur_hier.Types:
                 if _w in t :
                     _n = _s.IDParse()
-                    dim = s.BracketParse()
+                    dim = _s.BracketParse()
                     attrlist.append( ( _n , np.sum([x[1] for x in t[_w] ]) ,self.Tuple2num(dim) , _w) )
                     break
     def TypeParse(self, s , lines):
@@ -223,7 +250,7 @@ class SVparse():
     def Tuple2num(self, t ):
         return tuple(map(lambda x : SVstr(x).S2num(params=self.cur_hier.Params) ,t))
 class SVstr():
-    sp_chars = ['=','{','}','[',']','::',';']
+    sp_chars = ['=','{','}','[',']','::',';',',','(',')']
     op_chars = ['+','-','*','/','(',')']
     def __init__(self,s):
         self.s = s
@@ -327,6 +354,11 @@ class SVstr():
         _idx = _temp.find(':')
         _s,_e = self.s[0:_idx] , self.s[_idx+1:]
         return SVstr(_s).S2num(params)-SVstr(_e).S2num(params)+1
+    def DeleteList(self,clist):
+        _s = self.s
+        for c in clist:
+            _s = _s.replace(c,'')
+        return _s
     def ReplaceSplit(self, clist):
         _s = self.s
         for c in clist:
@@ -341,6 +373,8 @@ class SVstr():
 def ParseFirstArgument():
     import sys
     SVparse.ParseFiles(sys.argv[1])
+def Reset():
+    ParseFirstArgument()
 def ShowFile(n,start=0,end=None):
     f=open(SVparse.paths[n])
     l=f.readlines()

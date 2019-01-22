@@ -1,4 +1,4 @@
-`include "/home/enhoshen/research/lpAccel/src/MEM/MEMdefine.sv"
-`include "/home/enhoshen/research/lpAccel/src/MEM/MEM.sv"
-`include "/home/enhoshen/research/lpAccel/src/MEM/memv/MEMV_include.sv"
+`include "MEMdefine.sv"
+`include "MEM.sv"
+`include "MEMV_include.sv"
 
