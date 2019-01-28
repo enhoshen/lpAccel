@@ -37,9 +37,22 @@
                 .EMAA(EMA),\
                 .EMAB(EMA)\
                 );
+`define RF2Pinstance_arr(  name , idx)\
+                  name(\
+                .QA  (o_rdata[i]),\
+                .CLKA(i_clk),\
+                .CENA(we_n),\
+                .AA  (i_raddr),\
+                .CLKB(i_clk),\
+                .CENB(re_n),\
+                .AB  (i_waddr),\
+                .DB  (i_wdata[i]),\
+                .EMAA(EMA),\
+                .EMAB(EMA)\
+                );
 
 package RFCfg;
-    typedef enum {SIM , SYN } GenMode;
+    typedef enum {SIM , SYN ,FPGA} GenMode;
     parameter GenMode gen_mode= SYN;
     task ErrorRF;
         begin
@@ -48,4 +61,4 @@ package RFCfg;
         end
     endtask
 endpackage 
-
+typedef enum logic [1:0] { D16 , D32 } DWD_mode;

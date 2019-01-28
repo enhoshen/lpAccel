@@ -11,6 +11,7 @@ class SVhier ():
         self.types = {}
         self.child = {}
         self.ports = []
+        self.protoPorts = []
         self._scope = scope
         if scope != None:
             scope.child[name] = self
@@ -31,11 +32,12 @@ class SVhier ():
     @property
     def Types(self):
         if self._scope == None:
-            return deque([h.types for _ , h in self.child.items()]) 
+            _l = deque([h.types for _ , h in self.child.items()] )
+            return _l 
         else:
             _l = self._scope.Types
             _l.appendleft(self.types)
-        return _l
+            return _l
     @property
     def ShowTypes(self):
         for k,v in self.types.items():
@@ -51,13 +53,21 @@ class SVhier ():
         for i in ['type' , 'name' , 'dim']:
             print(f'{i:{w}}' , end=' ')
         print(f'\n{"":=<{3*w}}')
+        for io , n in self.protoPorts:
+            print(f'{io:<{w}}'f'{n:<{w}}'f'{"()":<{w}}')
         for io , n ,dim in self.ports:
-            print(f'{io:<{w}}'f'{n:<{w}}'f'{dim.__repr__():<{w}}', end=' ')
-            print()
+            print(f'{io:<{w}}'f'{n:<{w}}'f'{dim.__repr__():<{w}}')
+    @property
     def ShowPortsConnect(self,*conf):
-        print('.*,')
+        s = '.*,\n'
+        for t , n in self.protoPorts:
+            if t == 'rdyack':
+                s += '`rdyack_connect('+n+',),\n'
+            if t == 'dval':
+                s += '`dval_connect('+n+',),\n'
         for _ , n ,dim in self.ports:
-            print('.'+n+'(),')
+            s += '.'+n+'(),\n'
+        print(s,end='')
     def TypeStr(self,n,l,w=13):
         print(f'{self.hier+"."+n:-^{4*w}}' )
         for i in ['name','BW','dimension' , 'type']:
@@ -102,7 +112,8 @@ class SVparse():
         self.cur_key = ''
         self.keyword = { 'logic':self.LogicParse , 'parameter':self.ParamParse, 'localparam':self.ParamParse,\
                         'typedef':self.TypeParse , 'struct':self.StructParse  , 'package':self.HierParse , 'enum': self.EnumParse,\
-                        'module':self.HierParse , 'import':self.ImportParse, 'input':self.PortParse , 'output':self.PortParse}
+                        'module':self.HierParse , 'import':self.ImportParse, 'input':self.PortParse , 'output':self.PortParse,\
+                        '`rdyack_input':self.RdyackParse, '`rdyack_output':self.RdyackParse}
     @classmethod
     def ParseFiles(cls , path , inc=True ):
         _top =  environ.get("TOPMODULE") 
@@ -157,12 +168,18 @@ class SVparse():
         bw = s.BracketParse()
         temp = s.lsplit()
         types = [ x for i in self.cur_hier.Types for x in i.keys() ]
+        types += [ x for x in self.gb_hier.types.keys()]
         if temp in types or '::' in temp :
+            tp = temp
+            bw = s.BracketParse()
             name = s.lsplit()
         else:
             name = temp
         dim = self.Tuple2num(s.BracketParse())
         self.cur_hier.ports.append( (self.cur_key,name,dim) )
+    def RdyackParse(self, s , lines):
+        _ , args = s.FunctionParse()
+        self.cur_hier.protoPorts.append(('rdyack',args[0]))
     def EnumParse(self, s , lines):
         
         if 'logic' in s:
@@ -328,6 +345,11 @@ class SVstr():
             raise StopIteration
         if _step == len(rules) :
             return
+    def FunctionParse(self):
+        func = self.lsplit()
+        _s , self.s = self.split(')',maxsplit=1)
+        args = SVstr(_s).ReplaceSplit(['(',','])
+        return func,args
     def Arit2num(self, s):
         pass
     def S2num(self,params):

@@ -1,6 +1,7 @@
+import PECfg::DWD;
+import PECfg::PEROW;
 import PECtlCfg::*;
 typedef struct packed{
-    PPctl ppctl_FS;
     MSctl msctl_FS;
     SSctl ssctl_FS;
 } FSpipe;
@@ -8,7 +9,7 @@ typedef struct packed{
     logic [DWD-1:0]  Input_IP ;
     logic [DWD-1:0]  Weight_WP;
     logic [DWD-1:0]  Psum_PP  ;
-} FSdata;
+} FSin;
 typedef struct packed{
     logic [DWD-1:0]  Input_FS ;
     logic [DWD-1:0]  Weight_FS;
@@ -19,8 +20,9 @@ module FetchStage(
 input  FSctl i_ctl,
 `rdyack_input(MAIN),
 `rdyack_output(FS),
-input  FSdata i_data[PEROW],
+input  FSin   i_data[PEROW],
 output FSout  o_data[PEROW],
+output PPctl  o_ppctl_FS,
 input  FSpipe i_FSpipe_MAIN,
 output FSpipe o_FSpipe_FS
 );
@@ -29,12 +31,7 @@ output FSpipe o_FSpipe_FS
     //logic
     //===============
 
-    Forward FD(
-    .*,
-    `rdyack_connect(src,MAIN),
-    `rdyack_connect(dst,FS)
-    );
-
+    `forward ( FD,MAIN,FS)
     `ff_rstn
         o_FSpipe_FS <= '0;
         for ( int i =0 ; i<PEROW ; ++i)begin

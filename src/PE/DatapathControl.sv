@@ -1,5 +1,5 @@
-module DataPathController
-import PECfg::*;(
+import PECfg::*;
+module DataPathController(
 `clk_input,
 input  Conf     i_PEconf,
 input  Inst     i_PEinst,

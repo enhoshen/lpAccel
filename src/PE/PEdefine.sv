@@ -3,11 +3,12 @@ package PECfg ;
     parameter PCONFDWD = 6; 
     parameter TILECONFDWD=10; 
     parameter DWD  = 16;     // data bit width , fixed
-    parameter PSUMDWD  = 16;
+    parameter PSUMDWD  = 32;
     parameter INSTDWD  = 3;   // 
     parameter PECOL =16;
     parameter PEROW =16;
     parameter IPADSIZE =12;
+    parameter IPADN    = 1;
     parameter WPADSIZE =48; 
     parameter PPADSIZE =64;
     parameter IPADADDRWD=$clog2(IPADSIZE);
