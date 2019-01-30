@@ -1,14 +1,12 @@
 import PECfg::DWD;
+import PECfg::PSUMDWD;
 import PECfg::PEROW;
 import PECtlCfg::*;
 typedef struct packed{
-    logic [DWD-1:0]  Input_FS;
-    logic [DWD-1:0]  Weight_FS;
-    logic [DWD-1:0]  Psum_FS;
-    logic [DWD-1:0]  Psum_PP;
+    FSout fsout_FS ;
 } MSin;
 typedef struct packed{
-    logic [2*DWD-1:0] Psum_MS;
+    logic [PSUMDWD-1:0] Psum_MS;
     logic [DWD-1:0]   Sum_MS;
 } MSout;
 module MultStage(
@@ -18,8 +16,8 @@ input MSctl i_ctl,
 `rdyack_output(MS),
 input  MSin   i_data [PEROW],
 output MSout o_data [PEROW],
-input  SSctl i_SSctl_FS,
-output SSctl o_SSctl_MS
+input  SSctl i_MSpipe_FS,
+output SSctl o_MSpipe_MS
 );
 
     //==================

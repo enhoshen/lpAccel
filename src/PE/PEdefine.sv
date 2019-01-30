@@ -15,6 +15,7 @@ package PECfg ;
     parameter WPADADDRWD=$clog2(WPADSIZE);
     parameter PPADADDRWD=$clog2(PPADSIZE);
     typedef enum logic [2:0] { XNOR,M1,M2,M4,M8 } AuSel;
+    import RFCfg::DWD_mode;
     typedef struct packed{
         logic [3:0]             Pch;  // channel number to b   
         logic [4:0]             Pm; // filters number to be 
@@ -32,6 +33,7 @@ package PECfg ;
         logic [4:0]             Xb; // *b is the bit channel        
         logic [4:0]             Wb; 
         logic [4:0]             wb_idx;
+        DWD_mode                Psum_mode;
         logic [6:0]             Tw; //feature map width tile, for
     } Conf ;
     typedef struct packed{
@@ -113,7 +115,9 @@ package PECtlCfg;
         logic                          read;
         logic                         write; 
     } WPctl ;
+    import RFCfg::DWD_mode;
     typedef struct packed{
+        DWD_mode                       mode;
         logic [PECfg::PPADADDRWD-1:0] raddr;
         logic [PECfg::PPADADDRWD-1:0] waddr;
         logic                          read;

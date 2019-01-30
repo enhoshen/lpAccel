@@ -53,6 +53,7 @@
 
 package RFCfg;
     typedef enum {SIM , SYN ,FPGA} GenMode;
+    typedef enum logic [1:0] { D16 , D32 } DWD_mode;
     parameter GenMode gen_mode= SYN;
     task ErrorRF;
         begin
@@ -61,4 +62,3 @@ package RFCfg;
         end
     endtask
 endpackage 
-typedef enum logic [1:0] { D16 , D32 } DWD_mode;
