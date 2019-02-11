@@ -25,7 +25,7 @@
       },
       "window_name": "nWave",
       "panes":[
-        "nWave & -guiConf mynWave.conf"
+        "nWave  -guiConf mynWave.conf &"
       ],
       "start_directory": "/home/enhoshen/research/lpAccel/sim",
       "window_index":2

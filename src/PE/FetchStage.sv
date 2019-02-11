@@ -38,7 +38,7 @@ output FSpipe o_FSpipe_FS
             o_data[i] <= '0;
         end
     `ff_cg( `rdyNack(MAIN) || `rdyNack(FS) )
-        o_FSpipe_FS <= i_FSpipe_MAIN;
+        o_FSpipe_FS.ssctl <= i_FSpipe_MAIN.ssctl;
         for ( int i =0 ; i<PEROW ; ++i)begin
             o_data[i] <= {i_data[i].Input_IP,i_data[i].Weight_WP,i_data[i].Psum_PP};
         end 

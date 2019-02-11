@@ -17,8 +17,8 @@ output [DWD-1:0] o_sum,
     //logic
     //=================
     wire [AUMASKWD-1:0] msk_ipix ,msk_wpix;
-        assign msk_ipix = {AUMULTSIZE{i_ipix}} & i_ctl.mask;
-        assign msk_wpix = {AUMULTSIZE{i_wpix}} & i_ctl.mask;
+        assign msk_ipix = {AUMULTSIZE{i_ipix}} & i_ctl.AuMask;
+        assign msk_wpix = {AUMULTSIZE{i_wpix}} & i_ctl.AuMask;
     wire [DWD-1:0] msk1b_ipix,msk2b_ipix,msk4b_ipix ;
         assign  msk1b_ipix=msk_ipix[0+:DWD];   
         assign  msk2b_ipix=msk_ipix[DWD+:DWD];

@@ -14,17 +14,17 @@ package PECfg ;
     parameter IPADADDRWD=$clog2(IPADSIZE);
     parameter WPADADDRWD=$clog2(WPADSIZE);
     parameter PPADADDRWD=$clog2(PPADSIZE);
+    typedef enum logic { SIGNED , UNSIGNED } NumT;
     typedef enum logic [2:0] { XNOR,M1,M2,M4,M8 } AuSel;
     import RFCfg::DWD_mode;
     typedef struct packed{
         logic [3:0]             Pch;  // channel number to b   
         logic [4:0]             Pm; // filters number to be 
-        AuSel                   Au; // Aunit bit used
+        AuSel                   Au; // Aunit mode
         logic [2:0]             Tb;// batch tile
         logic [2:0]             U ;// stride spatially
         logic [3:0]             R ;// filter width
         logic [3:0]             S ;// filter height
-        logic [3:0]             s_idx ;
         logic [WPADADDRWD:0]    wpad_size; // pch*pm*R
         logic [IPADADDRWD:0]    ipad_size; // pch*R
         logic [PPADADDRWD:0]    ppad_size; // pm*Tw
@@ -32,6 +32,8 @@ package PECfg ;
         logic                   PixReuse;// R<U or fully connected
         logic [4:0]             Xb; // *b is the bit channel        
         logic [4:0]             Wb; 
+        NumT                    XNumT; // signed or unsigned
+        NumT                    WNumT;
         logic [4:0]             wb_idx;
         DWD_mode                Psum_mode;
         logic [6:0]             Tw; //feature map width tile, for
@@ -47,42 +49,20 @@ endpackage
 `timescale 1ns/1ps
 package PECtlCfg;
     import PECfg::*;
-    typedef enum { MUX , BOOTH , SIMPLE }AUNITTYPE;
-    parameter AUNITTYPE ATYPE = MUX;
-        parameter MSK = 1;
-    `define MULT8 
-    `ifdef MULT8
-    parameter AUMULTSIZE=4; 
     //====================
     //Aunit
     //==================== 
-    function automatic AuMask;
-        input AuSel sel;
-        case (sel)
-            XNOR:AuMask={ {48{1'b0}} , {16{1'b1}} }; 
-            M1  :AuMask={ {48{1'b0}} , {16{1'b1}} };
-            M2  :AuMask={ {32{1'b0}} , {16{1'b1}} , {16{1'b0}} };
-            M4  :AuMask={ {16{1'b0}} , {16{1'b1}} , {32{1'b0}} };
-            M8  :AuMask={ {16{1'b1}} , {48{1'b0}} };
-            default: AuMask=64'b0;
-        endcase
-    endfunction
-    parameter AUODWD = 16;
-    `else
-    parameter AUMULTSIZE=3;
-    function automatic AuMask;
-        input AuSel sel;
-        case (sel)
-            XNOR:AuMask={ {32{1'b0}} , {16{1'b1}} }; 
-            M1  :AuMask={ {32{1'b0}} , {16{1'b1}} };
-            M2  :AuMask={ {16{1'b0}} , {16{1'b1}} , {16{1'b0}} };
-            M4  :AuMask={ {16{1'b1}} , {32{1'b0}} };
-        endcase
-    endfunction
-    parameter AUODWD = 11;
-    `endif
-    parameter AUMASKWD = AUMULTSIZE*DWD;
-    typedef enum logic { SIGNED , UNSIGNED } NumT;
+    typedef enum { MUX , BOOTH , SIMPLE }AUNITTYPE;
+    parameter AUNITTYPE ATYPE = MUX;
+        parameter MSK = 1;
+        parameter AUMULTSIZE=4; 
+        parameter AUMASKWD = AUMULTSIZE*DWD;
+    task ErrorAu;
+        begin
+            $display("Aunit Configuration error");
+            $finish();
+        end
+    endtask
     typedef struct packed{
         logic lastPix;
         logic confEnd;
@@ -90,12 +70,7 @@ package PECtlCfg;
 
     typedef struct packed{
         AuSel mode;
-        `ifdef MSK
-        logic [AUMASKWD-1:0] mask;
-        `endif
-        logic valid;
-        logic reset;
-        logic work;
+        logic [AUMASKWD-1:0] AuMask;
         logic iNumT;
         logic wNumT;       
     } AuCtl;
@@ -124,19 +99,22 @@ package PECtlCfg;
         logic                         write; 
     } PPctl ;
     typedef struct packed{
-        logic valid;
+        DWD_mode mode;
+        logic psum_parity;
     } FSctl ;
     typedef struct packed{
         AuCtl auctl;
     } MSctl ;
-    typedef enum logic [1:0] { SHT1,SHT2,SHT4,SHT8 } ShtNum;
+        typedef struct packed{
+            AuSel mode;
+            logic iNumT;
+            logic wNumT;
+        }MSconf; // Compute the mask at Fetch stage to save up registers
     typedef struct packed{
-        logic  valid;
-        logic  init;    // 
-        logic  fstpix;  // first pix, psum initialize to 0
-        logic  lstpix;  // last pix , 
-        logic  sht;     // shift 
-        ShtNum sht_num ;
-     } SSctl ;
+        DWD_mode psum_mode;
+        logic  fstrow;  // first pix, psum initialize to 0
+        logic  lstrow;  // last pix , 
+        logic  [3:0] sht_num ;
+    } SSctl ;
 endpackage
 

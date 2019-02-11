@@ -1,7 +1,7 @@
 import numpy as np
 from nicotb import *
 from nicotb.primitives import JoinableFork
-from util import *
+from NicoUtil import *
 from itertools import repeat
 def BusInit():
     SBC = StructBusCreator
@@ -18,21 +18,29 @@ def test():
     conf ,inst , inbus ,wbus ,obus ,dummy = BusInit()
     conf.SetTo(0)
     inst.SetTo(0)
-    config = [ (  4,4,1,1,1,3,3, 0,48,12,64,4 ,1,2,1,1,13),\
-                ( 4,4,1,1,4,3,3, 0,48,12,64,12,0,2,1,1,13) ]
+    config = [ (  4,4,1,1,1,3,3, 48,12,13*4,4,1,2,1,1,1,1,0,13),\
+                (  4,2,1,1,1,3,3, 24,12,13*2,4,1,2,1,1,1,1,1,13) ]
 
     def it(i):
         for _ in range(i):
             yield dummy.values
     for i1 in range (1 ): 
-        conf.values = config[0] 
+        conf.values = config[1] 
         print (conf)
         print(inst)
         conf.Write()
+        s = conf.S.value[0]
+        r = conf.R.value[0]
+        pm = conf.Pm.value[0]
+        pch = conf.Pch.value[0]
+        tw = conf.Tw.value[0]
+        tw_padded = tw+r-1
+        xb=conf.Xb.value[0]
+        print(pm*pch*r*tw*xb*s) 
         j = []
-        j.append( JoinableFork( inbus.SendIter(it(2*15*4)) ) )
-        j.append( JoinableFork( wbus.SendIter(it(48)) ) )
-        j.append( JoinableFork( obus.MyMonitor(13*2*48) ) )
+        j.append( JoinableFork( inbus.SendIter(it(xb*tw_padded*pch*r)) ) )
+        j.append( JoinableFork( wbus.SendIter(it(pm*pch*r*s)) ) )
+        j.append( JoinableFork( obus.MyMonitor(tw*xb*s*pm*pch*r) ) )
         inst.reset.value =1
         inst.Write()
         yield ck_ev
@@ -55,5 +63,6 @@ def test():
 rst_out , ck_ev = CreateEvents(["rst_out","ck_ev"])
 RegisterCoroutines(
     [test()]
+
 )
  

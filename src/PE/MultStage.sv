@@ -3,18 +3,15 @@ import PECfg::PSUMDWD;
 import PECfg::PEROW;
 import PECtlCfg::*;
 typedef struct packed{
-    FSout fsout_FS ;
-} MSin;
-typedef struct packed{
     logic [PSUMDWD-1:0] Psum_MS;
     logic [DWD-1:0]   Sum_MS;
 } MSout;
 module MultStage(
 `clk_input,
-input MSctl i_ctl,
+input  MSctl i_ctl,
 `rdyack_input(FS),
 `rdyack_output(MS),
-input  MSin   i_data [PEROW],
+input  FSout i_data [PEROW],
 output MSout o_data [PEROW],
 input  SSctl i_MSpipe_FS,
 output SSctl o_MSpipe_MS
@@ -28,29 +25,25 @@ output SSctl o_MSpipe_MS
     //==================
     //comb
     //==================
-    Forward FD(
+    `forward ( FD, FS, MS)
+    
+    Aunit Arithmetic_unit (
     .*,
-    `rdyack_connect(src,FS),
-    `rdyack_connect(dst,MS)
+    .i_ctl(i_ctl.auctl),
+    .i_Input(i_data.Input_FS),
+    .i_Weight(i_data.Weight_FS),
+    .o_Sum(o_data.Sum_MS)     
     );
 
-    genvar pe_row;
-
-    generate 
-        for (pe_row=0 ; pe_row<PEROW ; ++i) begin:Arithmetic
-            Aunit
-        end
-    endgenerate
-
     `ff_rstn
-        o_SSctl_MS <= '0;
+        o_MSpipe_MS <= '0;
         for ( int i=0 ; i<PEROW ; ++i)begin
-            o_data[i] <= '0;
+            o_data.Psum_MS[i] <= '0;
         end
     `ff_cg( `rdyNack(FS) || `rdyNack(MS) )
-        o_SSctl_MS <= i_SSctl_FS;
+        o_MSpipe_MS <= i_MSpipe_FS;
         for ( int i=0 ; i<PEROW ; ++i)begin
-            o_data[i] <= {{i_data.Psum_PP[i],i_data.Psum_MS[i]}, };
+            o_data.Psum_MS[i] <= i_data.Psum_PP[i] ;
         end
     `ff_end
 endmodule

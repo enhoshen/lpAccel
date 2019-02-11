@@ -65,6 +65,10 @@ end
 ```
 * You can configure toolbar, making constantly used function more easily accessible.
 ![toolbar](images/nWave_Custom_toolbar.png)
+  save the configuration in `.conf` format, and open your nWave with the command:
+```shell
+$nWave  -guiConf mynWave.conf &
+```
 ## Makefile
 * See for the [GNU make documentation](http://www.gnu.org/software/make/manual/make.html#Goals) for elaborated information
 * Automatic variables : `%` `<` `@` 

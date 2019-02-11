@@ -1,4 +1,5 @@
 import PECfg::*;
+import RFCfg::*;
 module DataPathController(
 `clk_input,
 input  Conf     i_PEconf,
@@ -10,7 +11,7 @@ output PECtlCfg::IPctl           o_IPctl,
 output PECtlCfg::WPctl           o_WPctl,
 output PECtlCfg::PPctl           o_PPctl,
 output PECtlCfg::FSctl           o_FSctl,
-output PECtlCfg::MSctl           o_MSctl,
+output PECtlCfg::MSconf          o_MSconf,
 output PECtlCfg::SSctl           o_SSctl,
 output PECtlCfg::DPstatus        o_DPstatus
 //`ifdef DEBUG
@@ -22,16 +23,17 @@ output PECtlCfg::DPstatus        o_DPstatus
     //==================
     localparam INPUTDIM = 2;
     localparam WEIGHTDIM = 3;
-    localparam OUTDIM = 5;
+    localparam OUTDIM = 6;
     localparam MAXPCH = $clog2(12);
     localparam MAXR = $clog2(12);
     localparam MAXPM = $clog2(16);
     localparam MAXTW = $clog2(64); 
     localparam MAXROWW = $clog2(255); //input row tile width 
     localparam MAXXB = $clog2(16);
+    localparam MAXS  = $clog2(11);
     enum { WTPCH, WTR, WTPM } wt_dim;
     enum { INPCH, INTW } in_dim;
-    enum { OUTPCH , OUTR , OUTPM , OUTTW , OUTXB} out_dim ; // psum dimension name
+    enum { OUTPCH , OUTR , OUTPM , OUTTW , OUTXB , OUTS } out_dim ; // psum dimension name
     //==================
     //state
     //==================
@@ -58,7 +60,7 @@ output PECtlCfg::DPstatus        o_DPstatus
             assign in_row_tile = (i_PEconf.PixReuse)? i_PEconf.Tw * in_real_stride + i_PEconf.R - 1'b1 : i_PEconf.Tw*in_real_stride ;
         assign in_loopSize = {i_PEconf.Pch ,  in_row_tile};
         assign wt_loopSize = {i_PEconf.Pch , i_PEconf.R , i_PEconf.Pm} ;
-        assign out_loopSize = {i_PEconf.Pch , i_PEconf.R , i_PEconf.Pm , i_PEconf.Tw, i_PEconf.Xb};
+        assign out_loopSize = {i_PEconf.Pch , i_PEconf.R , i_PEconf.Pm , i_PEconf.Tw, i_PEconf.Xb , i_PEconf.S};
     logic [MAXROWW-1:0] in_loopIdx[INPUTDIM];
     logic [MAXPM-1:0] wt_loopIdx [WEIGHTDIM];
     logic [MAXTW-1:0] out_loopIdx[OUTDIM];
@@ -118,8 +120,13 @@ output PECtlCfg::DPstatus        o_DPstatus
         assign o_IPctl.write= in_idx_ctl.inc;
         assign o_WPctl.read = out_idx_ctl.inc;
         assign o_WPctl.write= wt_idx_ctl.inc;
-        assign o_PPctl.read = psum_raddr_ctl.inc;
+        assign o_PPctl.read = psum_raddr_ctl.inc && !o_SSctl.fstrow && !(i_PEconf.Psum_mode==D16 && o_PPctl.raddr[0]); // address is odd and data of D16 type:don't read; first row don't read, just initialize.
         assign o_PPctl.write= psum_waddr_ctl.inc;
+        //=====================
+        //Misc
+        //=====================
+    logic [3:0] Ab ; // Aunit bit used
+   
    //==================
    // comb
    //==================
@@ -146,7 +153,7 @@ output PECtlCfg::DPstatus        o_DPstatus
     );
     
     LoopCounter #( 
-    .NDEPTH(OUTDIM) , .IDXDW({MAXPCH, MAXR, MAXPM, MAXTW, MAXXB}) , .IDXMAXDW(MAXTW) 
+    .NDEPTH(OUTDIM) , .IDXDW({MAXPCH, MAXR, MAXPM, MAXTW, MAXXB,MAXS}) , .IDXMAXDW(MAXTW) 
     ) OLp( 
     .*,
     .i_loopSize( out_loopSize ),
@@ -166,7 +173,7 @@ output PECtlCfg::DPstatus        o_DPstatus
     ) IPWADDR( .*, .i_loopSize(i_PEconf.ipad_size), .i_ctl(in_idx_ctl), 
                 .o_loopIdx(in_waddra1), .o_loopEnd(in_waddr_end)
     ); 
-    //TODO input read address is tricky for pixel reuses, so a simple
+    //input read address is tricky for pixel reuses, so a simple
     //loopcounter is insufficient
     LoopCounterStrideStart #(
     .IDXDW(IPADADDRWD+1), .STARTPOINT(1'b1) 
@@ -217,22 +224,26 @@ output PECtlCfg::DPstatus        o_DPstatus
         else
             s_main_nxt = s_main;
     end        
+    //=====================
+    //datapath control
+    //=====================
     always_comb begin
-    end
-    always_comb begin
-        case (s_main)
-            IDLE: begin
-            end 
-            STALL:begin
-            end
-            INIT: begin 
-            end
-            WORK: begin 
-                
-            end
-            default: begin
-            end   
-        endcase 
+        o_FSctl = {i_PEconf.Psum_mode,o_PPctl.raddr[0]};
+        o_MSconf.mode = i_PEconf.Au;
+        o_MSconf.iNumT = (i_PEconf.XNumT == UNSIGNED)? UNSIGNED : (out_end[OUTXB])? SIGNED : UNSIGNED;
+        o_MSconf.wNumT = (i_PEconf.WNumT == UNSIGNED)? UNSIGNED : (i_PEconf.Wb == i_PEconf.wb_idx)? SIGNED : UNSIGNED;
+        o_SSctl.fstrow = (out_loopIdx[OUTXB]==1 && out_loopIdx[OUTS]== 1);
+        o_SSctl.lstrow = (out_end[OUTXB] && out_end[OUTS] );
+        o_SSctl.psum_mode   = i_PEconf.Psum_mode;
+        case (i_PEconf.Au)
+            XNOR: Ab=4'b1;
+            M1: Ab=4'b1;
+            M2: Ab=4'd2;
+            M4: Ab=4'd4;
+            M8: Ab=4'd8;
+            default: Ab=4'b1;
+        endcase
+        o_SSctl.sht_num   = (out_loopIdx[OUTXB]+i_PEconf.wb_idx-2'd2)* Ab ;
     end
     //==================
     //sequential
@@ -269,7 +280,7 @@ DataPathController dut(
 .o_WPctl(),
 .o_PPctl(),
 .o_FSctl(),
-.o_MSctl(),
+.o_MSconf(),
 .o_SSctl()
 //`ifdef DEBUG
 //output o_error

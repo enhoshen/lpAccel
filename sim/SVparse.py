@@ -4,6 +4,13 @@ import re
 from os import environ
 from collections import namedtuple
 from collections import deque
+from subprocess import Popen, PIPE
+def ToClip(s):
+    try:
+        p = Popen(['xclip' ,'-selection' , 'clipboard'], stdin=PIPE)
+        p.communicate(input=s.encode())
+    except:
+        print( "xclip not found or whatever, copy it yourself")
 class SVhier ():
     def __init__(self,name,scope):
         self.hier= name
@@ -58,7 +65,7 @@ class SVhier ():
         for io , n ,dim in self.ports:
             print(f'{io:<{w}}'f'{n:<{w}}'f'{dim.__repr__():<{w}}')
     @property
-    def ShowPortsConnect(self,*conf):
+    def ShowConnect(self,*conf):
         s = '.*,\n'
         for t , n in self.protoPorts:
             if t == 'rdyack':
@@ -67,22 +74,24 @@ class SVhier ():
                 s += '`dval_connect('+n+',),\n'
         for _ , n ,dim in self.ports:
             s += '.'+n+'(),\n'
-        print(s,end='')
+        s = s[:-2]
+        ToClip(s)
+        print(s)
     def TypeStr(self,n,l,w=13):
         print(f'{self.hier+"."+n:-^{4*w}}' )
         for i in ['name','BW','dimension' , 'type']:
-            print(f'{i:{w}}', end=' ')
+            print(f'{i:^{w}}', end=' ')
         print( f' \n{"":=<{4*w}}')
         for i in l:
             for idx,x in enumerate(i):
                 if idx < 4:
-                    print (f'{x.__repr__():{w}}' , end=' ')
+                    print (f'{x.__repr__():^{w}}' , end=' ')
                 else:
                     print(f'\n{x.__repr__():^{4*w}}',end=' ')
             print()
     def ParamStr(self,w=13):
         for i in ['name','value']:
-            print(f'{i:{w}}' , end=' ')
+            print(f'{i:^{w}}' , end=' ')
         print(f'\n{"":=<{2*w}}')
         l = self.params
         for k,v in l.items():
@@ -97,6 +106,7 @@ class SVhier ():
                 f'{"types":^15}:{[x for x in self.types] !r:^}\n'+\
                 f'{"child":^15}:{[x for x in self.child] !r:^}\n'+\
                 f'{"ports":^15}:{[io[0]+" "+n for io,n,dim in self.ports] !r:^}\n'
+        
 class SVparse():
     package = {}
     hiers = {}
@@ -105,7 +115,9 @@ class SVparse():
     gb_hier.types =  {'integer':None,'int':None,'logic':None}
     cur_scope = ''
     base_path = '/home/enhoshen/research/lpAccel/'
-    include_path = '/home/enhoshen/research/lpAccel/include/' 
+    include_path = '/home/enhoshen/research/lpAccel/include/'
+    def __getattr__(self , n ):
+        return hiers[n]
     def __init__(self,name,scope):
         self.cur_hier = SVhier(name,scope) if scope != None else SVhier(name,self.gb_hier) 
         SVparse.hiers[name]= self.cur_hier
@@ -267,7 +279,7 @@ class SVparse():
     def Tuple2num(self, t ):
         return tuple(map(lambda x : SVstr(x).S2num(params=self.cur_hier.Params) ,t))
 class SVstr():
-    sp_chars = ['=','{','}','[',']','::',';',',','(',')']
+    sp_chars = ['=','{','}','[',']','::',';',',','(',')','#']
     op_chars = ['+','-','*','/','(',')']
     def __init__(self,s):
         self.s = s
@@ -368,7 +380,10 @@ class SVstr():
                     _s = _s.replace( w , str(p[w]) )
                     break
         _s = _s.replace('{','[').replace('}',']').replace('\'','')
-        return eval(ps.expr(_s).compile('file.py'))
+        try:
+            return eval(ps.expr(_s).compile('file.py'))
+        except:
+            return _s
     def Slice2num(self,params):
         if self.s == '':
             return 1
@@ -392,6 +407,11 @@ class SVstr():
         return st in self.s
     def End(self):
         return self.s==''
+class EAdict():
+    def __init__(self,dic):
+        self.dic = dic
+    def __getattr__(self, n):
+        return self.dic[n]
 def ParseFirstArgument():
     import sys
     SVparse.ParseFiles(sys.argv[1])
@@ -430,3 +450,4 @@ if __name__ == '__main__':
     #    print (i)
     #print(SVparse.hiers['PECtlCfg'])
     ParseFirstArgument()
+    hiers = EAdict(SVparse.hiers)

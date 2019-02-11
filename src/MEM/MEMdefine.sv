@@ -39,14 +39,28 @@
                 );
 `define RF2Pinstance_arr(  name , idx)\
                   name(\
-                .QA  (o_rdata[i]),\
+                .QA  (o_rdata[idx]),\
                 .CLKA(i_clk),\
                 .CENA(we_n),\
                 .AA  (i_raddr),\
                 .CLKB(i_clk),\
                 .CENB(re_n),\
                 .AB  (i_waddr),\
-                .DB  (i_wdata[i]),\
+                .DB  (i_wdata[idx]),\
+                .EMAA(EMA),\
+                .EMAB(EMA)\
+                );
+`define RF2Pinstance_msk_arr( name , idx)\
+                name (\
+                .QA(o_rdata[idx]),\
+                .CLKA(i_clk),\
+                .CENA(we_n),\
+                .AA(i_raddr),\
+                .CLKB(i_clk),\
+                .CENB(re_n),\
+                .WENB(wmsk),\
+                .AB(waddr),\
+                .DB(i_wdata[idx]),\
                 .EMAA(EMA),\
                 .EMAB(EMA)\
                 );
