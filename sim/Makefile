@@ -2,6 +2,8 @@
 NICOTB=/opt/nicotb/lib
 IRUN=irun
 SYN=syn
+TCHECK=
+VERBOSE=
 HOME=/home/enhoshen/research/lpAccel
 
 Top_syn:
@@ -20,9 +22,11 @@ PRE := $(if$(SV),$(SV).sv, %.sv )
 	+incdir+$(HOME)/src \
 	+incdir+$(HOME)/include \
 	+incdir+/opt/CAD/synopsys/synthesis/2017.09/dw/sim_ver \
-	+define+$@\
+	+define+SIM=1	+define+$@\
 	$(ARGS) $(NICOTB)/verilog/Utils.sv \
 	$(if $(SV),$(SV) , $@.sv) \
+	$(TCHECK)\
+	$(VERBOSE)\
 	+sv
 # dump_scoreboard help you recording the lastest run time and result
 dump_scoreboard:
@@ -42,4 +46,4 @@ dump_scoreboard:
 	 | sqlite3
 
 clean:
-	-rm -rf ncsim* novas* irun* *.rc scoreboard.db __pycache__ INCA_libs
+	-rm -rf ncsim* novas* irun* scoreboard.db __pycache__ INCA_libs

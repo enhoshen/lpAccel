@@ -10,60 +10,52 @@ input Inst i_PEinst,
 `rdyack_output(Psum),
 input [DWD-1:0] i_Input[IPADN],
 input [DWD-1:0] i_Weight [PEROW],
-output[DWD-1:0] o_Psum [PEROW]
+output[PSUMDWD-1:0] o_Psum [PEROW]
 );
-
     //=========================================
     //parameters
     //=========================================
 	//=========================================
 	//logics
 	//=========================================
-        // control //
-    enum logic [1:0] {IDLE,WRITE,READ,DONE} s_main , s_main_nxt;
         // connection //
     `rdyack_logic(MAIN);
     `rdyack_logic(FS);
     `rdyack_logic(MS);
     `rdyack_logic(SS);
     FSctl fs_ctl_MAIN;
-    MSctl ms_ctl_MAIN;
+    MSconf ms_conf_MAIN;
     SSctl ss_ctl_MAIN;
             // pipeline connect
-    FSpipe fspipe_MAIN , fspipe_FS ;
-        assign fspipe_MAIN = {ppctl_MAIN,ms_ctl_MAIN,ss_ctl_MAIN};
-    SSctl  mspipe_FS , mspipe_ms;
+    FSpipein fspipe_MAIN;
+        assign fspipe_MAIN = {ms_conf_MAIN,ss_ctl_MAIN};
+    FSpipeout fspipe_FS; 
+    SSctl  mspipe_FS , mspipe_MS;
         assign mspipe_FS = fspipe_FS.ssctl;
             //PAD
     logic [DWD-1:0] ip_out [IPADN];
     logic [DWD-1:0] wp_out [PEROW];
-    logic [PSUMDWD-1:0] pp_in  [PEROW] , pp_out[PEROW];
+    logic [PSUMDWD-1:0] pp_out[PEROW];
     IPctl ipctl;
     WPctl wpctl;
     PPctl ppctl_MAIN , ppctl_SS;
             //data pipe
     FSin  fs_data_in [PEROW];
     FSout fs_data_out[PEROW];
-    MSin  ms_data_in [PEROW];
     MSout ms_data_out[PEROW];
-    SSin  ss_data_in [PEROW];
             // final outputs
     logic [PSUMDWD-1:0] sum_SS [PEROW];
-
+        assign o_Psum = sum_SS;
     //=========================================
-    //
+    //comb
     //=========================================
     genvar pe_row;
     generate
         for( pe_row=0 ; pe_row<PEROW ; ++pe_row)begin
-            assign fs_data_in[pe_row] = {ip_out[pe_row],wp_out[pe_row],pp_out[pe_row]};
+            localparam int ip_idx = IPADN / pe_row;
+            assign fs_data_in[pe_row] = {ip_out[ip_idx],wp_out[pe_row],pp_out[pe_row]};
         end
     endgenerate
-    
-    
-    //=========================================
-    //combination
-    //=========================================
         // module // 
     RF_2P #(
         .WORDWD(IPADSIZE),
@@ -91,7 +83,7 @@ output[DWD-1:0] o_Psum [PEROW]
         .o_rdata(wp_out),
         .i_wdata(i_Weight)
     );
-    // TODO
+    // ?TODO?
     // Psum pad need special arrangement
     //
     RF_2P_MSK #(
@@ -100,13 +92,13 @@ output[DWD-1:0] o_Psum [PEROW]
         .SIZE  (PEROW)           
     )PPAD(                                         
         .*,             
-        .i_dwd_mode(i_PEconf.Psum_mode),  
-        .i_read(),      
-        .i_write(),     
-        .i_raddr(),     
-        .i_waddr(),     
-        .o_rdata(),     
-        .i_wdata()      
+        .i_dwd_mode(ppctl_MAIN.psum_mode),  
+        .i_read (ppctl_MAIN.read),      
+        .i_write(ppctl_MAIN.write),     
+        .i_raddr(ppctl_MAIN.raddr),     
+        .i_waddr(ppctl_MAIN.waddr),     
+        .o_rdata(pp_out),     
+        .i_wdata(sum_SS)      
     );                                         
     DataPathController DPC(
         .*,           
@@ -117,7 +109,7 @@ output[DWD-1:0] o_Psum [PEROW]
         .o_WPctl(wpctl),   
         .o_PPctl(ppctl_MAIN),   
         .o_FSctl(fs_ctl_MAIN),   
-        .o_MSctl(ms_ctl_MAIN),   
+        .o_MSconf(ms_conf_MAIN),   
         .o_SSctl(ss_ctl_MAIN),   
         .o_DPstatus()        
     );
@@ -136,7 +128,7 @@ output[DWD-1:0] o_Psum [PEROW]
         `rdyack_connect(FS,FS), 
         `rdyack_connect(MS,MS), 
         .i_ctl(fspipe_FS.msctl),             
-        .i_data(ms_data_in),            
+        .i_data(fs_data_out),            
         .o_data(ms_data_out),            
         .i_MSpipe_FS(mspipe_FS),       
         .o_MSpipe_MS(mspipe_MS)      
@@ -146,26 +138,39 @@ output[DWD-1:0] o_Psum [PEROW]
         `rdyack_connect(MS,MS),  
         `rdyack_connect(SS,SS),  
         .i_ctl(mspipe_MS),              
-        .i_data(ss_data_in),             
+        .i_data(ms_data_out),             
         .Sum_SS(sum_SS),             
         .o_ppctl_SS(ppctl_SS)          
      );
-    PathStage Ps(
              
-    genvar pe_row ; 
-    generate  
-    endgenerate 
 
      
     //=========================================
     //sequential
     //=========================================
-    always_ff @ (posedge i_clk or negedge i_rstn)begin
     
-    end
 endmodule
 
+`ifdef PEtest
+module PEtest;
+    import PECfg::*;
+    Conf i_PEconf;
+    Inst i_PEinst;
+    logic [DWD-1:0] i_Input [IPADN] , i_Weight [PEROW];
+    logic [PSUMDWD-1:0] o_Psum [PEROW];
+    `rdyack_logic(Input);
+    `rdyack_logic(Weight);
+    `rdyack_logic(MAIN);
+    `default_Nico_define 
+    
+PE dut(
+.*      
+);
 
+`default_Nico_init_block(PEtest,10000)
+endmodule
+
+`endif
 
 
 

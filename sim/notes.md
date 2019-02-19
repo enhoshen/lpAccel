@@ -50,25 +50,30 @@ structbus, abus = CreateBuses([
 ```
 * 1 bit signal dimension should not be of `(1,)`, instead a empty tuple `tuple()`
 ```python
-bitbus1 = CreateBus( ("" , "bitSignal" )
+bitbus1 = CreateBus( ("" , "bitSignal" ) )
 bitbus2 = CreateBus( ("" , "bitSignal2" , tuple() )
 bitbus3 = CreateBus( ("" , "bitSignal3" , () )
 ```
 
 ## nWave
+* Useful Shortcuts:
+  * `L`: reload signals
+  * `r`: reload `.rc` signal file
+  * `S`: save signals to `.rc` signal file
+* It takes me way too long to find the user guide, it's under: `CAD/synopsys/spring/verdi/2017.03-sp2/doc/`
 * If you have any self defined type, struct,`$fsdbDumpvars()` arguments should be `"+all"`..................
-```verilog
-inital begin
-    $fsdbDumpfile("tb.fsdb");
-    $fsdbDumpvars("+all"); // rather than something like $fsdbDumpvars(0,tb,'+mda');
-end
-```
+  ```verilog
+  inital begin
+      $fsdbDumpfile("tb.fsdb");
+      $fsdbDumpvars("+all"); // rather than something like $fsdbDumpvars(0,tb,'+mda');
+  end
+  ```
 * You can configure toolbar, making constantly used function more easily accessible.
 ![toolbar](images/nWave_Custom_toolbar.png)
-  save the configuration in `.conf` format, and open your nWave with the command:
-```shell
-$nWave  -guiConf mynWave.conf &
-```
+  save the layout configuration in `novas.conf` file, customized tool bar in `novas.rc` file, and open your nWave with the command:
+  ```shell
+  $nWave  -guiConf mynWave.conf -rcFile mynovas.rc &
+  ```
 ## Makefile
 * See for the [GNU make documentation](http://www.gnu.org/software/make/manual/make.html#Goals) for elaborated information
 * Automatic variables : `%` `<` `@` 
@@ -87,4 +92,4 @@ I can fix this by update the Makefile to the drive, but I remove the prerequisit
 python to read, resulting constant compile error within this file even if I were just testing stuff using the python console!  
 **Careful naming excluding any built-in names is a must, be more specific**, for example this file has something to do with systemverilog,
 so I should have used name like `SVstruct.py` or so.
-
+* Two-finger tap on laptop touchscreen as middle mouse button, in linux it works as paste, in nWave it pulls up a menu.

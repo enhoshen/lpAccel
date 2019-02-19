@@ -78,22 +78,23 @@ output PECtlCfg::DPstatus        o_DPstatus
                                 out_loopIdx[OUTPCH] == wt_loopIdx[WTPCH] ; 
     logic in_out_catchup;
         assign in_out_catchup = curPix == in_loopIdx[INTW] &&
-                                out_loopIdx[OUTPCH]==in_loopIdx[INPCH];
+                                out_loopIdx[OUTPCH]==in_loopIdx[INPCH]; // input and psum are at the same index
     logic prefetch_in_end;
     logic curfetch_in_end;
-        assign prefetch_in_end = in_loopIdx[INTW]==prefetchEndPix && in_end[INPCH] && out_end[OUTPM] ;
-        assign curfetch_in_end = in_end[INPCH] && in_loopIdx[INTW]==endPix && !out_end[OUTPM] ; 
+        assign prefetch_in_end = in_loopIdx[INTW]==prefetchEndPix && in_end[INPCH] && out_end[OUTPM] ; // new input pixels in place (prefetch) and psum progress to the last pm
+        assign curfetch_in_end = in_end[INPCH] && in_loopIdx[INTW]==endPix && !out_end[OUTPM] ; // input pixels all in place, psum not at the last pm
+    logic prefetch_wt_end;
+    logic curfetch_wt_end;
+        
     logic waitInput ;
     logic waitWeight;
-        assign waitInput =  in_out_catchup && !( curfetch_in_end || prefetch_in_end);
+        assign waitInput = in_out_catchup && !( curfetch_in_end || prefetch_in_end)  ;//TODO
         //;
-        assign waitWeight = wt_out_catchup && !(&wt_end) ;
-        assign Input_ack  =ce && !( curfetch_in_end || 
-                        (out_end[OUTPM] && (in_out_catchup || prefetch_in_end) )  );
+        assign waitWeight = wt_out_catchup && !(&wt_end) && !(out_end[OUTXB] &&out_end[OUTTW]) ;
+        assign Input_ack  = ce && !( curfetch_in_end ||  prefetch_in_end   ) ; // TODO
         assign Weight_ack = ce && !( (&wt_end && !(out_end[OUTXB] && out_end[OUTTW]) ) || 
                         (out_end[OUTXB] && out_end[OUTTW] && (wt_out_catchup )  ) );
-        assign MAIN_rdy = ce &&! (  waitInput || waitWeight );
-        //TODO no PixReuse???
+        assign MAIN_rdy = ce && !(  waitInput || waitWeight ) && ! (&out_end);
         //==============
         //Address
         //==============
@@ -107,8 +108,8 @@ output PECtlCfg::DPstatus        o_DPstatus
         assign psum_raddr_ctl.reset =i_PEinst.reset;
         assign psum_waddr_ctl.dval  =ce; 
         assign psum_raddr_ctl.dval  =ce;
-            assign psum_waddr_ctl.inc = out_end[OUTPCH] && out_end[OUTR] && out_idx_ctl.inc;
-            assign psum_raddr_ctl.inc = out_loopIdx[OUTPCH]==1 && out_loopIdx[OUTR]==1 && out_idx_ctl.inc;
+            assign psum_raddr_ctl.inc = out_end[OUTPCH] && out_end[OUTR] && out_idx_ctl.inc;
+            assign psum_waddr_ctl.inc =( i_PEconf.Pch == 4'd1 || out_loopIdx[OUTPCH]==out_loopSize[OUTPCH]-1'b1) && out_end[OUTR] && out_idx_ctl.inc;
         assign in_raddr_ctl = '{dval:ce , reset:i_PEinst.reset, inc:out_idx_ctl.inc, strideCond: i_PEconf.PixReuse && (&out_end[OUTPM:OUTR] && !out_end[OUTTW]) };
     assign o_IPctl.raddr = in_raddra1 -1'd1;
     assign o_IPctl.waddr = in_waddra1 -1'd1;
@@ -122,6 +123,7 @@ output PECtlCfg::DPstatus        o_DPstatus
         assign o_WPctl.write= wt_idx_ctl.inc;
         assign o_PPctl.read = psum_raddr_ctl.inc && !o_SSctl.fstrow && !(i_PEconf.Psum_mode==D16 && o_PPctl.raddr[0]); // address is odd and data of D16 type:don't read; first row don't read, just initialize.
         assign o_PPctl.write= psum_waddr_ctl.inc;
+            assign o_PPctl.psum_mode = i_PEconf.Psum_mode;
         //=====================
         //Misc
         //=====================
@@ -231,8 +233,8 @@ output PECtlCfg::DPstatus        o_DPstatus
         o_FSctl = {i_PEconf.Psum_mode,o_PPctl.raddr[0]};
         o_MSconf.mode = i_PEconf.Au;
         o_MSconf.iNumT = (i_PEconf.XNumT == UNSIGNED)? UNSIGNED : (out_end[OUTXB])? SIGNED : UNSIGNED;
-        o_MSconf.wNumT = (i_PEconf.WNumT == UNSIGNED)? UNSIGNED : (i_PEconf.Wb == i_PEconf.wb_idx)? SIGNED : UNSIGNED;
-        o_SSctl.fstrow = (out_loopIdx[OUTXB]==1 && out_loopIdx[OUTS]== 1);
+        o_MSconf.wNumT = (i_PEconf.WNumT == UNSIGNED)? UNSIGNED : (i_PEconf.Wb == i_PEconf.Wb_idx)? SIGNED : UNSIGNED;
+        o_SSctl.fstrow = (i_PEconf.Wb_idx !=1 && out_loopIdx[OUTXB]==1 && out_loopIdx[OUTS]== 1);
         o_SSctl.lstrow = (out_end[OUTXB] && out_end[OUTS] );
         o_SSctl.psum_mode   = i_PEconf.Psum_mode;
         case (i_PEconf.Au)
@@ -243,7 +245,7 @@ output PECtlCfg::DPstatus        o_DPstatus
             M8: Ab=4'd8;
             default: Ab=4'b1;
         endcase
-        o_SSctl.sht_num   = (out_loopIdx[OUTXB]+i_PEconf.wb_idx-2'd2)* Ab ;
+        o_SSctl.sht_num   = (out_loopIdx[OUTXB]+i_PEconf.Wb_idx-2'd2)* Ab ;
     end
     //==================
     //sequential

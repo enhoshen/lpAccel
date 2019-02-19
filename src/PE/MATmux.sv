@@ -8,7 +8,7 @@ module MATmux(
 input AuCtl i_ctl,
 input [DWD-1:0] i_ipix,
 input [DWD-1:0] i_wpix,
-output [DWD-1:0] o_sum,
+output [DWD-1:0] o_sum
 );
     //=================
     //parameter
@@ -49,7 +49,7 @@ output [DWD-1:0] o_sum,
     logic signed [7:0] sum2b ;
     logic signed [10:0]sum4b ;
 
-    logic signed [AUODWD-1:0] sum_w;
+    logic signed [DWD-1:0] sum_w;
         assign o_sum = sum_w ;
         // control
 `ifdef MULT8
@@ -120,25 +120,25 @@ output [DWD-1:0] o_sum,
             endcase
         end
         for ( i = 0 ; i <8; i=i+1)begin: m2  
-            setd2b_ipix[i] = (i_ctl.iNUMT==SIGNED)? $signed(msk2b_ipix[i*2+:2]):$unsigned(msk2b_ipix[i*2+:2]); 
-            setd2b_wpix[i] = (i_ctl.wNUMT==SIGNED)? $signed(msk2b_wpix[i*2+:2]):$unsigned(msk2b_wpix[i*2+:2]);
+            setd2b_ipix[i] = (i_ctl.iNumT==SIGNED)? $signed(msk2b_ipix[i*2+:2]):$unsigned(msk2b_ipix[i*2+:2]); 
+            setd2b_wpix[i] = (i_ctl.wNumT==SIGNED)? $signed(msk2b_wpix[i*2+:2]):$unsigned(msk2b_wpix[i*2+:2]);
             m2b [i] = setd2b_ipix[i]*setd2b_wpix[i];
         end
         for ( i = 0 ; i <4; i=i+1)begin: m4
-            setd4b_ipix[i] = (i_ctl.iNUMT==SIGNED)? $signed(msk4b_ipix[i*4+:4]):$unsigned(msk4b_ipix[i*4+:4]); 
-            setd4b_wpix[i] = (i_ctl.wNUMT==SIGNED)? $signed(msk4b_wpix[i*4+:4]):$unsigned(msk4b_wpix[i*4+:4]);
+            setd4b_ipix[i] = (i_ctl.iNumT==SIGNED)? $signed(msk4b_ipix[i*4+:4]):$unsigned(msk4b_ipix[i*4+:4]); 
+            setd4b_wpix[i] = (i_ctl.wNumT==SIGNED)? $signed(msk4b_wpix[i*4+:4]):$unsigned(msk4b_wpix[i*4+:4]);
             m4b [i] = setd4b_ipix[i]*setd4b_wpix[i]; 
         end
         `ifdef MULT8 
             for ( i=0 ; i<2 ; ++i)begin: m8
-                setd8b_ipix[i] =(i_ctl.iNUMT==SIGNED)? $signed(msk8b_ipix[i*8+:8]) : $unsigned(msk8b_ipix[i*8+:8];
-                setd8b_wpix[i] =(i_ctl.wNUMT==SIGNED)? $signed(msk8b_wpix[i*8+:8]) : $unsigned(msk8b_wpix[i*8+:8];
+                setd8b_ipix[i] =(i_ctl.iNumT==SIGNED)? $signed(msk8b_ipix[i*8+:8]) : $unsigned(msk8b_ipix[i*8+:8];
+                setd8b_wpix[i] =(i_ctl.wNumT==SIGNED)? $signed(msk8b_wpix[i*8+:8]) : $unsigned(msk8b_wpix[i*8+:8];
                 m8b[i] = setd8b_ipix[i] * setd8b_wpix[i];
             end
         `endif
         case ( i_ctl.mode )
             XNOR: sum_w = sum1b - 5'd16;
-            M1:   sum_w = (i_ctl.iNUMT == i_ctl.wNumT)? sum1b : -sum1b ;
+            M1:   sum_w = (i_ctl.iNumT == i_ctl.wNumT)? sum1b : -sum1b ;
             M2:   sum_w = sum2b;
             M4:   sum_w = sum4b;
             `ifdef MULT8

@@ -65,7 +65,7 @@
     integer clk_cnt;
 `define default_Nico_init_block(name,end_cycle) \
     always #`HCLK i_clk = ~i_clk;\
-    always #`CLK clk_cnt = clk_cnt+1;\
+    `ff_rstn clk_cnt <= 0; `ff_nocg clk_cnt <= clk_cnt+1; `ff_end\
     initial begin\
         $fsdbDumpfile(`"name.fsdb`");\
         $fsdbDumpvars( 0 , name , "+all");\
@@ -74,16 +74,13 @@
         #(`CLK) $NicotbInit();\
         #11 i_rstn = 0;\
         #10 i_rstn = 1;\
-        clk_cnt = 0;\
         #(`CLK*end_cycle) $display("timeout");\
         $NicotbFinal();\
-        $finish;\
+        $finish();\
     end
-
-package SramCfg;
-	typedef enum {BEHAVIOUR} GenerateMode;
-	typedef enum {UNDEF, OLD, NEW} ConcurrentRW;
-	parameter GenerateMode GEN_MODE = BEHAVIOUR;
-	parameter ConcurrentRW CON_RW = UNDEF;
+package General;
+    task TODO;
+        $display("This part hasn't finished yet");
+        $finish();
+    endtask  
 endpackage
-

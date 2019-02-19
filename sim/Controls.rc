@@ -1,0 +1,116 @@
+Magic 271485
+Revision Verdi_M-2017.03-SP2
+
+; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
+viewPort 0 63 1216 748 218 65
+
+; File list:
+; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
+openDirFile -d / "" "/home/enhoshen/research/lpAccel/sim/DataFlowCtrl.fsdb"
+
+openDirFile -d / "" "/home/enhoshen/research/lpAccel/sim/PEtest.fsdb"
+
+; file time scale:
+; fileTimeScale ### s|ms|us|ns|ps
+
+; active file:
+activeDirFile "" "/home/enhoshen/research/lpAccel/sim/PEtest.fsdb"
+
+; signal spacing:
+signalSpacing 5
+
+; windowTimeUnit is used for zoom, cursor & marker
+; waveform viewport range
+zoom 0.000000 6202801.688233
+cursor 3118750.000000
+marker 0.000000
+
+; user define markers
+; userMarker time_pos marker_name color linestyle
+; visible top row signal index
+top 8
+; marker line index
+markerPos 26
+
+; event list
+; addEvent event_name event_expression
+; curEvent event_name
+
+
+
+COMPLEX_EVENT_BEGIN
+
+
+COMPLEX_EVENT_END
+
+
+
+; toolbar current search type
+; curSTATUS search_type
+curSTATUS ByChange
+
+
+addGroup "G1"
+activeDirFile "" "/home/enhoshen/research/lpAccel/sim/DataFlowCtrl.fsdb"
+addSignal -h 15 /DataFlowCtrl/dut/Input_rdy
+addSignal -h 15 -holdScope Input_ack
+addSignal -h 15 -holdScope Weight_ack
+addSignal -h 15 -holdScope Weight_rdy
+addSignal -h 15 -holdScope MAIN_ack
+addSignal -h 15 -holdScope MAIN_rdy
+addSignal -h 15 -holdScope i_PEconf
+addSignal -h 15 -holdScope i_PEinst
+addSignal -h 15 -UNSIGNED -holdScope s_main[3:0]
+addSignal -h 15 -holdScope i_clk
+addSignal -h 15 -UNSIGNED -UDEC /DataFlowCtrl/clk_cnt[31:0]
+addSignal -expanded -h 15 -UNSIGNED -HEX /DataFlowCtrl/dut/out_loopIdx[0:5]
+addSignal -h 15 -UNSIGNED -HEX -holdScope out_loopIdx[0][5:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope out_loopIdx[1][5:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope out_loopIdx[2][5:0]
+addSignal -h 15 -UNSIGNED -UDEC -holdScope out_loopIdx[3][5:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope out_loopIdx[4][5:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope out_loopIdx[5][5:0]
+addSignal -h 15 -holdScope o_IPctl
+addSignal -expanded -h 15 -holdScope o_WPctl
+addSignal -h 15 -UNSIGNED -HEX -holdScope o_WPctl.raddr[5:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope o_WPctl.waddr[5:0]
+addSignal -h 15 -holdScope o_WPctl.read
+addSignal -h 15 -holdScope o_WPctl.write
+activeDirFile "" "/home/enhoshen/research/lpAccel/sim/PEtest.fsdb"
+addSignal -h 15 -UNSIGNED -HEX /PEtest/dut/WPAD/i_wdata[0:15]
+addSignal -h 15 -UNSIGNED -HEX -holdScope o_rdata[0:15]
+activeDirFile "" "/home/enhoshen/research/lpAccel/sim/DataFlowCtrl.fsdb"
+addSignal -expanded -h 15 /DataFlowCtrl/dut/o_PPctl
+addSignal -h 15 -UNSIGNED -holdScope o_PPctl.psum_mode[1:0]
+addSignal -h 15 -UNSIGNED -UDEC -holdScope o_PPctl.raddr[5:0]
+addSignal -h 15 -UNSIGNED -UDEC -holdScope o_PPctl.waddr[5:0]
+addSignal -h 15 -holdScope o_PPctl.read
+addSignal -h 15 -holdScope o_PPctl.write
+addSignal -h 15 -holdScope o_FSctl
+addSignal -h 15 -holdScope o_MSconf
+addSignal -h 15 -holdScope o_SSctl
+addGroup "G4"
+
+; getSignalForm Scope Hierarchy Status
+; active file of getSignalForm
+activeDirFile "" "/home/enhoshen/research/lpAccel/sim/PEtest.fsdb"
+
+GETSIGNALFORM_SCOPE_HIERARCHY_BEGIN
+getSignalForm close
+
+"/PEtest"
+"/PEtest/dut"
+"/PEtest/dut/genblk1[0]"
+
+SCOPE_LIST_BEGIN
+"/PEtest"
+"/PEtest/dut"
+"/PEtest/dut/WPAD"
+SCOPE_LIST_END
+
+GETSIGNALFORM_SCOPE_HIERARCHY_END
+
+
+activeDirFile "" "/home/enhoshen/research/lpAccel/sim/PEtest.fsdb"
+
+

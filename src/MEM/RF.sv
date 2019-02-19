@@ -19,7 +19,11 @@ input [DWD-1:0] i_wdata[SIZE]
 
     wire we_n, re_n;
         assign we_n = !i_write;
-        assign re_n = !i_read ;
+        assign re_n = !i_read ; 
+    logic [AWD-1:0] raddr , waddr;
+        assign raddr = i_raddr;
+        assign waddr = i_waddr;
+
     genvar arr;
     generate  
         if (gen_mode == SIM) begin: sim_mode
@@ -65,9 +69,10 @@ input [DWD-1:0] i_wdata[SIZE]
     wire we_n, re_n;
         assign we_n = !i_write;
         assign re_n = !i_read ;
-    logic [AWD-1:0] waddr;
+    logic [RFAWD-1:0] waddr , raddr;
     logic [WENWD-1:0] wmsk; 
-        assign waddr = (i_dwd_mode == D16)? i_waddr[1+:RFAWD] : i_waddr[RFAWD-1:0];
+        assign raddr = (i_dwd_mode == D16)? i_raddr[1+:RFAWD] : i_raddr[0+:RFAWD];
+        assign waddr = (i_dwd_mode == D16)? i_waddr[1+:RFAWD] : i_waddr[0+:RFAWD];
         assign wmsk  = (i_dwd_mode == D16)? i_waddr[0] : 2'b11; 
     genvar arr;
     generate  

@@ -26,9 +26,15 @@ class StructBus:
     def values(self, v):
         for bb,vv in zip(self.buses,v):
             try:
-                bb.values = vv 
+                bb.values = vv
             except:
                 bb.value = vv
+    @property
+    def value(self):
+        return self.buses[0]._vs[0]
+    @value.setter
+    def value(self,v):
+        self.buses[0].signals[0].value = v
     def SetToZ(self):
         [ x.SetToZ() for x in self.buses ]
     def SetToX(self):

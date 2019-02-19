@@ -34,7 +34,7 @@ package PECfg ;
         logic [4:0]             Wb; 
         NumT                    XNumT; // signed or unsigned
         NumT                    WNumT;
-        logic [4:0]             wb_idx;
+        logic [4:0]             Wb_idx;
         DWD_mode                Psum_mode;
         logic [6:0]             Tw; //feature map width tile, for
     } Conf ;
@@ -71,8 +71,8 @@ package PECtlCfg;
     typedef struct packed{
         AuSel mode;
         logic [AUMASKWD-1:0] AuMask;
-        logic iNumT;
-        logic wNumT;       
+        NumT iNumT;
+        NumT wNumT;       
     } AuCtl;
     //=================
     //Datapath
@@ -92,23 +92,23 @@ package PECtlCfg;
     } WPctl ;
     import RFCfg::DWD_mode;
     typedef struct packed{
-        DWD_mode                       mode;
+        DWD_mode                  psum_mode;
         logic [PECfg::PPADADDRWD-1:0] raddr;
         logic [PECfg::PPADADDRWD-1:0] waddr;
         logic                          read;
         logic                         write; 
     } PPctl ;
     typedef struct packed{
-        DWD_mode mode;
+        DWD_mode psum_mode;
         logic psum_parity;
     } FSctl ;
     typedef struct packed{
         AuCtl auctl;
     } MSctl ;
         typedef struct packed{
-            AuSel mode;
-            logic iNumT;
-            logic wNumT;
+            AuSel  mode;
+            NumT iNumT;
+            NumT wNumT;
         }MSconf; // Compute the mask at Fetch stage to save up registers
     typedef struct packed{
         DWD_mode psum_mode;

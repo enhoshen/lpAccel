@@ -9,10 +9,9 @@ input [DWD-1:0] i_Input [PEROW],
 input [DWD-1:0] i_Weight [PEROW],
 input [DWD-1:0] o_Sum [PEROW]
 );
-
 genvar pe_row;
 generate
-    for ( pe_row = 0 ; pe_row < PEROW ; ++pe_row) begin:
+    for ( pe_row = 0 ; pe_row < PEROW ; ++pe_row) begin:Arithmetic_unit
         if (ATYPE==MUX)begin
             MATmux MA (
             .*,
@@ -22,10 +21,12 @@ generate
             );
         end
         else if (ATYPE == SIMPLE)begin
+            initial General::TODO;    
         end
         else if (ATYPE == BOOTH)begin
+            initial General::TODO;
         end
-        else
+        else begin
             initial ErrorAu; 
         end 
     end

@@ -20,30 +20,42 @@ output SSctl o_MSpipe_MS
     //==================
     //logic
     //==================
-    logic [DWD-1:0] Sum [PEROW];
-    
     //==================
     //comb
     //==================
     `forward ( FD, FS, MS)
     
-    Aunit Arithmetic_unit (
-    .*,
-    .i_ctl(i_ctl.auctl),
-    .i_Input(i_data.Input_FS),
-    .i_Weight(i_data.Weight_FS),
-    .o_Sum(o_data.Sum_MS)     
-    );
-
+    genvar pe_row;
+    generate                                                            
+        for ( pe_row = 0 ; pe_row < PEROW ; ++pe_row) begin:Arithmetic_unit
+            if (ATYPE==MUX)begin                                        
+                MATmux MA (                                             
+                .*,                                                     
+                .i_ipix(i_data[pe_row].Input_FS),                               
+                .i_wpix(i_data[pe_row].Weight_FS),                              
+                .o_sum(o_data[pe_row].Sum_MS)                                   
+                );                                                      
+            end                                                         
+            else if (ATYPE == SIMPLE)begin                              
+                initial General::TODO;                                  
+            end                                                         
+            else if (ATYPE == BOOTH)begin                               
+                initial General::TODO;                                  
+            end                                                         
+            else begin                                                  
+                initial ErrorAu;                                        
+            end                                                         
+        end                                                             
+    endgenerate                                                         
     `ff_rstn
         o_MSpipe_MS <= '0;
         for ( int i=0 ; i<PEROW ; ++i)begin
-            o_data.Psum_MS[i] <= '0;
+            o_data[i].Psum_MS <= '0;
         end
     `ff_cg( `rdyNack(FS) || `rdyNack(MS) )
         o_MSpipe_MS <= i_MSpipe_FS;
         for ( int i=0 ; i<PEROW ; ++i)begin
-            o_data.Psum_MS[i] <= i_data.Psum_PP[i] ;
+            o_data[i].Psum_MS <= i_data[i].Psum_FS ;
         end
     `ff_end
 endmodule

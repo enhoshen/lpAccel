@@ -29,10 +29,10 @@
                 .QA  (o_rdata),\
                 .CLKA(i_clk),\
                 .CENA(we_n),\
-                .AA  (i_raddr),\
+                .AA  (raddr),\
                 .CLKB(i_clk),\
                 .CENB(re_n),\
-                .AB  (i_waddr),\
+                .AB  (waddr),\
                 .DB  (i_wdata),\
                 .EMAA(EMA),\
                 .EMAB(EMA)\
@@ -42,10 +42,10 @@
                 .QA  (o_rdata[idx]),\
                 .CLKA(i_clk),\
                 .CENA(we_n),\
-                .AA  (i_raddr),\
+                .AA  (raddr),\
                 .CLKB(i_clk),\
                 .CENB(re_n),\
-                .AB  (i_waddr),\
+                .AB  (waddr),\
                 .DB  (i_wdata[idx]),\
                 .EMAA(EMA),\
                 .EMAB(EMA)\
@@ -55,7 +55,7 @@
                 .QA(o_rdata[idx]),\
                 .CLKA(i_clk),\
                 .CENA(we_n),\
-                .AA(i_raddr),\
+                .AA(raddr),\
                 .CLKB(i_clk),\
                 .CENB(re_n),\
                 .WENB(wmsk),\
@@ -66,7 +66,7 @@
                 );
 
 package RFCfg;
-    typedef enum {SIM , SYN ,FPGA} GenMode;
+    typedef enum { SIM , SYN ,FPGA} GenMode;
     typedef enum logic [1:0] { D16 , D32 } DWD_mode;
     parameter GenMode gen_mode= SYN;
     task ErrorRF;
@@ -76,3 +76,10 @@ package RFCfg;
         end
     endtask
 endpackage 
+
+package SramCfg;                                    
+    typedef enum {BEHAVIOUR} GenerateMode;          
+    typedef enum {UNDEF, OLD, NEW} ConcurrentRW;    
+    parameter GenerateMode GEN_MODE = BEHAVIOUR;    
+    parameter ConcurrentRW CON_RW = UNDEF;          
+endpackage                                          
