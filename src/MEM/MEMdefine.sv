@@ -68,7 +68,7 @@
 package RFCfg;
     typedef enum { SIM , SYN ,FPGA} GenMode;
     typedef enum logic [1:0] { D16 , D32 } DWD_mode;
-    parameter GenMode gen_mode= SYN;
+    parameter GenMode gen_mode= SIM;
     task ErrorRF;
         begin
             $display("RF configuration wrong!");

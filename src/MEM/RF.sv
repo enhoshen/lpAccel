@@ -12,8 +12,8 @@ input i_read,
 input i_write,
 input [AWD-1:0] i_raddr,
 input [AWD-1:0] i_waddr,
-output [DWD-1:0] o_rdata[SIZE], 
-input [DWD-1:0] i_wdata[SIZE]
+output logic [DWD-1:0] o_rdata[SIZE], 
+input        [DWD-1:0] i_wdata[SIZE]
 );
     localparam EMA = 3'b000;
 
@@ -27,6 +27,22 @@ input [DWD-1:0] i_wdata[SIZE]
     genvar arr;
     generate  
         if (gen_mode == SIM) begin: sim_mode
+            logic [DWD-1:0] data_r[WORDWD][SIZE];
+            always @(posedge i_clk) begin
+                if (i_write) begin
+                    if( i_write && i_read && i_waddr == i_raddr)
+                        data_r [i_waddr] <= {SIZE{'x}};
+                    else
+                        data_r [i_waddr] <= i_wdata ;
+                end
+
+                if (i_read) begin
+                    if (!i_write || i_waddr != i_raddr) 
+                        o_rdata <= data_r[i_raddr];
+                    else
+                        o_rdata <= {SIZE{'x}};
+                end
+            end
         end 
         else if (gen_mode == SYN) begin: syn_mode
             for ( arr=0 ; arr<SIZE ; ++arr)begin: rf_instance 
@@ -53,6 +69,7 @@ module RF_2P_MSK
     parameter DWD    = 32,
     parameter AWD    = $clog2(2*WORDWD),
     parameter WENWD  = 2,
+    parameter WPSIZE = 16,
     parameter SIZE   = 1
 )(
 `clk_input,
@@ -61,8 +78,8 @@ input i_read,
 input i_write,
 input [AWD-1:0] i_raddr,
 input [AWD-1:0] i_waddr,
-output [DWD-1:0] o_rdata[SIZE], 
-input [DWD-1:0] i_wdata[SIZE]
+output logic [DWD-1:0] o_rdata[SIZE], 
+input        [DWD-1:0] i_wdata[SIZE]
 );
     localparam EMA = 3'b000;
     localparam RFAWD = $clog2(WORDWD);
@@ -77,6 +94,25 @@ input [DWD-1:0] i_wdata[SIZE]
     genvar arr;
     generate  
         if (gen_mode == SIM) begin: sim_mode
+            logic [DWD-1:0] data_r [WORDWD][SIZE];
+            always @(posedge i_clk) begin
+                for (int j=0 ; j < SIZE   ; ++j)
+                for (int k=0 ; k < WENWD  ; ++k)begin
+                    if (i_write && wmsk[k] ) begin
+                        if( i_write && i_read && i_waddr == i_raddr)
+                            data_r [i_waddr][j][k*WPSIZE+:WPSIZE] <= 'x;
+                        else
+                            data_r [i_waddr][j][k*WPSIZE+:WPSIZE] <= i_wdata[j][k*WPSIZE+:WPSIZE] ;
+                    end
+                end
+                if (i_read) begin
+                    if (!i_write || i_waddr != i_raddr) 
+                        o_rdata <= data_r[i_raddr];
+                    else
+                        o_rdata <= {SIZE{'x}};
+                end
+            end
+
         end 
         else if (gen_mode == SYN) begin: syn_mode
             for ( arr=0 ; arr<SIZE ; ++arr)begin: rf_instance 

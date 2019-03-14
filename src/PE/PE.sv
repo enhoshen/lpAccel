@@ -45,7 +45,12 @@ output[PSUMDWD-1:0] o_Psum [PEROW]
     MSout ms_data_out[PEROW];
             // final outputs
     logic [PSUMDWD-1:0] sum_SS [PEROW];
-        assign o_Psum = sum_SS;
+    //=========================================
+    //debug/test
+    //=========================================
+    assign o_Psum = sum_SS;
+    assign SS_ack = Psum_ack;
+    assign Psum_rdy = SS_rdy;
     //=========================================
     //comb
     //=========================================
@@ -160,7 +165,7 @@ module PEtest;
     logic [PSUMDWD-1:0] o_Psum [PEROW];
     `rdyack_logic(Input);
     `rdyack_logic(Weight);
-    `rdyack_logic(MAIN);
+    `rdyack_logic(Psum);
     `default_Nico_define 
     
 PE dut(

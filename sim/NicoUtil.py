@@ -121,7 +121,7 @@ class ProtoBus ():
         if len(args)==1:
             protolist =  portCallback( kw['name'] )
             kw.pop('name')
-            self.proto = protoCallback( *(protolist+self.data) ,clk=clk ,**kw)
+            self.proto = protoCallback( *(protolist),self.data ,clk=clk ,**kw)
         else:
             self.proto = protoCallback( *args , clk=clk ,**kw)
     def SideChoose (self, side='master'):
@@ -137,6 +137,12 @@ class ProtoBus ():
         yield from self.slave.Monitor()
     def MyMonitor(self,n):
         yield from self.slave.MyMonitor(n)
+    @property
+    def Data(self):
+        return self.data
+    @Data.setter
+    def Data(self,data):
+        self.proto.data = GetBus(data)
     @property
     def values(self):
         return [ x.values for x in self.data]

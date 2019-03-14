@@ -56,14 +56,14 @@ class SVhier ():
         self.ParamStr(w)
     @property
     def ShowPorts(self):
-        w=17
-        for i in ['type' , 'name' , 'dim']:
+        w=15
+        for i in ['io' , 'name' , 'dim' , 'type']:
             print(f'{i:{w}}' , end=' ')
-        print(f'\n{"":=<{3*w}}')
+        print(f'\n{"":=<{4*w}}')
         for io , n in self.protoPorts:
             print(f'{io:<{w}}'f'{n:<{w}}'f'{"()":<{w}}')
-        for io , n ,dim in self.ports:
-            print(f'{io:<{w}}'f'{n:<{w}}'f'{dim.__repr__():<{w}}')
+        for io , n ,dim,tp in self.ports:
+            print(f'{io:<{w}}'f'{n:<{w}}'f'{dim.__repr__():<{w}}'f'{tp:<{w}}')
     @property
     def ShowConnect(self,*conf):
         s = '.*,\n'
@@ -178,6 +178,7 @@ class SVparse():
         return name,_n
     def PortParse(self, s , lines):
         bw = s.BracketParse()
+        tp = 'logic'
         temp = s.lsplit()
         types = [ x for i in self.cur_hier.Types for x in i.keys() ]
         types += [ x for x in self.gb_hier.types.keys()]
@@ -188,7 +189,7 @@ class SVparse():
         else:
             name = temp
         dim = self.Tuple2num(s.BracketParse())
-        self.cur_hier.ports.append( (self.cur_key,name,dim) )
+        self.cur_hier.ports.append( (self.cur_key,name,dim,tp) )
     def RdyackParse(self, s , lines):
         _ , args = s.FunctionParse()
         self.cur_hier.protoPorts.append(('rdyack',args[0]))

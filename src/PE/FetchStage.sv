@@ -30,6 +30,9 @@ output FSout  o_data[PEROW],
 input  FSpipein i_FSpipe_MAIN,
 output FSpipeout o_FSpipe_FS
 );
+    //===============
+    //parameter
+    //===============
 
     //===============
     //logic
@@ -44,11 +47,14 @@ output FSpipeout o_FSpipe_FS
         auctl.iNumT = i_FSpipe_MAIN.msconf.iNumT;
         auctl.wNumT = i_FSpipe_MAIN.msconf.wNumT;
     end
-
+    
     genvar pe_row;
     generate 
         if (ATYPE==MUX)begin
-            assign auctl.AuMask = (auctl.mode == XNOR)? {48'b0 ,16'hffff }: 16'hffff << (auctl.mode-1'b1);
+            parameter [63:0] MUXMASK [4] = {64'h0000_0000_0000_ffff,64'h0000_0000_ffff_0000,64'h0000_ffff_0000_0000,64'hffff_0000_0000_0000};
+            logic [1:0] modem1;
+                assign modem1 = auctl.mode - 1'b1;
+            assign auctl.AuMask = (auctl.mode == XNOR)? {48'b0 ,16'hffff }:MUXMASK[modem1];
         end
         else if (ATYPE == SIMPLE)begin
             initial General::TODO;

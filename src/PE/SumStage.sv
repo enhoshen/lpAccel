@@ -19,7 +19,7 @@ output PPctl o_ppctl_SS
     //===============
     //comb
     //===============
-    `forward ( FD, MS , SS)
+    `forward ( FD, MS, SS)
 
     always_comb begin
         
