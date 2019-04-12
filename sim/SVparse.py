@@ -105,7 +105,7 @@ class SVhier ():
                 f'{"scope":^15}:{sc !r:^}\n'+\
                 f'{"types":^15}:{[x for x in self.types] !r:^}\n'+\
                 f'{"child":^15}:{[x for x in self.child] !r:^}\n'+\
-                f'{"ports":^15}:{[io[0]+" "+n for io,n,dim in self.ports] !r:^}\n'
+                f'{"ports":^15}:{[io[0]+" "+n for io,n,*_ in self.ports] !r:^}\n'
         
 class SVparse():
     package = {}

@@ -2,6 +2,7 @@ import numpy as np
 from nicotb import *
 from nicotb.primitives import JoinableFork
 from NicoUtil import *
+from Datagen import *
 from SVparse import SVparse
 from itertools import repeat
 def BusInit():
@@ -29,60 +30,17 @@ def DataBusInit():
     ])
     return Input , Weight , Psum
     #TODO
-def InputData(ch,tw,xb,ab,th):
-    data = np.random.randn(ch,tw)
-    bound = 2**(ab*xb-1)
-    Quant = np.rint(np.clip(data*bound/th,-bound,bound-1 )).astype(np.int16)
-    uQuant = Quant.astype(np.uint16)
-    print(Quant)
-    np.set_printoptions(formatter={'int':hex})
-    print(uQuant)
-    ch_new = int(ch*ab/16)
-    ch_pack = int(16/ab)
-    Repack= np.zeros( shape=(xb,int(ch*ab/16),tw),dtype=np.uint16 )
-    for i in range(xb):
-        for j in range(ch_new):
-            for k in range(ch_pack):
-                temp = (uQuant[j*ch_pack+k,:]/(2**(ab*i))).astype(np.uint16)
-                temp = (temp % (2**ab)).astype(np.uint16)
-                temp = (temp * (2**(ab*k))).astype(np.uint16)
-                Repack[i,j,:] += temp
-    print(Repack)
-    return data , Quant , Repack
-def WeightData(ch,r,m,wb,ab,th):
-    data = np.random.randn(m,ch,r)
-    bound = 2**(ab*wb-1)
-    Quant = np.rint(np.clip(data*bound/th,-bound,bound-1 )).astype(np.int16)
-    uQuant = Quant.astype(np.uint16)
-    print(Quant)
-    np.set_printoptions(formatter={'int':hex})
-    print(uQuant)
-    ch_new = int(ch*ab/16)
-    ch_pack = int(16/ab)
-    Repack= np.zeros( shape=(wb,m,ch_new,r),dtype=np.uint16 )
-    for i in range(wb):
-        for j in range(m):
-            for k in range(ch_new):
-                for l in range(ch_pack):
-                    temp = (uQuant[j,k*ch_pack+l,:]/(2**(ab*i))).astype(np.uint16)
-                    temp = (temp % (2**ab)).astype(np.uint16)
-                    temp = (temp * (2**(ab*l))).astype(np.uint16)
-
-                    Repack[i,j,k,:] += temp
-    print(Repack)
-    return data , Quant , Repack
-
 def test():
     yield rst_out
     conf ,inst ,dummy = BusInit()
     data = DataBusInit()
-    print(data)
     
     inbus , wbus ,obus = PErdyack(data)
+    print(inbus.data.values)
     SVparse.hiers['PE'].ShowPorts
     conf.SetTo(0)
     inst.SetTo(0)
-    config = [ (  4,4,2,1,1,3,3, 48,12,13*4,4,1,2,1,1,0,1,0,13),\
+    config = [ (  4,4,3,1,1,3,1, 48,12,13*4,4,1,2,1,1,0,1,0,13),\
                 (  4,2,3,1,1,3,3, 24,12,13*2,4,1,3,2,0,0,2,1,13),\
                  (  1,2,3,1,3,3,3, 6,3,13*2,3,0,3,2,0,0,2,1,13)  ]
 
@@ -100,15 +58,18 @@ def test():
         tw = conf.Tw.value[0]
         tw_padded = tw+r-1
         xb=conf.Xb.value[0]
+        wb=conf.Wb.value[0]
         upix = conf.Upix.value[0]
         j = []
-        ab = 1 if conf.Au.value[0] == 0 else conf.Au.value[0]-1
+        ab = 1 if conf.Au.value[0] == 0 else 2**(conf.Au.value[0]-1)
         Input = InputData(pch*ab,tw,2,ab,1.3)
-        Weight = WeightData(pch*ab,r,pm,2,ab,1.3)
+        Weight = WeightData(pch*ab,r,pm,wb,ab,1.3)
         if conf.PixReuse.value[0] == 1:
-            j.append( JoinableFork( inbus.SendIter(it(xb*tw_padded*pch*s)) ) )
-            j.append( JoinableFork( wbus.SendIter(it(pm*pch*r*s)) ) )
-            j.append( JoinableFork( obus.MyMonitor(tw*xb*s*pm*pch*r) ) )
+            j.append( JoinableFork( inbus.SendIter( Input[3](inbus.data) ) ) )
+            #j.append( JoinableFork(inbus.SendIter(it(pch*tw*xb*s)))   )
+            j.append( JoinableFork( wbus.SendIter(Weight[3](wbus.data)) ) )
+            #j.append( JoinableFork( wbus.SendIter(it(pm*pch*r*s)) ) )
+            #j.append( JoinableFork( obus.MyMonitor(tw*xb*s*pm*pch*r) ) )
         else:
             j.append( JoinableFork( inbus.SendIter(it(xb*tw*upix*s)) ) )
             j.append( JoinableFork( wbus.SendIter(it(pm*pch*r*s)) ) )

@@ -189,6 +189,7 @@ class MySlaveTwoWire(TwoWire.Slave):
                     break
                 self.ack.value[0] = RandProb(self.A, self.B)
                 self.ack.Write()            
+        print( "monitor done")
         self.ack.value[0]=0
         self.ack.Write()
         yield self.clk

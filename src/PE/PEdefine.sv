@@ -116,5 +116,8 @@ package PECtlCfg;
         logic  lstrow;  // last pix , 
         logic  [3:0] sht_num ;
     } SSctl ;
+    typedef struct packed{
+        logic [PPADADDRWD:0] ppad_size;
+    } PSctl ;
 endpackage
 

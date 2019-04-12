@@ -15,14 +15,17 @@ output PPctl o_ppctl_SS
     //===============
     //logic
     //===============
-    logic [PSUMDWD-1:0] Sum_SS_w [PEROW];
+    logic [PSUMDWD-1:0] Sum_SS_w [PEROW], Sum_add_sht [PEROW];
     //===============
     //comb
     //===============
     `forward ( FD, MS, SS)
 
     always_comb begin
-        
+        for (int i=0 ; i<PEROW ; ++i)begin
+            Sum_add_sht = 
+            Sum_SS_w =  
+        end 
     end    
     //===============
     //sequential
