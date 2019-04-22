@@ -78,9 +78,13 @@
         $NicotbFinal();\
         $finish();\
     end
-package General;
-    task TODO;
+package GenCfg; //general config
+
+    task automatic TODO;
         $display("This part hasn't finished yet");
         $finish();
     endtask  
+    
+    typedef enum { SIM , SYN ,FPGA} GenMode;
+    parameter GenMode GENMODE = SIM;
 endpackage

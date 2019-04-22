@@ -2,7 +2,7 @@ Magic 271485
 Revision Verdi_M-2017.03-SP2
 
 ; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
-viewPort 8 63 1216 748 218 65
+viewPort 2393 223 1513 748 218 65
 
 ; File list:
 ; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
@@ -16,8 +16,8 @@ signalSpacing 5
 
 ; windowTimeUnit is used for zoom, cursor & marker
 ; waveform viewport range
-zoom 0.000000 917504.138328
-cursor 0.000000
+zoom 33256.368359 52230.488867
+cursor 51250.000000
 marker 0.000000
 
 ; user define markers
@@ -25,7 +25,7 @@ marker 0.000000
 ; visible top row signal index
 top 0
 ; marker line index
-markerPos 12
+markerPos 0
 
 ; event list
 ; addEvent event_name event_expression
@@ -46,7 +46,16 @@ curSTATUS ByChange
 
 
 addGroup "G1"
+addSubGroup "clk"
 activeDirFile "" "/home/enhoshen/research/lpAccel/sim/PEtest.fsdb"
+addSignal -h 15 /PEtest/dut/i_clk
+addSignal -h 15 -holdScope i_rstn
+endSubGroup "clk"
+addSubGroup "control"
+addSubGroup "control-out" -e FALSE
+addSignal -h 15 -UNSIGNED -HEX /PEtest/dut/DPC/out_loopIdx[0:5]
+endSubGroup "control-out"
+addSubGroup "control-rdyack" -e FALSE
 addSignal -h 15 /PEtest/dut/FS_ack
 addSignal -h 15 -holdScope FS_rdy
 addSignal -h 15 -holdScope MAIN_ack
@@ -59,15 +68,12 @@ addSignal -h 15 /PEtest/dut/DPC/Input_ack
 addSignal -h 15 -holdScope Input_rdy
 addSignal -h 15 -holdScope Weight_ack
 addSignal -h 15 -holdScope Weight_rdy
-addSignal -h 15 /PEtest/dut/i_clk
-addSignal -h 15 -holdScope i_rstn
-addSignal -expanded -h 15 -UNSIGNED -HEX /PEtest/dut/DPC/out_loopIdx[0:5]
-addSignal -h 15 -UNSIGNED -HEX -holdScope out_loopIdx[0][5:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope out_loopIdx[1][5:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope out_loopIdx[2][5:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope out_loopIdx[3][5:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope out_loopIdx[4][5:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope out_loopIdx[5][5:0]
+endSubGroup "control-rdyack"
+endSubGroup "control"
+addSubGroup "dataflow" -e FALSE
+endSubGroup "dataflow"
+addSignal -h 15 -2COMP -HEX /PEtest/dut/Ms/Arithmetic_unit[0]/genblk1/MA/setd4b_wpix[0:3]
+addSignal -h 15 -UNSIGNED -HEX -holdScope msk4b_ipix[15:0]
 addGroup "G2"
 
 ; getSignalForm Scope Hierarchy Status
@@ -75,16 +81,24 @@ addGroup "G2"
 activeDirFile "" "/home/enhoshen/research/lpAccel/sim/PEtest.fsdb"
 
 GETSIGNALFORM_SCOPE_HIERARCHY_BEGIN
-getSignalForm close
+getSignalForm open
 
 "/PEtest"
 "/PEtest/dut"
 "/PEtest/dut/DPC"
+"/PEtest/dut/Ms"
+"/PEtest/dut/Ms/Arithmetic_unit[0]"
+"/PEtest/dut/Ms/Arithmetic_unit[0]/genblk1"
 
 SCOPE_LIST_BEGIN
 "/PEtest"
 "/PEtest/dut"
 "/PEtest/dut/DPC"
+"/PEtest/dut/Fs"
+"/PEtest/dut/IPAD"
+"/PEtest/dut/Ms"
+"/PEtest/dut/Ms/Arithmetic_unit[0]/genblk1"
+"/PEtest/dut/Ms/Arithmetic_unit[0]/genblk1/MA"
 SCOPE_LIST_END
 
 GETSIGNALFORM_SCOPE_HIERARCHY_END

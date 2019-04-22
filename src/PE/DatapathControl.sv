@@ -13,6 +13,7 @@ output PECtlCfg::PPctl           o_PPctl,
 output PECtlCfg::FSctl           o_FSctl,
 output PECtlCfg::MSconf          o_MSconf,
 output PECtlCfg::SSctl           o_SSctl,
+output PECtlCfg::PPctl           o_SSPPctl,
 output PECtlCfg::DPstatus        o_DPstatus
 //`ifdef DEBUG
 //output o_error
@@ -116,14 +117,19 @@ output PECtlCfg::DPstatus        o_DPstatus
     assign o_WPctl.raddr = wt_raddra1 -1'd1;
     assign o_WPctl.waddr = wt_waddra1 -1'd1;
     assign o_PPctl.raddr = ps_raddra1 -1'd1;
-    assign o_PPctl.waddr = ps_waddra1 -1'd1;
+    assign o_PPctl.waddr = '0;
+    assign o_SSPPctl.waddr = ps_waddra1 -1'd1;
+    assign o_SSPPctl.raddr = ps_raddra1 -1'd1;
         assign o_IPctl.read = out_idx_ctl.inc;
         assign o_IPctl.write= in_idx_ctl.inc;
         assign o_WPctl.read = out_idx_ctl.inc;
         assign o_WPctl.write= wt_idx_ctl.inc;
         assign o_PPctl.read = psum_raddr_ctl.inc && !o_SSctl.fstrow && !(i_PEconf.Psum_mode==D16 && o_PPctl.raddr[0]); // address is odd and data of D16 type:don't read; first row don't read, just initialize.
-        assign o_PPctl.write= psum_waddr_ctl.inc;
+        assign o_PPctl.write= '0;
+        assign o_SSPPctl.write = psum_waddr_ctl.inc;
+        assign o_SSPPctl.read = '0;
             assign o_PPctl.psum_mode = i_PEconf.Psum_mode;
+            assign o_SSPPctl.psum_mode = i_PEconf.Psum_mode;
         //=====================
         //Misc
         //=====================
@@ -234,8 +240,11 @@ output PECtlCfg::DPstatus        o_DPstatus
         o_MSconf.mode = i_PEconf.Au;
         o_MSconf.iNumT = (i_PEconf.XNumT == UNSIGNED)? UNSIGNED : (out_end[OUTXB])? SIGNED : UNSIGNED;
         o_MSconf.wNumT = (i_PEconf.WNumT == UNSIGNED)? UNSIGNED : (i_PEconf.Wb == i_PEconf.Wb_idx)? SIGNED : UNSIGNED;
-        o_SSctl.fstrow = (i_PEconf.Wb_idx !=1 && out_loopIdx[OUTXB]==1 && out_loopIdx[OUTS]== 1);
+        o_SSctl.fstrow = (i_PEconf.Wb_idx ==1 && out_loopIdx[OUTXB]==1 && out_loopIdx[OUTS]== 1);
         o_SSctl.lstrow = (out_end[OUTXB] && out_end[OUTS] );
+        o_SSctl.psumread  = psum_raddr_ctl.inc;
+        o_SSctl.psumwrite = psum_waddr_ctl.inc;
+        o_SSctl.resetsum  = psum_raddr_ctl.inc && o_SSctl.fstrow; 
         o_SSctl.psum_mode   = i_PEconf.Psum_mode;
         case (i_PEconf.Au)
             XNOR: Ab=4'b1;

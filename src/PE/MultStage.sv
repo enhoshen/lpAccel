@@ -3,23 +3,28 @@ import PECfg::PSUMDWD;
 import PECfg::PEROW;
 import PECtlCfg::*;
 typedef struct packed{
-    logic [PSUMDWD-1:0] Psum_MS;
-    logic [DWD-1:0]   Sum_MS;
+    logic signed [PSUMDWD-1:0] Psum_MS;
+    logic signed [ASUMDWD-1:0]   Sum_MS;
 } MSout;
+typedef struct packed{
+    SSctl ssctl;
+    PPctl ssppctl;
+}MSpipe;
 module MultStage(
 `clk_input,
-input  MSctl i_ctl,
+input  FSpipeout i_pipe,
 `rdyack_input(FS),
 `rdyack_output(MS),
 input  FSout i_data [PEROW],
 output MSout o_data [PEROW],
-input  SSctl i_MSpipe_FS,
-output SSctl o_MSpipe_MS
+output MSpipe o_MSpipe_MS
 );
 
     //==================
     //logic
     //==================
+    MSctl i_ctl;
+        assign i_ctl = i_pipe.msctl;
     //==================
     //comb
     //==================
@@ -53,7 +58,7 @@ output SSctl o_MSpipe_MS
             o_data[i].Psum_MS <= '0;
         end
     `ff_cg( `rdyNack(FS) || `rdyNack(MS) )
-        o_MSpipe_MS <= i_MSpipe_FS;
+        o_MSpipe_MS <= {i_pipe.ssctl,i_pipe.ssppctl};
         for ( int i=0 ; i<PEROW ; ++i)begin
             o_data[i].Psum_MS <= i_data[i].Psum_FS ;
         end

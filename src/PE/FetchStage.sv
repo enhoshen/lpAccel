@@ -3,12 +3,15 @@ import PECfg::PSUMDWD;
 import PECfg::PEROW;
 import PECtlCfg::*;
 typedef struct packed{
+    FSctl fsctl;
     MSconf msconf;
     SSctl ssctl;
+    PPctl ssppctl;
 } FSpipein;
 typedef struct packed{
     MSctl msctl;
     SSctl ssctl;
+    PPctl ssppctl;
 } FSpipeout;
 typedef struct packed{
     logic [DWD-1:0]  Input_IP ;
@@ -22,12 +25,11 @@ typedef struct packed{
 } FSout;
 module FetchStage(
 `clk_input,
-input  FSctl i_ctl,
+input  FSpipein i_pipe,
 `rdyack_input(MAIN),
 `rdyack_output(FS),
 input  FSin   i_data[PEROW],
 output FSout  o_data[PEROW],
-input  FSpipein i_FSpipe_MAIN,
 output FSpipeout o_FSpipe_FS
 );
     //===============
@@ -38,14 +40,19 @@ output FSpipeout o_FSpipe_FS
     //logic
     //===============
     AuCtl auctl;
+    MSctl msctl;
+        assign msctl = {auctl};
+    FSctl i_ctl;
+        assign i_ctl = i_pipe.fsctl;
     logic [PSUMDWD-1:0] psum_FS [PEROW] ;
     //===============
     //comb
     //===============
+        
     always_comb begin
-        auctl.mode = i_FSpipe_MAIN.msconf.mode;
-        auctl.iNumT = i_FSpipe_MAIN.msconf.iNumT;
-        auctl.wNumT = i_FSpipe_MAIN.msconf.wNumT;
+        auctl.mode = i_pipe.msconf.mode;
+        auctl.iNumT = i_pipe.msconf.iNumT;
+        auctl.wNumT = i_pipe.msconf.wNumT;
     end
     
     genvar pe_row;
@@ -86,8 +93,7 @@ output FSpipeout o_FSpipe_FS
             o_data[i] <= '0;
         end
     `ff_cg( `rdyNack(MAIN) || `rdyNack(FS) )
-        o_FSpipe_FS.ssctl <= i_FSpipe_MAIN.ssctl;
-        o_FSpipe_FS.msctl <= {auctl};
+        o_FSpipe_FS <= {msctl, i_pipe.ssctl , i_pipe.ssppctl};
         for ( int i =0 ; i<PEROW ; ++i)begin
             o_data[i] <= {i_data[i].Input_IP,i_data[i].Weight_WP,i_data[i].Psum_PP};
         end 

@@ -40,7 +40,7 @@ def test():
     SVparse.hiers['PE'].ShowPorts
     conf.SetTo(0)
     inst.SetTo(0)
-    config = [ (  4,4,3,1,1,3,1, 48,12,13*4,4,1,2,1,1,0,1,0,13),\
+    config = [ (  4,4,4,1,1,3,1, 48,12,13*4,4,1,2,1,1,1,1,0,13),\
                 (  4,2,3,1,1,3,3, 24,12,13*2,4,1,3,2,0,0,2,1,13),\
                  (  1,2,3,1,3,3,3, 6,3,13*2,3,0,3,2,0,0,2,1,13)  ]
 
@@ -62,8 +62,8 @@ def test():
         upix = conf.Upix.value[0]
         j = []
         ab = 1 if conf.Au.value[0] == 0 else 2**(conf.Au.value[0]-1)
-        Input = InputData(pch*ab,tw,2,ab,1.3)
-        Weight = WeightData(pch*ab,r,pm,wb,ab,1.3)
+        Input = InputData(pch,tw,2,ab,1.3)
+        Weight = WeightData(pch,r,pm,wb,ab,1.3)
         if conf.PixReuse.value[0] == 1:
             j.append( JoinableFork( inbus.SendIter( Input[3](inbus.data) ) ) )
             #j.append( JoinableFork(inbus.SendIter(it(pch*tw*xb*s)))   )

@@ -3,6 +3,7 @@ package PECfg ;
     parameter PCONFDWD = 6; 
     parameter TILECONFDWD=10; 
     parameter DWD  = 16;     // data bit width , fixed
+    parameter ASUMDWD = 18;
     parameter PSUMDWD  = 32;
     parameter INSTDWD  = 3;   // 
     parameter PECOL =16;
@@ -57,7 +58,7 @@ package PECtlCfg;
         parameter MSK = 1;
         parameter AUMULTSIZE=4; 
         parameter AUMASKWD = AUMULTSIZE*DWD;
-    task ErrorAu;
+    task automatic ErrorAu;
         begin
             $display("Aunit Configuration error");
             $finish();
@@ -114,6 +115,9 @@ package PECtlCfg;
         DWD_mode psum_mode;
         logic  fstrow;  // first pix, psum initialize to 0
         logic  lstrow;  // last pix , 
+        logic  psumread; // psum is read
+        logic  psumwrite;  // psum is written out
+        logic  resetsum;  // fstrow and next out pixel
         logic  [3:0] sht_num ;
     } SSctl ;
     typedef struct packed{

@@ -1,7 +1,8 @@
 `timescale 1 ns/1 ps
 // MEMdefin
-module RF_2P 
-    import RFCfg::*;#(
+import RFCfg::*;
+import GenCfg::GENMODE;
+module RF_2P #(
     parameter WORDWD = 12,
     parameter DWD    = 16,
     parameter AWD    = $clog2(WORDWD),
@@ -26,7 +27,7 @@ input        [DWD-1:0] i_wdata[SIZE]
 
     genvar arr;
     generate  
-        if (gen_mode == SIM) begin: sim_mode
+        if (GENMODE == SIM) begin: sim_mode
             logic [DWD-1:0] data_r[WORDWD][SIZE];
             always @(posedge i_clk) begin
                 if (i_write) begin
@@ -44,17 +45,17 @@ input        [DWD-1:0] i_wdata[SIZE]
                 end
             end
         end 
-        else if (gen_mode == SYN) begin: syn_mode
+        else if (GENMODE == SYN) begin: syn_mode
             for ( arr=0 ; arr<SIZE ; ++arr)begin: rf_instance 
                 case ({WORDWD,DWD}) 
-                    {32'd12,32'd16}: RF_2P_12x16 `RF2Pinstance_arr(RF12x16,arr)
-                    {32'd48,32'd16}: RF_2P_48x16 `RF2Pinstance_arr(RF48x16,arr)
+                    {32'd12,32'd16}: rf_2p_12x16 `RF2Pinstance_arr(RF12x16,arr)
+                    {32'd48,32'd16}: rf_2p_48x16 `RF2Pinstance_arr(RF48x16,arr)
                     {32'd64,32'd16}: RF_2P_64x16 `RF2Pinstance_arr(RF64x16,arr)
                     default: initial ErrorRF;
                 endcase
             end
         end
-        else if (gen_mode == FPGA) begin:fpga_mode
+        else if (GENMODE == FPGA) begin:fpga_mode
             //TODO
             initial ErrorRF;
         end
@@ -93,7 +94,7 @@ input        [DWD-1:0] i_wdata[SIZE]
         assign wmsk  = (i_dwd_mode == D16)? i_waddr[0] : 2'b11; 
     genvar arr;
     generate  
-        if (gen_mode == SIM) begin: sim_mode
+        if (GENMODE == SIM) begin: sim_mode
             logic [DWD-1:0] data_r [WORDWD][SIZE];
             always @(posedge i_clk) begin
                 for (int j=0 ; j < SIZE   ; ++j)
@@ -114,7 +115,7 @@ input        [DWD-1:0] i_wdata[SIZE]
             end
 
         end 
-        else if (gen_mode == SYN) begin: syn_mode
+        else if (GENMODE == SYN) begin: syn_mode
             for ( arr=0 ; arr<SIZE ; ++arr)begin: rf_instance 
                 case ({WORDWD,DWD}) 
                     {32'd32,32'd32}: RF_2P_32x32 `RF2Pinstance_msk_arr(RF32x32,arr)
@@ -123,7 +124,7 @@ input        [DWD-1:0] i_wdata[SIZE]
             end
             
         end
-        else if (gen_mode == FPGA) begin:fpga_mode
+        else if (GENMODE == FPGA) begin:fpga_mode
             //TODO
             initial ErrorRF;
         end

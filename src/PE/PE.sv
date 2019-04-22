@@ -26,23 +26,22 @@ output[PSUMDWD-1:0] o_Psum [PEROW]
     FSctl fs_ctl_MAIN;
     MSconf ms_conf_MAIN;
     SSctl ss_ctl_MAIN;
-            // pipeline connect
-    FSpipein fspipe_MAIN;
-        assign fspipe_MAIN = {ms_conf_MAIN,ss_ctl_MAIN};
-    FSpipeout fspipe_FS; 
-    SSctl  mspipe_FS , mspipe_MS;
-        assign mspipe_FS = fspipe_FS.ssctl;
             //PAD
     logic [DWD-1:0] ip_out [IPADN];
     logic [DWD-1:0] wp_out [PEROW];
     logic [PSUMDWD-1:0] pp_out[PEROW];
     IPctl ipctl;
     WPctl wpctl;
-    PPctl ppctl_MAIN , ppctl_SS;
+    PPctl ppctl_MAIN , ss_ppctl_MAIN ,ppctl_SS;
             //data pipe
     FSin  fs_data_in [PEROW];
     FSout fs_data_out[PEROW];
     MSout ms_data_out[PEROW];
+            // pipeline connect
+    FSpipein fspipe_MAIN;
+        assign fspipe_MAIN = {fs_ctl_MAIN,ms_conf_MAIN,ss_ctl_MAIN,ss_ppctl_MAIN};
+    FSpipeout fspipe_FS; 
+    MSpipe    mspipe_MS;
             // final outputs
     logic [PSUMDWD-1:0] sum_SS [PEROW];
     //=========================================
@@ -56,8 +55,8 @@ output[PSUMDWD-1:0] o_Psum [PEROW]
     //=========================================
     genvar pe_row;
     generate
-        for( pe_row=0 ; pe_row<PEROW ; ++pe_row)begin
-            localparam int ip_idx = IPADN / pe_row;
+        for( pe_row=0 ; pe_row<PEROW ; ++pe_row)begin: ipad_gen
+            localparam int ip_idx = pe_row/(16/IPADN);
             assign fs_data_in[pe_row] = {ip_out[ip_idx],wp_out[pe_row],pp_out[pe_row]};
         end
     endgenerate
@@ -116,33 +115,32 @@ output[PSUMDWD-1:0] o_Psum [PEROW]
         .o_FSctl(fs_ctl_MAIN),   
         .o_MSconf(ms_conf_MAIN),   
         .o_SSctl(ss_ctl_MAIN),   
+        .o_SSPPctl(ss_ppctl_MAIN),
         .o_DPstatus()        
     );
     FetchStage Fs(
         .*,                      
         `rdyack_connect(MAIN,MAIN),  
         `rdyack_connect(FS,FS),    
-        .i_ctl(fs_ctl_MAIN),                
+        .i_pipe(fspipe_MAIN),                
         .i_data(fs_data_in),              
         .o_data(fs_data_out),             
-        .i_FSpipe_MAIN(fspipe_MAIN),        
         .o_FSpipe_FS(fspipe_FS)         
     );
     MultStage Ms(
         .*,                   
         `rdyack_connect(FS,FS), 
         `rdyack_connect(MS,MS), 
-        .i_ctl(fspipe_FS.msctl),             
+        .i_pipe(fspipe_FS),             
         .i_data(fs_data_out),            
         .o_data(ms_data_out),            
-        .i_MSpipe_FS(mspipe_FS),       
         .o_MSpipe_MS(mspipe_MS)      
     );
     SumStage Ss(
         .*,                    
         `rdyack_connect(MS,MS),  
         `rdyack_connect(SS,SS),  
-        .i_ctl(mspipe_MS),              
+        .i_pipe(mspipe_MS),              
         .i_data(ms_data_out),             
         .Sum_SS(sum_SS),             
         .o_ppctl_SS(ppctl_SS)          
