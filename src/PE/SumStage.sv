@@ -6,7 +6,6 @@ module SumStage(
 `clk_input,
 input MSpipe i_pipe,
 `rdyack_input(MS),
-`rdyack_output(SS),
 input  MSout i_data [PEROW],
 output logic [PSUMDWD-1:0] Sum_SS [PEROW],
 output PPctl o_ppctl_SS
@@ -28,16 +27,15 @@ output PPctl o_ppctl_SS
     //===============
     //comb
     //===============
-    `forward ( FD, MS, SS)
-    assign o_ppctl_SS = i_pipe.ssppctl;
+    assign MS_ack = '1;
     always_comb begin
         for (int i=0 ; i<PEROW ; ++i)begin
             //TODO
             Operand [i] = (i_ctl.resetsum)? '0 : (i_ctl.psumread)? i_data[i].Psum_MS : Sum_SS[i]; 
             Sum_add_sht [i] = (Operand[i] + i_data[i].Sum_MS) << i_ctl.sht_num ; 
             // overflow
-            Overflow [i] = (i_ctl.psum_mode==D16) ? ( !Sum_SS[i][15] && !i_data[i].Sum_MS[15] && Sum_add_sht[i][15] ) : ( !Sum_SS[i][31] && !i_data[i].Sum_MS[31] && Sum_add_sht[i][31] ) ;
-            Underflow[i] = (i_ctl.psum_mode==D16) ? ( Sum_SS[i][15] && i_data[i].Sum_MS[15] && !Sum_add_sht[i][15] ) : ( Sum_SS[i][31] && i_data[i].Sum_MS[31] && !Sum_add_sht[i][31] ) ; 
+            Overflow [i] = (i_ctl.psum_mode==D16) ? ( !Sum_SS[i][15] && !i_data[i].Sum_MS[ASUMDWD-1] && Sum_add_sht[i][15] ) : ( !Sum_SS[i][31] && !i_data[i].Sum_MS[ASUMDWD-1] && Sum_add_sht[i][31] ) ;
+            Underflow[i] = (i_ctl.psum_mode==D16) ? ( Sum_SS[i][15] && i_data[i].Sum_MS[ASUMDWD-1] && !Sum_add_sht[i][15] ) : ( Sum_SS[i][31] && i_data[i].Sum_MS[ASUMDWD-1] && !Sum_add_sht[i][31] ) ; 
             case ( {Overflow[i],Underflow[i]} )
                 2'b01: Sum_SS_w[i] = (i_ctl.psum_mode==D16)? MIN16 : MIN32;
                 2'b10: Sum_SS_w[i] = (i_ctl.psum_mode==D16)? MAX16 : MAX32;
@@ -52,12 +50,12 @@ output PPctl o_ppctl_SS
     //sequential
     //===============
     `ff_rstn
-        //o_ppctl_SS <= '0;
+        o_ppctl_SS <= '0;
         for ( int i=0 ; i<PEROW ; ++i)begin
             Sum_SS[i] <= '0;
         end
-    `ff_cg( `rdyNack(MS) || `rdyNack(SS))
-        //o_ppctl_SS <= ;
+    `ff_cg(`rdyNack(MS))
+        o_ppctl_SS <= i_pipe.ssppctl;
         for ( int i=0 ; i<PEROW ; ++i)begin
             Sum_SS[i] <= Sum_SS_w[i] ;
         end

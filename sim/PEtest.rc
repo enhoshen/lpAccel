@@ -2,7 +2,7 @@ Magic 271485
 Revision Verdi_M-2017.03-SP2
 
 ; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
-viewPort 2393 223 1513 748 218 65
+viewPort 2138 195 1513 748 218 65
 
 ; File list:
 ; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
@@ -16,8 +16,8 @@ signalSpacing 5
 
 ; windowTimeUnit is used for zoom, cursor & marker
 ; waveform viewport range
-zoom 33256.368359 52230.488867
-cursor 51250.000000
+zoom 45800.223587 96025.836697
+cursor 60545.35771103670
 marker 0.000000
 
 ; user define markers
@@ -25,7 +25,7 @@ marker 0.000000
 ; visible top row signal index
 top 0
 ; marker line index
-markerPos 0
+markerPos 7
 
 ; event list
 ; addEvent event_name event_expression
@@ -70,11 +70,24 @@ addSignal -h 15 -holdScope Weight_ack
 addSignal -h 15 -holdScope Weight_rdy
 endSubGroup "control-rdyack"
 endSubGroup "control"
-addSubGroup "dataflow" -e FALSE
+addSubGroup "ALU" -e FALSE
+addSignal -h 15 -2COMP -UDEC /PEtest/dut/Ms/Arithmetic_unit[0]/genblk1/MA/setd2b_ipix[0:7]
+addSignal -h 15 -2COMP -UDEC -holdScope setd2b_wpix[0:7]
+addSignal -h 15 -2COMP -UDEC -holdScope setd4b_ipix[0:3]
+addSignal -h 15 -2COMP -UDEC -holdScope setd4b_wpix[0:3]
+addSignal -h 15 -2COMP -UDEC -holdScope setd8b_ipix[0:1]
+addSignal -h 15 -2COMP -UDEC -holdScope setd8b_wpix[0:1]
+addSignal -h 15 -2COMP -UDEC -holdScope o_sum[17:0]
+endSubGroup "ALU"
+addSubGroup "dataflow"
+addSignal -h 15 -UNSIGNED -HEX /PEtest/dut/Ss/Sum_add_sht[0:15]
+addSignal -h 15 /PEtest/dut/Ms/Arithmetic_unit[0]/genblk1/MA/i_ctl
 endSubGroup "dataflow"
-addSignal -h 15 -2COMP -HEX /PEtest/dut/Ms/Arithmetic_unit[0]/genblk1/MA/setd4b_wpix[0:3]
-addSignal -h 15 -UNSIGNED -HEX -holdScope msk4b_ipix[15:0]
 addGroup "G2"
+addSignal -h 15 -UNSIGNED -HEX /PEtest/dut/Ss/Sum_add_sht[0:15]
+addSignal -h 15 -holdScope i_ctl
+addGroup "G3"
+addGroup "G4"
 
 ; getSignalForm Scope Hierarchy Status
 ; active file of getSignalForm
@@ -99,6 +112,9 @@ SCOPE_LIST_BEGIN
 "/PEtest/dut/Ms"
 "/PEtest/dut/Ms/Arithmetic_unit[0]/genblk1"
 "/PEtest/dut/Ms/Arithmetic_unit[0]/genblk1/MA"
+"/PEtest/dut/Ss"
+"/PEtest/dut/Ms/Arithmetic_unit[0]"
+"/PEtest/dut/Ms/Arithmetic_unit[1]"
 SCOPE_LIST_END
 
 GETSIGNALFORM_SCOPE_HIERARCHY_END

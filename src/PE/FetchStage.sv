@@ -48,7 +48,7 @@ output FSpipeout o_FSpipe_FS
     //===============
     //comb
     //===============
-        
+    `forward ( FD, MAIN, FS)
     always_comb begin
         auctl.mode = i_pipe.msconf.mode;
         auctl.iNumT = i_pipe.msconf.iNumT;
@@ -86,7 +86,6 @@ output FSpipeout o_FSpipe_FS
     //===============
     //sequential
     //===============
-    `forward ( FD, MAIN, FS)
     `ff_rstn
         o_FSpipe_FS <= '0;
         for ( int i =0 ; i<PEROW ; ++i)begin

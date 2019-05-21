@@ -391,7 +391,11 @@ class SVstr():
         _temp = self.s.replace('::','  ')
         _idx = _temp.find(':')
         _s,_e = self.s[0:_idx] , self.s[_idx+1:]
-        return SVstr(_s).S2num(params)-SVstr(_e).S2num(params)+1
+        try:
+            return SVstr(_s).S2num(params)-SVstr(_e).S2num(params)+1
+        except(TypeError):
+            print('TypeError')
+            print (self.s)
     def DeleteList(self,clist):
         _s = self.s
         for c in clist:

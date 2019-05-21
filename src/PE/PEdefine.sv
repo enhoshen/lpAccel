@@ -15,6 +15,7 @@ package PECfg ;
     parameter IPADADDRWD=$clog2(IPADSIZE);
     parameter WPADADDRWD=$clog2(WPADSIZE);
     parameter PPADADDRWD=$clog2(PPADSIZE);
+    parameter PEROWWD = $clog2(PEROW);
     typedef enum logic { SIGNED , UNSIGNED } NumT;
     typedef enum logic [2:0] { XNOR,M1,M2,M4,M8 } AuSel;
     import RFCfg::DWD_mode;
@@ -121,7 +122,11 @@ package PECtlCfg;
         logic  [3:0] sht_num ;
     } SSctl ;
     typedef struct packed{
-        logic [PPADADDRWD:0] ppad_size;
-    } PSctl ;
+        DWD_mode psum_mode;
+        logic [PEROWWD-1:0] pe_row_idx;
+        logic [4:0] pm;
+        logic [6:0] tw;
+    } PSconf;
+    
 endpackage
 

@@ -7,10 +7,12 @@ input Conf i_PEconf,
 input Inst i_PEinst,
 `rdyack_input(Input),
 `rdyack_input(Weight),
-`rdyack_output(Psum),
+`rdyack_input(Psum_in),
+`rdyack_output(Psum_out),
 input [DWD-1:0] i_Input[IPADN],
 input [DWD-1:0] i_Weight [PEROW],
-output[PSUMDWD-1:0] o_Psum [PEROW]
+output[PSUMDWD-1:0] o_Psum [PEROW],
+output PSconf o_Psumconf
 );
     //=========================================
     //parameters
@@ -22,7 +24,6 @@ output[PSUMDWD-1:0] o_Psum [PEROW]
     `rdyack_logic(MAIN);
     `rdyack_logic(FS);
     `rdyack_logic(MS);
-    `rdyack_logic(SS);
     FSctl fs_ctl_MAIN;
     MSconf ms_conf_MAIN;
     SSctl ss_ctl_MAIN;
@@ -32,7 +33,7 @@ output[PSUMDWD-1:0] o_Psum [PEROW]
     logic [PSUMDWD-1:0] pp_out[PEROW];
     IPctl ipctl;
     WPctl wpctl;
-    PPctl ppctl_MAIN , ss_ppctl_MAIN ,ppctl_SS;
+    PPctl ppctl_MAIN , ss_ppctl_MAIN ,ppctl_SS , ppctl_PS;
             //data pipe
     FSin  fs_data_in [PEROW];
     FSout fs_data_out[PEROW];
@@ -48,8 +49,7 @@ output[PSUMDWD-1:0] o_Psum [PEROW]
     //debug/test
     //=========================================
     assign o_Psum = sum_SS;
-    assign SS_ack = Psum_ack;
-    assign Psum_rdy = SS_rdy;
+    assign Psum_out_rdy = ppctl_SS.write;
     //=========================================
     //comb
     //=========================================
@@ -139,13 +139,15 @@ output[PSUMDWD-1:0] o_Psum [PEROW]
     SumStage Ss(
         .*,                    
         `rdyack_connect(MS,MS),  
-        `rdyack_connect(SS,SS),  
         .i_pipe(mspipe_MS),              
         .i_data(ms_data_out),             
         .Sum_SS(sum_SS),             
         .o_ppctl_SS(ppctl_SS)          
      );
-             
+    PathStage Ps(
+        .*,
+        
+    );             
 
      
     //=========================================
@@ -163,7 +165,8 @@ module PEtest;
     logic [PSUMDWD-1:0] o_Psum [PEROW];
     `rdyack_logic(Input);
     `rdyack_logic(Weight);
-    `rdyack_logic(Psum);
+    `rdyack_logic(Psum_in);
+    `rdyack_logic(Psum_out);
     `default_Nico_define 
     
 PE dut(

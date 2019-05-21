@@ -7,6 +7,7 @@ input  Inst     i_PEinst,
 `rdyack_input(Input),
 `rdyack_input(Weight),
 `rdyack_output(MAIN),
+`rdyack_output(PS),
 output PECtlCfg::IPctl           o_IPctl,
 output PECtlCfg::WPctl           o_WPctl,
 output PECtlCfg::PPctl           o_PPctl,
@@ -14,6 +15,7 @@ output PECtlCfg::FSctl           o_FSctl,
 output PECtlCfg::MSconf          o_MSconf,
 output PECtlCfg::SSctl           o_SSctl,
 output PECtlCfg::PPctl           o_SSPPctl,
+output PECtlCfg::PPctl           o_PSPPctl,
 output PECtlCfg::DPstatus        o_DPstatus
 //`ifdef DEBUG
 //output o_error
@@ -52,6 +54,9 @@ output PECtlCfg::DPstatus        o_DPstatus
         assign in_idx_ctl = '{reset:i_PEinst.reset,dval:ce,inc:Input_rdy&&Input_ack};
         assign wt_idx_ctl = '{reset:i_PEinst.reset,dval:ce,inc:Weight_rdy&&Weight_ack};
         assign out_idx_ctl ='{reset:i_PEinst.reset,dval:ce,inc:MAIN_rdy&&MAIN_ack};
+        //--------------
+        //data index loop size and index
+        //--------------
     logic [MAXROWW-1:0] in_loopSize [INPUTDIM] ;
     logic [MAXPM-1:0] wt_loopSize[WEIGHTDIM];
     logic [MAXTW-1:0] out_loopSize[OUTDIM]; 
@@ -73,11 +78,11 @@ output PECtlCfg::DPstatus        o_DPstatus
         assign endPix = startPix + i_PEconf.R - 1'b1;
         assign curPix = startPix + out_loopIdx[OUTR] - 1'b1;
         assign prefetchEndPix = endPix + in_real_stride;
-    logic wt_out_catchup;
+    logic wt_out_catchup; // weight catch up with output, stop weight
         assign wt_out_catchup = out_loopIdx[OUTPM] == wt_loopIdx[WTPM] && 
                                 out_loopIdx[OUTR]==wt_loopIdx[WTR] && 
                                 out_loopIdx[OUTPCH] == wt_loopIdx[WTPCH] ; 
-    logic in_out_catchup;
+    logic in_out_catchup; // input catch up with output, stop input
         assign in_out_catchup = curPix == in_loopIdx[INTW] &&
                                 out_loopIdx[OUTPCH]==in_loopIdx[INPCH]; // input and psum are at the same index
     logic prefetch_in_end;
@@ -92,10 +97,28 @@ output PECtlCfg::DPstatus        o_DPstatus
         assign waitInput = in_out_catchup && !( curfetch_in_end || prefetch_in_end)  ;//TODO
         //;
         assign waitWeight = wt_out_catchup && !(&wt_end) && !(out_end[OUTXB] &&out_end[OUTTW]) ;
+
         assign Input_ack  = ce && !( curfetch_in_end ||  prefetch_in_end   ) ; // TODO
         assign Weight_ack = ce && !( (&wt_end && !(out_end[OUTXB] && out_end[OUTTW]) ) || 
                         (out_end[OUTXB] && out_end[OUTTW] && (wt_out_catchup )  ) );
         assign MAIN_rdy = ce && !(  waitInput || waitWeight ) && ! (&out_end);
+        //--------------
+        //path stage
+        //--------------
+    PSconf pre_o_shape_r , pre_o_shape_w;
+        assign pre_o_shape_w = (o_DPstatus.lastPix)? {i_PEconf.ppad_size , i_PEconf.Psum_mode , i_PEconf.Pm , i_PEconf.Tw}: pre_o_shape_r;
+    LpCtl ps_idx_ctl;
+        assign ps_idx_ctl = {i_PEinst.reset, ce , PS_rdy&&PS_ack};
+    logic [MAXTW-1:0] ps_loopSize ;
+    logic ps_end;
+        assign ps_loopSize = pre_o_shape_r.ppad_size;
+    logic [MAXTW-1:0] ps_loopIdx  ;
+        assign o_PSPPctl.waddr = '0;
+        assign o_PSPPctl.raddr = ps_loopIdx -1'd1;
+            assign o_PSPPctl.read = ps_idx_ctl.inc;
+            assign o_PSPPctl.write= '0; 
+     
+        
         //==============
         //Address
         //==============
@@ -134,45 +157,62 @@ output PECtlCfg::DPstatus        o_DPstatus
         //Misc
         //=====================
     logic [3:0] Ab ; // Aunit bit used
-   
-   //==================
-   // comb
-   //==================
+    //=====================
+    //Status
+    //=====================
+    assign o_DPstatus.lastPix = &out_end ;
+  
+    //==================
+    // comb
+    //==================
         //==================
         //data transfer control
         //==================
     LoopCounter #( 
     .NDEPTH(INPUTDIM) , .IDXDW({MAXPCH, MAXROWW }) , .IDXMAXDW(MAXROWW)
     ) INLp(
-    .*,
-    .i_loopSize( in_loopSize ),
-    .i_ctl(in_idx_ctl),
-    .o_loopEnd(in_end),
-    .o_loopIdx(in_loopIdx)
+        .*,
+        .i_loopSize( in_loopSize ),
+        .i_ctl(in_idx_ctl),
+        .o_loopEnd(in_end),
+        .o_loopIdx(in_loopIdx)
     ); 
     LoopCounter #( 
     .NDEPTH(WEIGHTDIM) , .IDXDW({MAXPCH, MAXR, MAXPM}) , .IDXMAXDW(MAXPM)
     ) WLp( 
-    .*,
-    .i_loopSize(wt_loopSize),
-    .i_ctl(wt_idx_ctl),
-    .o_loopEnd(wt_end),
-    .o_loopIdx(wt_loopIdx)
+        .*,
+        .i_loopSize(wt_loopSize),
+        .i_ctl(wt_idx_ctl),
+        .o_loopEnd(wt_end),
+        .o_loopIdx(wt_loopIdx)
     );
     
     LoopCounter #( 
     .NDEPTH(OUTDIM) , .IDXDW({MAXPCH, MAXR, MAXPM, MAXTW, MAXXB,MAXS}) , .IDXMAXDW(MAXTW) 
     ) OLp( 
-    .*,
-    .i_loopSize( out_loopSize ),
-    .i_ctl(out_idx_ctl),
-    .o_loopEnd(out_end),
-    .o_loopIdx(out_loopIdx)
+        .*,
+        .i_loopSize( out_loopSize ),
+        .i_ctl(out_idx_ctl),
+        .o_loopEnd(out_end),
+        .o_loopIdx(out_loopIdx)
     );
     //init  stage : prepare fetch 
     //fetch Stage : prepare psum address, output input/weight data
     //Mult Stage
     // read next psum pix/reset from 0 / read and shift
+        //===================
+        //Path Stage
+        //===================
+    LoopCounterD1 #(
+    .IDXDW(MAXTW), .STARTPOINT(1'b1)
+    ) PSLp(
+        .*,
+        .i_loopSize(ps_loopSize),
+        .i_ctl(ps_idx_ctl),
+        .o_loopEnd(ps_end),
+        .o_loopIdx(ps_loopIdx)
+    );
+       
         //===================
         //Address conversion
         //=================== 
@@ -266,7 +306,9 @@ output PECtlCfg::DPstatus        o_DPstatus
     `ff_end
 
     `ff_rstn
+        pre_o_shape_r <= '0; 
     `ff_cg(ce)
+        pre_o_shape_r <= pre_o_shape_w;
     `ff_end
 
     `ff_rstn

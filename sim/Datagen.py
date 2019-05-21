@@ -42,6 +42,7 @@ def WeightData(pch,r,m,wb,ab,th):
             yield bus.value
         print("weight done")
     return data , Quant , Repack , it
+#TODO S has not been handled
 def Conv1d( r , indata, wtdata):
     pad = indata
 def PsumData(m,tw,ab,th,inputdata,weightdata):
