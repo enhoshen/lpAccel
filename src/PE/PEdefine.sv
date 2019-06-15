@@ -44,6 +44,7 @@ package PECfg ;
         logic start; 
         logic stall;
         logic reset;
+        logic next;
         logic dval ;
     } Inst ; 
 

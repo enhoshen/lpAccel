@@ -197,7 +197,7 @@ module Loop;
         assign i_loopSize = {11'd5,11'd0,11'd7};
     `default_Nico_define
 LoopCounter #(
-.NDEPTH, .IDXDW( {10'd3,10'd5,10'd3} ), .IDXMAXDW
+.NDEPTH(NDEPTH), .IDXDW( {10'd3,10'd5,10'd3} ), .IDXMAXDW(IDXMAXDW)
 ) dut(
 .*
 //`clk_connect,

@@ -1,6 +1,6 @@
 import numpy as np
 from nicotb import *
-from nicotb.primitives import JoinableFork
+from primitives import JoinableFork
 from NicoUtil import *
 from Datagen import *
 from SVparse import SVparse

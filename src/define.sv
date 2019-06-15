@@ -27,40 +27,15 @@
 `define pbpix_connect(port_name, logic_name) .port_name``_rdy(logic_name``_rdy), .port_name``_ack(logic_name``_ack), .port_name``_zero(logic_name``_zero)
 `define pbpix_unconnect(port_name) .port_name``_rdy(), .port_name``_ack() , .port_name``_zero()
 `define rdyNack(name) name``_rdy && name``_ack
-// =======by JohnJohnLin ==========
-`define rdyack_input(name) output logic name``_ack, input name``_rdy
-`define rdyack_output(name) output logic name``_rdy, input name``_ack
-`define rdyack_logic(name) logic name``_rdy, name``_ack
-`define rdyack_port(name) name``_rdy, name``_ack
-`define rdyack_connect(port_name, logic_name) .port_name``_rdy(logic_name``_rdy), .port_name``_ack(logic_name``_ack)
-`define rdyack_unconnect(port_name) .port_name``_rdy(), .port_name``_ack()
-`define dval_input(name) input name``_dval
-`define dval_output(name) output logic name``_dval
-`define dval_logic(name) logic name``_dval
-`define dval_port(name) name``_dval
-`define dval_connect(port_name, logic_name) .port_name``_dval(logic_name``_dval)
-`define dval_unconnect(port_name) .port_name``_dval()
-`define clk_port i_clk, i_rstn
-`define clk_connect .i_clk(i_clk), .i_rstn(i_rstn)
-`define clk_input input i_clk , input i_rstn
-`define clk_logic logic i_clk ; logic i_rstn
-
-`define ff_rstn always_ff @(posedge i_clk or negedge i_rstn)if (!i_rstn)begin
-`define ff_cg(cg) end else if (cg) begin
-`define ff_nocg end else begin
-`define ff_end end
-`define deffsm1(N,n,f1               ) typedef enum {f1,               N``_N}N;logic[N``_N-1:0]n``_r,n``_w;always_ff@(posedge i_clk or negedge i_rst)if(!i_rst)n``_r<='b1<<f1;else n``_r<=n``_w;
-`define deffsm2(N,n,f1,f2            ) typedef enum {f1,f2,            N``_N}N;logic[N``_N-1:0]n``_r,n``_w;always_ff@(posedge i_clk or negedge i_rst)if(!i_rst)n``_r<='b1<<f1;else n``_r<=n``_w;
-`define deffsm3(N,n,f1,f2,f3         ) typedef enum {f1,f2,f3,         N``_N}N;logic[N``_N-1:0]n``_r,n``_w;always_ff@(posedge i_clk or negedge i_rst)if(!i_rst)n``_r<='b1<<f1;else n``_r<=n``_w;
-`define deffsm4(N,n,f1,f2,f3,f4      ) typedef enum {f1,f2,f3,f4,      N``_N}N;logic[N``_N-1:0]n``_r,n``_w;always_ff@(posedge i_clk or negedge i_rst)if(!i_rst)n``_r<='b1<<f1;else n``_r<=n``_w;
-`define deffsm5(N,n,f1,f2,f3,f4,f5   ) typedef enum {f1,f2,f3,f4,f5,   N``_N}N;logic[N``_N-1:0]n``_r,n``_w;always_ff@(posedge i_clk or negedge i_rst)if(!i_rst)n``_r<='b1<<f1;else n``_r<=n``_w;
-`define deffsm6(N,n,f1,f2,f3,f4,f5,f6) typedef enum {f1,f2,f3,f4,f5,f6,N``_N}N;logic[N``_N-1:0]n``_r,n``_w;always_ff@(posedge i_clk or negedge i_rst)if(!i_rst)n``_r<='b1<<f1;else n``_r<=n``_w;
-`define fsm_to(n,f) n``_w[f] = 1'b1
+`define forstart(index,range) integer index;\
+    for ( index = 0 ; index < range ; ++index ) begin
+`define forend end
+//======= nico modified by enho =======
 `define default_Nico_define \
     `clk_logic;\
-    `Pos(rst_out , i_rstn)\
-    `PosIf(ck_ev, i_clk, i_rstn)\
-    `WithFinish\
+    //`Pos(rst_out , i_rstn)\
+    //`PosIf(ck_ev, i_clk, i_rstn)\
+    //`WithFinish\
     logic dummy;\
     integer clk_cnt;
 `define default_Nico_init_block(name,end_cycle) \
@@ -88,3 +63,25 @@ package GenCfg; //general config
     typedef enum { SIM , SYN ,FPGA} GenMode;
     parameter GenMode GENMODE = SIM;
 endpackage
+// =======by JohnJohnLin ==========
+`define rdyack_input(name) output logic name``_ack, input name``_rdy
+`define rdyack_output(name) output logic name``_rdy, input name``_ack
+`define rdyack_logic(name) logic name``_rdy, name``_ack
+`define rdyack_port(name) name``_rdy, name``_ack
+`define rdyack_connect(port_name, logic_name) .port_name``_rdy(logic_name``_rdy), .port_name``_ack(logic_name``_ack)
+`define rdyack_unconnect(port_name) .port_name``_rdy(), .port_name``_ack()
+`define dval_input(name) input name``_dval
+`define dval_output(name) output logic name``_dval
+`define dval_logic(name) logic name``_dval
+`define dval_port(name) name``_dval
+`define dval_connect(port_name, logic_name) .port_name``_dval(logic_name``_dval)
+`define dval_unconnect(port_name) .port_name``_dval()
+`define clk_port i_clk, i_rstn
+`define clk_connect .i_clk(i_clk), .i_rstn(i_rstn)
+`define clk_input input i_clk , input i_rstn
+`define clk_logic logic i_clk ; logic i_rstn
+
+`define ff_rstn always_ff @(posedge i_clk or negedge i_rstn)if (!i_rstn)begin
+`define ff_cg(cg) end else if (cg) begin
+`define ff_nocg end else begin
+`define ff_end end

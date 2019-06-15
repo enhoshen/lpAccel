@@ -11,7 +11,8 @@ function memtype()
  done
  echo "choose cell library"
  read IN
- MEM_PATH=${CELL_LIB_PATH}${LS[${IN}]}/CIC/Memory/
+# MEM_PATH=${CELL_LIB_PATH}${LS[${IN}]}/CIC/Memory/
+ MEM_PATH=${CELL_LIB_PATH}${LS[${IN}]}/orig_lib/aci/
 }
 function sourceMem()
 {

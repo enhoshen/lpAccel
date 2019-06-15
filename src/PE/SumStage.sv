@@ -6,6 +6,7 @@ module SumStage(
 `clk_input,
 input MSpipe i_pipe,
 `rdyack_input(MS),
+`rdyack_output(PS),
 input  MSout i_data [PEROW],
 output logic [PSUMDWD-1:0] Sum_SS [PEROW],
 output PPctl o_ppctl_SS
@@ -27,7 +28,8 @@ output PPctl o_ppctl_SS
     //===============
     //comb
     //===============
-    assign MS_ack = '1;
+    assign MS_ack = !(PS_rdy && !PS_ack);
+    assign PS_rdy = i_pipe.ssppctl.write;
     always_comb begin
         for (int i=0 ; i<PEROW ; ++i)begin
             //TODO
@@ -54,7 +56,7 @@ output PPctl o_ppctl_SS
         for ( int i=0 ; i<PEROW ; ++i)begin
             Sum_SS[i] <= '0;
         end
-    `ff_cg(`rdyNack(MS))
+    `ff_cg(`rdyNack(MS) )
         o_ppctl_SS <= i_pipe.ssppctl;
         for ( int i=0 ; i<PEROW ; ++i)begin
             Sum_SS[i] <= Sum_SS_w[i] ;

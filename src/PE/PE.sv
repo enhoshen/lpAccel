@@ -1,14 +1,16 @@
 
 import PECfg::*;
 import PECtlCfg::*;
-module PE (
+module PE #(
+parameter PECOLIDX = 0
+)(
 `clk_input,
 input Conf i_PEconf,
 input Inst i_PEinst,
 `rdyack_input(Input),
 `rdyack_input(Weight),
-`rdyack_input(Psum_in),
-`rdyack_output(Psum_out),
+`rdyack_input(LPE),
+`rdyack_output(POUT),
 input [DWD-1:0] i_Input[IPADN],
 input [DWD-1:0] i_Weight [PEROW],
 output[PSUMDWD-1:0] o_Psum [PEROW],
@@ -24,9 +26,6 @@ output PSconf o_Psumconf
     `rdyack_logic(MAIN);
     `rdyack_logic(FS);
     `rdyack_logic(MS);
-    FSctl fs_ctl_MAIN;
-    MSconf ms_conf_MAIN;
-    SSctl ss_ctl_MAIN;
             //PAD
     logic [DWD-1:0] ip_out [IPADN];
     logic [DWD-1:0] wp_out [PEROW];
@@ -39,6 +38,10 @@ output PSconf o_Psumconf
     FSout fs_data_out[PEROW];
     MSout ms_data_out[PEROW];
             // pipeline connect
+    FSctl fs_ctl_MAIN;
+    MSconf ms_conf_MAIN;
+    SSctl ss_ctl_MAIN;
+    DPstatus dpstatus_MAIN;            
     FSpipein fspipe_MAIN;
         assign fspipe_MAIN = {fs_ctl_MAIN,ms_conf_MAIN,ss_ctl_MAIN,ss_ppctl_MAIN};
     FSpipeout fspipe_FS; 
@@ -96,11 +99,11 @@ output PSconf o_Psumconf
         .SIZE  (PEROW)           
     )PPAD(                                         
         .*,             
-        .i_dwd_mode(ppctl_MAIN.psum_mode),  
-        .i_read (ppctl_MAIN.read),      
-        .i_write(ppctl_MAIN.write),     
-        .i_raddr(ppctl_MAIN.raddr),     
-        .i_waddr(ppctl_MAIN.waddr),     
+        .i_dwd_mode(ppctl_PS.psum_mode),  
+        .i_read (ppctl_PS.read),      
+        .i_write(ppctl_PS.write),     
+        .i_raddr(ppctl_PS.raddr),     
+        .i_waddr(ppctl_PS.waddr),     
         .o_rdata(pp_out),     
         .i_wdata(sum_SS)      
     );                                         
@@ -116,7 +119,7 @@ output PSconf o_Psumconf
         .o_MSconf(ms_conf_MAIN),   
         .o_SSctl(ss_ctl_MAIN),   
         .o_SSPPctl(ss_ppctl_MAIN),
-        .o_DPstatus()        
+        .o_DPstatus(dpstatus_MAIN)        
     );
     FetchStage Fs(
         .*,                      
@@ -145,8 +148,16 @@ output PSconf o_Psumconf
         .o_ppctl_SS(ppctl_SS)          
      );
     PathStage Ps(
-        .*,
-        
+        .*,                       
+        `rdyack_connect(PP,),     
+        `rdyack_connect(LPE,),    
+        `rdyack_connect(POUT,),   
+        .i_Psum_PP(),             
+        .i_conf_PP(),             
+        .i_Psum_LPE(),            
+        .i_conf_LPE(),            
+        .o_Psum_POUT(),           
+        .i_conf_POUT()                    
     );             
 
      

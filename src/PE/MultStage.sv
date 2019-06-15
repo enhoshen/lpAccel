@@ -42,10 +42,10 @@ output MSpipe o_MSpipe_MS
                 );                                                      
             end                                                         
             else if (ATYPE == SIMPLE)begin                              
-                initial General::TODO;                                  
+                initial GenCfg::TODO;                                  
             end                                                         
             else if (ATYPE == BOOTH)begin                               
-                initial General::TODO;                                  
+                initial GenCfg::TODO;                                  
             end                                                         
             else begin                                                  
                 initial ErrorAu;                                        

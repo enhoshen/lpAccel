@@ -72,7 +72,7 @@ class SVhier ():
                 s += '`rdyack_connect('+n+',),\n'
             if t == 'dval':
                 s += '`dval_connect('+n+',),\n'
-        for _ , n ,dim in self.ports:
+        for io , n , *_ in self.ports:
             s += '.'+n+'(),\n'
         s = s[:-2]
         ToClip(s)

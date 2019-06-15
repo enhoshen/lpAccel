@@ -1,13 +1,14 @@
 import PECfg::*;
 import RFCfg::*;
-module DataPathController(
+module DataPathController #(
+parameter [PEROWWD-1:0] PECOLIDX =0     
+)(
 `clk_input,
 input  Conf     i_PEconf,
 input  Inst     i_PEinst,
 `rdyack_input(Input),
 `rdyack_input(Weight),
 `rdyack_output(MAIN),
-`rdyack_output(PS),
 output PECtlCfg::IPctl           o_IPctl,
 output PECtlCfg::WPctl           o_WPctl,
 output PECtlCfg::PPctl           o_PPctl,
@@ -51,9 +52,9 @@ output PECtlCfg::DPstatus        o_DPstatus
     logic ce;
         assign ce = s_main==WORK ;
     LpCtl in_idx_ctl , wt_idx_ctl , out_idx_ctl ;
-        assign in_idx_ctl = '{reset:i_PEinst.reset,dval:ce,inc:Input_rdy&&Input_ack};
-        assign wt_idx_ctl = '{reset:i_PEinst.reset,dval:ce,inc:Weight_rdy&&Weight_ack};
-        assign out_idx_ctl ='{reset:i_PEinst.reset,dval:ce,inc:MAIN_rdy&&MAIN_ack};
+        assign in_idx_ctl = '{reset:i_PEinst.reset||i_PEinst.next,dval:ce,inc:Input_rdy&&Input_ack};
+        assign wt_idx_ctl = '{reset:i_PEinst.reset||i_PEinst.next,dval:ce,inc:Weight_rdy&&Weight_ack};
+        assign out_idx_ctl ='{reset:i_PEinst.reset||i_PEinst.next,dval:ce,inc:MAIN_rdy&&MAIN_ack};
         //--------------
         //data index loop size and index
         //--------------
@@ -105,19 +106,23 @@ output PECtlCfg::DPstatus        o_DPstatus
         //--------------
         //path stage
         //--------------
-    PSconf pre_o_shape_r , pre_o_shape_w;
-        assign pre_o_shape_w = (o_DPstatus.lastPix)? {i_PEconf.ppad_size , i_PEconf.Psum_mode , i_PEconf.Pm , i_PEconf.Tw}: pre_o_shape_r;
+        /*
+    enum logic {PSIDLE,PSWORK}  s_ps , s_ps_nxt; 
+    PSconf psconf_r , psconf_w;
+        assign psconf_w = (o_DPstatus.lastPix)? {i_PEconf.Psum_mode, PECOLIDX , i_PEconf.Pm , i_PEconf.Tw}: psconf_r;
     LpCtl ps_idx_ctl;
-        assign ps_idx_ctl = {i_PEinst.reset, ce , PS_rdy&&PS_ack};
-    logic [MAXTW-1:0] ps_loopSize ;
+        assign ps_idx_ctl = {i_PEinst.reset, ce&&s_ps==PSWORK , `rdyNack(PSPP)};
+    logic [MAXTW-1:0] ps_loopSize_r, ps_loopSize_w ;
     logic ps_end;
-        assign ps_loopSize = pre_o_shape_r.ppad_size;
+        assign ps_loopSize_w = (o_DPstatus.lastPix)? i_PEconf.ppad_size : ps_loopSize_r; 
     logic [MAXTW-1:0] ps_loopIdx  ;
         assign o_PSPPctl.waddr = '0;
         assign o_PSPPctl.raddr = ps_loopIdx -1'd1;
             assign o_PSPPctl.read = ps_idx_ctl.inc;
             assign o_PSPPctl.write= '0; 
-     
+        assign s_ps_nxt = (o_DPstatus.lastPix)? PSWORK : (s_ps==PSWORK && ps_end && `rdyNack(PSPP))? PSIDLE : s_ps;
+        */
+        //TODO rdy ack from whom?? 
         
         //==============
         //Address
@@ -203,16 +208,17 @@ output PECtlCfg::DPstatus        o_DPstatus
         //===================
         //Path Stage
         //===================
+        /*
     LoopCounterD1 #(
     .IDXDW(MAXTW), .STARTPOINT(1'b1)
     ) PSLp(
         .*,
-        .i_loopSize(ps_loopSize),
+        .i_loopSize(ps_loopSize_r),
         .i_ctl(ps_idx_ctl),
         .o_loopEnd(ps_end),
         .o_loopIdx(ps_loopIdx)
     );
-       
+        */ 
         //===================
         //Address conversion
         //=================== 
@@ -264,7 +270,7 @@ output PECtlCfg::DPstatus        o_DPstatus
                 s_main_nxt = ( i_PEinst.reset ) ? IDLE : WORK; 
             end
             WORK: begin
-                s_main_nxt = ( i_PEinst.reset && i_PEinst.start)? INIT :(i_PEinst.reset && !i_PEinst.start) ? IDLE : (!i_PEinst.stall)? WORK : STALL;
+                s_main_nxt = ( (i_PEinst.reset && i_PEinst.start) || i_PEinst.next)? INIT :(   (i_PEinst.reset && !i_PEinst.start ) || o_DPstatus.lastPix) ? IDLE : (!i_PEinst.stall)? WORK : STALL;
             end
             default: begin
             end   
@@ -306,9 +312,7 @@ output PECtlCfg::DPstatus        o_DPstatus
     `ff_end
 
     `ff_rstn
-        pre_o_shape_r <= '0; 
     `ff_cg(ce)
-        pre_o_shape_r <= pre_o_shape_w;
     `ff_end
 
     `ff_rstn

@@ -1,11 +1,17 @@
 #NICOTB=../nicotb/lib
-NICOTB=/opt/nicotb/lib
+#NICOTB=/opt/nicotb/lib
 IRUN=irun
 SYN=syn
 HOME=/home/enhoshen/research/lpAccel
+BRIDGE_SO=$(NICOTB)/bridge_vpi$(PY_SUFFIX)
+NICOTB=$(shell $(PY) -c "import nicotb; print(nicotb.__path__[0])")
 
 Top_syn:
 	make ARGS="+define+SDF=\\\"../$(SYN)/Top_syn.sdf\\\" +define+GATE_LEVEL +define+SRAM_GEN_MODE=SYNOPSYS32 +incdir+../$(SYN)/SAED32_EDK/lib/sram/verilog/ +incdir+../$(SYN)/SAED32_EDK/lib/stdcell_rvt/verilog/ +incdir+../$(SYN)/ +nowarn+SDFNCAP:SDFNDP:MACRDF:CUVWSP:SDFNSB:SDFNL1 " Top_test
+
+test:
+	echo $(NICOTB)
+	echo $(BRIDGE_SO)
 
 %: $(if $(SV),$(SV).sv,%.sv)
 	echo $(SV)
