@@ -67,7 +67,7 @@ package PECtlCfg;
         end
     endtask
     typedef struct packed{
-        logic lastPix;
+        logic firstPixEnd; 
         logic confEnd;
     } DPstatus;
 

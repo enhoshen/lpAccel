@@ -15,13 +15,13 @@ parameter N = 2
     //comb
     //============
     always_comb begin
-        src_acks[0] = last_src_r[N-1] && src_rdys[N-1] && ( !dst_rdy || dst_ack );
+        src_acks[0] = last_src_r[N-1] && src_rdys[0] && ( !dst_rdy || dst_ack );
         last_src_w[N-2:0] = last_src_r[N-1:1] ;
         last_src_w[N-1] = last_src_r[0];
         for(int i = 1 ; i<N ; ++i ) begin
-            src_acks[i] = last_src_r[i-1] && src_rdys[i-1] && ( !dst_rdy || dst_ack );
+            src_acks[i] = last_src_r[i-1] && src_rdys[i] && ( !dst_rdy || dst_ack );
         end
-        dst_rdy_w = &src_rdys || (dst_rdy && !dst_ack);
+        dst_rdy_w = |src_rdys || (dst_rdy && !dst_ack);
     end 
     //============
     //sequental

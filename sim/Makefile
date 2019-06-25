@@ -22,7 +22,6 @@ PRE := $(if$(SV),$(SV).sv, %.sv )
 	LD_PRELOAD=$(PRELOAD) PYTHONPATH=`pwd`	GLOG_logtostderr=1	GLOG_minloglevel=0 NICOTB_MODE=VPI\
 	TEST=$(if $(TEST),$(TEST),$@) \
 	TOPMODULE=$(if $(TOPMODULE),$(TOPMODULE),$@) \
-	PYTHONPATH=$(NICOTB)/python:`pwd` \
 	$(IRUN) +access+rw -loadvpi $(BRIDGE_SO):VpiBoot \
     -y /opt/CAD/synopsys/synthesis/2017.09/dw/sim_ver +libext+.v \
 	+incdir+$(HOME)/src \

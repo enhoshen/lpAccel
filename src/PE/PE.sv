@@ -14,6 +14,8 @@ input Inst i_PEinst,
 input [DWD-1:0] i_Input[IPADN],
 input [DWD-1:0] i_Weight [PEROW],
 output[PSUMDWD-1:0] o_Psum [PEROW],
+input [PSUMDWD-1:0] i_Psum_LPE [PEROW],
+input  PSconf i_Psumconf_LPE,
 output PSconf o_Psumconf
 );
     //=========================================
@@ -148,16 +150,18 @@ output PSconf o_Psumconf
         .o_ppctl_SS(ppctl_SS)          
      );
     PathStage Ps(
-        .*,                       
-        `rdyack_connect(PP,),     
-        `rdyack_connect(LPE,),    
-        `rdyack_connect(POUT,),   
-        .i_Psum_PP(),             
-        .i_conf_PP(),             
-        .i_Psum_LPE(),            
-        .i_conf_LPE(),            
-        .o_Psum_POUT(),           
-        .i_conf_POUT()                    
+        .*,                          
+        `rdyack_connect(LPE,),       
+        `rdyack_connect(SS,),        
+        `rdyack_connect(POUT,),      
+        .i_PEinst(i_PEinst),                 
+        .i_conf( {dpstatus_MAIN,{i_PEconf.Psum_mode,PECOLIDX,i_PEconf.Pm,i_PEconf.Tw } , ppctl_MAIN, ppctl_SS ,i_PEconf.ppad_size }  ),
+        .o_ppctl_PS(ppctl_PS),               
+        .i_Psum_PP(pp_out),
+        //.i_Psum_LPE(i_Psum_LPE),
+        .i_psconf_LPE(i_Psumconf_LPE),
+        .o_Psum_POUT(o_Psum),
+        .o_psconf_POUT(o_Psumconf)
     );             
 
      

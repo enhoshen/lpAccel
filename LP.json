@@ -1,9 +1,6 @@
 {
   "session_name": "LP",
-  "shell_command_before":[
-      "tool 2",
-      "tool 1"
-    ],
+  "shell_command_before":[],
   "windows": [
     {
       "options": {
@@ -11,11 +8,8 @@
       },
       "window_name": "dev",
       "_comment": " layout: 3cc8,207x58,0,0{103x58,0,0,1,103x58,104,0[103x29,104,0,2,103x28,104,30,9]}  ",
-      "layout": "3d64,207x58,0,0{103x58,0,0,2,103x58,104,0,5}",
-      "panes": [
-            {},
-            {}
-       ],
+      "layout": "3d64,207x58,0,0",
+      "panes": [],
       "start_directory": "/home/enhoshen/research/lpAccel/src/PE",
       "focus": true,
       "window_index":1
@@ -25,11 +19,8 @@
         "automatic-rename": "off"
       },
       "window_name": "references",
-      "layout": "bd63,207x58,0,0{103x58,0,0,1,103x58,104,0,6}",
-      "panes": [
-        {} ,
-        {}      
-      ],
+      "layout": "bd63,207x58,0,0",
+      "panes": [],
       "start_directory": "/home/enhoshen/media3temp",
       "window_index":6
     },
@@ -38,11 +29,8 @@
         "automatic-rename": "off"
       },
       "window_name": "dev2",
-      "layout": "3d64,207x58,0,0{103x58,0,0,2,103x58,104,0,5}",
-      "panes": [
-        {} ,
-        {}      
-      ],
+      "layout": "3d64,207x58,0,0",
+      "panes": [],
       "start_directory": "/home/enhoshen/research/lpAccel/src/",
       "focus": false,
       "window_index":2
@@ -57,20 +45,20 @@
         "git status",
         "git pull" 
       ],
-      "start_directory": "/home/enhoshen/research/lpAccel/src",
+      "start_directory": "/home/enhoshen/research/lpAccel/",
       "window_index":3
     },
     {
       "options": {
         "automatic-rename": "off"
       },
-      "window_name": "compile",
       "layout": "bd64,207x58,0,0{103x58,0,0,3,103x58,104,0,4}",
+      "window_name": "compile",
       "panes": [
-        "tool 1",
+        "tool 1 && cd ../syn",
         "tool 2" 
       ],
-      "start_directory": "/home/enhoshen/research/sim",
+      "start_directory": "/home/enhoshen/research/lpAccel/sim",
       "window_index":4
     },
     {
@@ -80,7 +68,7 @@
       "window_name": "notes",
       "layout": "bd64,207x58,0,0",
       "panes":[],
-      "start_directory": "/home/enhoshen/research/lpAccel/src",
+      "start_directory": "/home/enhoshen/research/lpAccel/",
       "window_index":5
    }
 

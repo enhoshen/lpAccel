@@ -95,14 +95,14 @@ output PECtlCfg::DPstatus        o_DPstatus
         
     logic waitInput ;
     logic waitWeight;
-        assign waitInput = in_out_catchup && !( curfetch_in_end || prefetch_in_end)  ;//TODO
+        assign waitInput = in_out_catchup && !( curfetch_in_end || prefetch_in_end)  ;
         //;
         assign waitWeight = wt_out_catchup && !(&wt_end) && !(out_end[OUTXB] &&out_end[OUTTW]) ;
 
-        assign Input_ack  = ce && !( curfetch_in_end ||  prefetch_in_end   ) ; // TODO
+        assign Input_ack  = ce && !( curfetch_in_end ||  prefetch_in_end   ) ;
         assign Weight_ack = ce && !( (&wt_end && !(out_end[OUTXB] && out_end[OUTTW]) ) || 
                         (out_end[OUTXB] && out_end[OUTTW] && (wt_out_catchup )  ) );
-        assign MAIN_rdy = ce && !(  waitInput || waitWeight ) && ! (&out_end);
+        assign MAIN_rdy = ce && !(  waitInput || waitWeight ) ;//TODO one rdy left on &out_end
         //--------------
         //path stage
         //--------------
@@ -165,8 +165,8 @@ output PECtlCfg::DPstatus        o_DPstatus
     //=====================
     //Status
     //=====================
-    assign o_DPstatus.lastPix = &out_end ;
-  
+    assign o_DPstatus.firstPixEnd= &out_end[OUTR:OUTPCH] && &out_end[OUTS:OUTXB] && `rdyNack(MAIN);
+    assign o_DPstatus.confEnd = &out_end && `rdyNack(MAIN); 
     //==================
     // comb
     //==================
@@ -270,7 +270,7 @@ output PECtlCfg::DPstatus        o_DPstatus
                 s_main_nxt = ( i_PEinst.reset ) ? IDLE : WORK; 
             end
             WORK: begin
-                s_main_nxt = ( (i_PEinst.reset && i_PEinst.start) || i_PEinst.next)? INIT :(   (i_PEinst.reset && !i_PEinst.start ) || o_DPstatus.lastPix) ? IDLE : (!i_PEinst.stall)? WORK : STALL;
+                s_main_nxt = ( (i_PEinst.reset && i_PEinst.start) || i_PEinst.next)? INIT :(   (i_PEinst.reset && !i_PEinst.start ) || o_DPstatus.confEnd) ? IDLE : (!i_PEinst.stall)? WORK : STALL;
             end
             default: begin
             end   

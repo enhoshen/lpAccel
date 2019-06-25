@@ -1,5 +1,6 @@
-import numpy as np
+
 from nicotb import *
+import numpy as np
 from primitives import JoinableFork
 from NicoUtil import *
 from Datagen import *

@@ -29,7 +29,7 @@ output PPctl o_ppctl_SS
     //comb
     //===============
     assign MS_ack = !(PS_rdy && !PS_ack);
-    assign PS_rdy = i_pipe.ssppctl.write;
+    assign PS_rdy = o_ppctl_SS.write;
     always_comb begin
         for (int i=0 ; i<PEROW ; ++i)begin
             //TODO
