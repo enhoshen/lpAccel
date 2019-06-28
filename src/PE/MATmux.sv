@@ -144,6 +144,7 @@ output [ASUMDWD-1:0] o_sum
             M2:   sum_w = sum2b;
             M4:   sum_w = sum4b;
             M8:   sum_w = sum8b;
+            default: sum_w = sum8b;
         endcase
         
 

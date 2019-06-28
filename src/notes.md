@@ -21,3 +21,17 @@ typedef struct packed { logic a , logic b } mytype;
 mytype t;
     assign t = '{a:1 , b:0} ;
 ```
+### Identify declaration while expection a statement error
+An error I've been avoided cluelessly that you have to put the declaration of integer **at the start of a block**  
+not sure if this holds only for `initial`, `always_ff` blocks.
+```verilog
+begin 
+    integer i;
+    //statements
+end //correct
+
+begin
+    //statements
+    integer i;
+end //complaints
+``` 

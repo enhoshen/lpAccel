@@ -29,7 +29,7 @@ output MSpipe o_MSpipe_MS
     //comb
     //==================
     `forward ( FD, FS, MS)
-    
+    logic signed [ASUMDWD-1:0] sum [PEROW] ; 
     genvar pe_row;
     generate                                                            
         for ( pe_row = 0 ; pe_row < PEROW ; ++pe_row) begin:Arithmetic_unit
@@ -38,7 +38,7 @@ output MSpipe o_MSpipe_MS
                 .*,                                                     
                 .i_ipix(i_data[pe_row].Input_FS),                               
                 .i_wpix(i_data[pe_row].Weight_FS),                              
-                .o_sum(o_data[pe_row].Sum_MS)                                   
+                .o_sum(sum)                                   
                 );                                                      
             end                                                         
             else if (ATYPE == SIMPLE)begin                              
@@ -56,11 +56,13 @@ output MSpipe o_MSpipe_MS
         o_MSpipe_MS <= '0;
         for ( int i=0 ; i<PEROW ; ++i)begin
             o_data[i].Psum_MS <= '0;
+            o_data[i].Sum_MS <= '0;
         end
     `ff_cg( `rdyNack(FS) || `rdyNack(MS) )
         o_MSpipe_MS <= {i_pipe.ssctl,i_pipe.ssppctl};
         for ( int i=0 ; i<PEROW ; ++i)begin
             o_data[i].Psum_MS <= i_data[i].Psum_FS ;
+            o_data[i].Sum_MS <= sum[i];
         end
     `ff_end
 endmodule

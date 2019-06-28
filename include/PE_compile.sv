@@ -1,3 +1,4 @@
+`define SYN
 `include "../src/define.sv"
 `include "../src/MEM/MEMdefine.sv"
 `include "../src/common/CommonDefine.sv"

@@ -1,30 +1,27 @@
 `timescale 1 ns/1 ps
 // MEMdefin
-import RFCfg::*;
-import GenCfg::*;
-module RF_2P #(
-    parameter WORDWD = 12,
+import SRAMCfg::*;
+import GenCfg::GENMODE;
+module SRAM_SP#(
+    parameter WORDWD = 256,
     parameter DWD    = 16,
     parameter AWD    = $clog2(WORDWD),
-    parameter SIZE   = 1
+    parameter SIZE   = 16
 )(
 `clk_input,
-input i_read,
-input i_write,
-input [AWD-1:0] i_raddr,
-input [AWD-1:0] i_waddr,
+input SP_rwmode i_rw,
+input ce,
+input [AWD-1:0] i_addr,
 output logic [DWD-1:0] o_rdata[SIZE], 
 input        [DWD-1:0] i_wdata[SIZE]
 );
     localparam EMA = 3'b000;
 
-    wire we_n, re_n;
-        assign we_n = !i_write;
-        assign re_n = !i_read ; 
-    logic [AWD-1:0] raddr , waddr;
-        assign raddr = i_raddr;
-        assign waddr = i_waddr;
-
+    wire ce_n , we_n;
+        assign we_n = !(i_rw==WRITE);
+        assign ce_n = !ce; 
+    logic [AWD-1:0] addr;
+        assign addr = i_addr; 
     genvar arr;
     generate  
         if (GENMODE == SIM) begin: sim_mode
@@ -48,9 +45,8 @@ input        [DWD-1:0] i_wdata[SIZE]
         else if (GENMODE == SYN) begin: syn_mode
             for ( arr=0 ; arr<SIZE ; ++arr)begin: rf_instance 
                 case ({WORDWD,DWD}) 
-                    {32'd12,32'd16}: RF_2P_12x16 `RF2Pinstance_arr(RF12x16,arr)
-                    {32'd48,32'd16}: RF_2P_48x16 `RF2Pinstance_arr(RF48x16,arr)
-                    {32'd64,32'd16}: RF_2P_64x16 `RF2Pinstance_arr(RF64x16,arr)
+                    {32'd256,32'd16}: `SRAMSPinstance_arr(SRAM256x16,arr)
+                    {32'd512,32'd16}: `SRAMSPinstance_arr(SRAM512x16,arr)
                     default: initial ErrorRF;
                 endcase
             end
@@ -64,7 +60,7 @@ input        [DWD-1:0] i_wdata[SIZE]
         end
     endgenerate
 endmodule
-module RF_2P_MSK 
+module SRAM_SP_MSK 
     import RFCfg::*;#(
     parameter WORDWD = 32,
     parameter DWD    = 32,

@@ -27,15 +27,14 @@
 `define pbpix_connect(port_name, logic_name) .port_name``_rdy(logic_name``_rdy), .port_name``_ack(logic_name``_ack), .port_name``_zero(logic_name``_zero)
 `define pbpix_unconnect(port_name) .port_name``_rdy(), .port_name``_ack() , .port_name``_zero()
 `define rdyNack(name) name``_rdy && name``_ack
-`define forstart(index,range) integer index;\
-    for ( index = 0 ; index < range ; ++index ) begin
+`define forstart(index,range)  for ( int index = 0 ; index < range ; ++index ) begin
 `define forend end
 //======= nico modified by enho =======
 `define default_Nico_define \
     `clk_logic;\
-    //`Pos(rst_out , i_rstn)\
-    //`PosIf(ck_ev, i_clk, i_rstn)\
-    //`WithFinish\
+    `Pos(rst_out , i_rstn)\
+    `PosIf(ck_ev, i_clk, i_rstn)\
+    `WithFinish\
     logic dummy;\
     integer clk_cnt;
 `define default_Nico_init_block(name,end_cycle) \
@@ -60,8 +59,15 @@ package GenCfg; //general config
         $finish();
     endtask  
     
-    typedef enum { SIM , SYN ,FPGA} GenMode;
-    parameter GenMode GENMODE = SIM;
+    typedef enum { SIM , SYN ,FPGA , ERROR} GenMode;
+    `ifdef SIM
+        parameter GenMode GENMODE = SIM;
+    `elsif SYN
+        parameter GenMode GENMODE = SYN;
+    `elsif FPGA
+        parameter GenMode GENMODE = FPGA;
+    `else
+    `endif
 endpackage
 // =======by JohnJohnLin ==========
 `define rdyack_input(name) output logic name``_ack, input name``_rdy

@@ -25,50 +25,58 @@
     .i_raddr(logname``_raddr),\
     .i_waddr(logname``_waddr)
 `define RF2Pinstance(  name )\
-                  name(\
-                .QA  (o_rdata),\
-                .CLKA(i_clk),\
-                .CENA(we_n),\
-                .AA  (raddr),\
-                .CLKB(i_clk),\
-                .CENB(re_n),\
-                .AB  (waddr),\
-                .DB  (i_wdata),\
-                .EMAA(EMA),\
-                .EMAB(EMA)\
-                );
+      name(\
+    .QA  (o_rdata),\
+    .CLKA(i_clk),\
+    .CENA(we_n),\
+    .AA  (raddr),\
+    .CLKB(i_clk),\
+    .CENB(re_n),\
+    .AB  (waddr),\
+    .DB  (i_wdata),\
+    .EMAA(EMA),\
+    .EMAB(EMA)\
+    );
 `define RF2Pinstance_arr(  name , idx)\
-                  name(\
-                .QA  (o_rdata[idx]),\
-                .CLKA(i_clk),\
-                .CENA(we_n),\
-                .AA  (raddr),\
-                .CLKB(i_clk),\
-                .CENB(re_n),\
-                .AB  (waddr),\
-                .DB  (i_wdata[idx]),\
-                .EMAA(EMA),\
-                .EMAB(EMA)\
-                );
+      name(\
+    .QA  (o_rdata[idx]),\
+    .CLKA(i_clk),\
+    .CENA(we_n),\
+    .AA  (raddr),\
+    .CLKB(i_clk),\
+    .CENB(re_n),\
+    .AB  (waddr),\
+    .DB  (i_wdata[idx]),\
+    .EMAA(EMA),\
+    .EMAB(EMA)\
+    );
 `define RF2Pinstance_msk_arr( name , idx)\
-                name (\
-                .QA(o_rdata[idx]),\
-                .CLKA(i_clk),\
-                .CENA(we_n),\
-                .AA(raddr),\
-                .CLKB(i_clk),\
-                .CENB(re_n),\
-                .WENB(wmsk),\
-                .AB(waddr),\
-                .DB(i_wdata[idx]),\
-                .EMAA(EMA),\
-                .EMAB(EMA)\
-                );
+    name (\
+    .QA(o_rdata[idx]),\
+    .CLKA(i_clk),\
+    .CENA(we_n),\
+    .AA(raddr),\
+    .CLKB(i_clk),\
+    .CENB(re_n),\
+    .WENB(wmsk),\
+    .AB(waddr),\
+    .DB(i_wdata[idx]),\
+    .EMAA(EMA),\
+    .EMAB(EMA)\
+    );
+`define SRAMSPinstance_arr( name , idx)\
+    name (\
+    .Q(o_rdata[idx]),\
+    .CLK(i_clk),\
+    .CEN(ce_n),\
+    .WEN(we_n),\
+    .A(addr),\
+    .D(i_wdata[idx]),\
+    .EMA(EMA)\
+    ); 
 
 package RFCfg;
-    typedef enum { SIM , SYN ,FPGA} GenMode;
     typedef enum logic [1:0] { D16 , D32 } DWD_mode;
-    parameter GenMode gen_mode= SYN;
     task automatic ErrorRF;
         begin
             $display("RF configuration wrong!");
@@ -76,10 +84,21 @@ package RFCfg;
         end
     endtask
 endpackage 
-
+package SRAMCfg;
+    typedef enum logic [1:0] { D16 , D32 } DWD_mode;
+    typedef enum logic {READ , WRITE} SP_rwmode;
+    task automatic ErrorSRAM;
+        begin
+            $display("SRAM configuration wrong!");
+            $finish();
+        end
+    endtask
+endpackage 
+/*
 package SramCfg;                                    
     typedef enum {BEHAVIOUR} GenerateMode;          
     typedef enum {UNDEF, OLD, NEW} ConcurrentRW;    
     parameter GenerateMode GEN_MODE = BEHAVIOUR;    
     parameter ConcurrentRW CON_RW = UNDEF;          
 endpackage                                          
+*/

@@ -6,7 +6,7 @@ module SumStage(
 `clk_input,
 input MSpipe i_pipe,
 `rdyack_input(MS),
-`rdyack_output(PS),
+`rdyack_output(SS),
 input  MSout i_data [PEROW],
 output logic [PSUMDWD-1:0] Sum_SS [PEROW],
 output PPctl o_ppctl_SS
@@ -28,13 +28,13 @@ output PPctl o_ppctl_SS
     //===============
     //comb
     //===============
-    assign MS_ack = !(PS_rdy && !PS_ack);
-    assign PS_rdy = o_ppctl_SS.write;
+    assign MS_ack = !(SS_rdy && !SS_ack);
+    assign SS_rdy = o_ppctl_SS.write;
     always_comb begin
         for (int i=0 ; i<PEROW ; ++i)begin
             //TODO
             Operand [i] = (i_ctl.resetsum)? '0 : (i_ctl.psumread)? i_data[i].Psum_MS : Sum_SS[i]; 
-            Sum_add_sht [i] = (Operand[i] + i_data[i].Sum_MS) << i_ctl.sht_num ; 
+            Sum_add_sht [i] = (Operand[i] + i_data[i].Sum_MS) << i_ctl.sht_num ; //TODO critical path with shifter?
             // overflow
             Overflow [i] = (i_ctl.psum_mode==D16) ? ( !Sum_SS[i][15] && !i_data[i].Sum_MS[ASUMDWD-1] && Sum_add_sht[i][15] ) : ( !Sum_SS[i][31] && !i_data[i].Sum_MS[ASUMDWD-1] && Sum_add_sht[i][31] ) ;
             Underflow[i] = (i_ctl.psum_mode==D16) ? ( Sum_SS[i][15] && i_data[i].Sum_MS[ASUMDWD-1] && !Sum_add_sht[i][15] ) : ( Sum_SS[i][31] && i_data[i].Sum_MS[ASUMDWD-1] && !Sum_add_sht[i][31] ) ; 

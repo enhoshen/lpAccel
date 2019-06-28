@@ -1,8 +1,8 @@
 Magic 271485
-Revision Verdi_M-2017.03-SP2
+Revision Verdi_O-2018.09
 
 ; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
-viewPort 2138 195 1513 748 218 65
+viewPort 0 63 2560 1017 305 65
 
 ; File list:
 ; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
@@ -16,8 +16,8 @@ signalSpacing 5
 
 ; windowTimeUnit is used for zoom, cursor & marker
 ; waveform viewport range
-zoom 45800.223587 96025.836697
-cursor 60545.35771103670
+zoom 1462890.625000 1880859.375000
+cursor 1678750.000000
 marker 0.000000
 
 ; user define markers
@@ -25,7 +25,7 @@ marker 0.000000
 ; visible top row signal index
 top 0
 ; marker line index
-markerPos 7
+markerPos 42
 
 ; event list
 ; addEvent event_name event_expression
@@ -52,10 +52,17 @@ addSignal -h 15 /PEtest/dut/i_clk
 addSignal -h 15 -holdScope i_rstn
 endSubGroup "clk"
 addSubGroup "control"
-addSubGroup "control-out" -e FALSE
+addSubGroup "control-out"
 addSignal -h 15 -UNSIGNED -HEX /PEtest/dut/DPC/out_loopIdx[0:5]
+addSignal -h 15 -UNSIGNED -HEX -holdScope out_loopIdx[0][5:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope out_loopIdx[1][5:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope out_loopIdx[2][5:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope out_loopIdx[3][5:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope out_loopIdx[4][5:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope out_loopIdx[5][5:0]
+addSignal -h 15 -holdScope o_DPstatus
 endSubGroup "control-out"
-addSubGroup "control-rdyack" -e FALSE
+addSubGroup "control-rdyack"
 addSignal -h 15 /PEtest/dut/FS_ack
 addSignal -h 15 -holdScope FS_rdy
 addSignal -h 15 -holdScope MAIN_ack
@@ -88,20 +95,19 @@ addSignal -h 15 -UNSIGNED -HEX /PEtest/dut/Ss/Sum_add_sht[0:15]
 addSignal -h 15 -holdScope i_ctl
 addGroup "G3"
 addGroup "G4"
+addGroup "G6"
 
 ; getSignalForm Scope Hierarchy Status
 ; active file of getSignalForm
 activeDirFile "" "/home/enhoshen/research/lpAccel/sim/PEtest.fsdb"
 
 GETSIGNALFORM_SCOPE_HIERARCHY_BEGIN
-getSignalForm open
+getSignalForm close
 
 "/PEtest"
 "/PEtest/dut"
 "/PEtest/dut/DPC"
-"/PEtest/dut/Ms"
-"/PEtest/dut/Ms/Arithmetic_unit[0]"
-"/PEtest/dut/Ms/Arithmetic_unit[0]/genblk1"
+"/PEtest/dut/PPAD"
 
 SCOPE_LIST_BEGIN
 "/PEtest"
@@ -115,6 +121,9 @@ SCOPE_LIST_BEGIN
 "/PEtest/dut/Ss"
 "/PEtest/dut/Ms/Arithmetic_unit[0]"
 "/PEtest/dut/Ms/Arithmetic_unit[1]"
+"/PEtest/dut/Ps"
+"/PEtest/dut/PPAD"
+"/PEtest/dut/DPC/INLp"
 SCOPE_LIST_END
 
 GETSIGNALFORM_SCOPE_HIERARCHY_END

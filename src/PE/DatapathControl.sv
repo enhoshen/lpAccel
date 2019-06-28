@@ -16,7 +16,6 @@ output PECtlCfg::FSctl           o_FSctl,
 output PECtlCfg::MSconf          o_MSconf,
 output PECtlCfg::SSctl           o_SSctl,
 output PECtlCfg::PPctl           o_SSPPctl,
-output PECtlCfg::PPctl           o_PSPPctl,
 output PECtlCfg::DPstatus        o_DPstatus
 //`ifdef DEBUG
 //output o_error
@@ -166,7 +165,7 @@ output PECtlCfg::DPstatus        o_DPstatus
     //Status
     //=====================
     assign o_DPstatus.firstPixEnd= &out_end[OUTR:OUTPCH] && &out_end[OUTS:OUTXB] && `rdyNack(MAIN);
-    assign o_DPstatus.confEnd = &out_end && `rdyNack(MAIN); 
+    assign o_DPstatus.confEnd = &out_end ; 
     //==================
     // comb
     //==================

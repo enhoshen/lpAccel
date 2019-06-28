@@ -1,11 +1,14 @@
-
-from nicotb import *
+import site, sys
+sys.path.insert(0,'/home/enhoshen/.local/lib/python3.7/site-packages')
+print(sys.path)
+# sys.path.append(site.USER_SITE)
 import numpy as np
-from primitives import JoinableFork
-from NicoUtil import *
 from Datagen import *
 from SVparse import SVparse
 from itertools import repeat
+from nicotb import *
+from nicotb.primitives import JoinableFork
+from NicoUtil import *
 def BusInit():
     SBC = StructBusCreator
     SBC.TopTypes()
@@ -21,33 +24,43 @@ def Ctlrdyack(dummy):
 def PErdyack(data):
     inbus = TwoWireBus( data[0],clk=ck_ev ,A=2,name='Input' )
     wbus = TwoWireBus ( data[1],clk=ck_ev ,A=5,name='Weight') 
-    obus = TwoWireBus ( data[2],clk=ck_ev ,side='slave',A=5,name='Psum')
-    return inbus , wbus , obus
+    obus = TwoWireBus ( data[2],clk=ck_ev ,side='slave',A=5,name='POUT')
+    lpebus = TwoWireBus ( data[3],clk=ck_ev ,A=5,name='LPE')
+    return inbus , wbus , obus , lpebus
+    #TODO LPE data and bus
 def DataBusInit():
-    Input , Weight , Psum = CreateBuses([
+    Input , Weight , Psum , Psum_lpe= CreateBuses([
         (('','i_Input',(1,)) ,),
         ((None,'i_Weight',(16,)) ,),
-        ((None,'o_Psum', (16,))  ,)
+        ((None,'o_Psum', (16,))  ,),
+        ((None,'i_Psum_LPE', (16,)),)
     ])
-    return Input , Weight , Psum
-    #TODO
+    return Input , Weight , Psum , Psum_lpe
+    #TODO LPE data and bus
 def test():
     yield rst_out
     conf ,inst ,dummy = BusInit()
     data = DataBusInit()
     
-    inbus , wbus ,obus = PErdyack(data)
+    inbus , wbus ,obus ,lpebus= PErdyack(data)
     print(inbus.data.values)
     SVparse.hiers['PE'].ShowPorts
     conf.SetTo(0)
     inst.SetTo(0)
-    config = [ (  4,4,3,1,1,3,3, 48,12,13*4,4,1,2,1,1,1,1,0,13),\
+    config = [ (  4,4,3,1,1,3,1, 48,12,13*4,4,1,2,1,1,1,1,0,13),\
                 (  4,2,3,1,1,3,3, 24,12,13*2,4,1,3,2,0,0,2,1,13),\
                  (  1,2,3,1,3,3,3, 6,3,13*2,3,0,3,2,0,0,2,1,13)  ]
 
     def it(i):
         for _ in range(i):
             yield dummy.value
+    def lpedata(i,bus):
+        print(type(bus))
+        for _ in range(i):
+            for j in range(16):
+                arr = np.random.randint(np.iinfo(np.int32).max,size=(16),dtype=np.int32 )
+                bus.value[j] = arr[j] 
+            yield bus.values
     for i1 in range (1 ): 
         conf.values = config[0] 
         print (conf)
@@ -63,12 +76,14 @@ def test():
         upix = conf.Upix.value[0]
         j = []
         ab = 1 if conf.Au.value[0] == 0 else 2**(conf.Au.value[0]-1)
-        Input = InputData(pch,tw,2,ab,1.3)
+        print(xb)
+        Input = InputData(pch,tw+2*(int(r/2)),xb,ab,1.3)
         Weight = WeightData(pch,r,pm,wb,ab,1.3)
         if conf.PixReuse.value[0] == 1:
             j.append( JoinableFork( inbus.SendIter( Input[3](inbus.data) ) ) )
             #j.append( JoinableFork(inbus.SendIter(it(pch*tw*xb*s)))   )
             j.append( JoinableFork( wbus.SendIter(Weight[3](wbus.data)) ) )
+            j.append( JoinableFork( lpebus.SendIter(lpedata(tw*pm,lpebus.data))) )
             #j.append( JoinableFork( wbus.SendIter(it(pm*pch*r*s)) ) )
             #j.append( JoinableFork( obus.MyMonitor(tw*xb*s*pm*pch*r) ) )
         else:

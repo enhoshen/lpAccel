@@ -2,7 +2,7 @@
 import PECfg::*;
 import PECtlCfg::*;
 module PE #(
-parameter PECOLIDX = 0
+parameter [PEROWWD-1:0] PECOLIDX = 0
 )(
 `clk_input,
 input Conf i_PEconf,
@@ -28,6 +28,7 @@ output PSconf o_Psumconf
     `rdyack_logic(MAIN);
     `rdyack_logic(FS);
     `rdyack_logic(MS);
+    `rdyack_logic(SS);
             //PAD
     logic [DWD-1:0] ip_out [IPADN];
     logic [DWD-1:0] wp_out [PEROW];
@@ -144,6 +145,7 @@ output PSconf o_Psumconf
     SumStage Ss(
         .*,                    
         `rdyack_connect(MS,MS),  
+        `rdyack_connect(SS,SS),
         .i_pipe(mspipe_MS),              
         .i_data(ms_data_out),             
         .Sum_SS(sum_SS),             
@@ -151,9 +153,9 @@ output PSconf o_Psumconf
      );
     PathStage Ps(
         .*,                          
-        `rdyack_connect(LPE,),       
-        `rdyack_connect(SS,),        
-        `rdyack_connect(POUT,),      
+        `rdyack_connect(LPE,LPE),       
+        `rdyack_connect(SS,SS),        
+        `rdyack_connect(POUT,POUT),      
         .i_PEinst(i_PEinst),                 
         .i_conf( {dpstatus_MAIN,{i_PEconf.Psum_mode,PECOLIDX,i_PEconf.Pm,i_PEconf.Tw } , ppctl_MAIN, ppctl_SS ,i_PEconf.ppad_size }  ),
         .o_ppctl_PS(ppctl_PS),               
@@ -177,11 +179,12 @@ module PEtest;
     Conf i_PEconf;
     Inst i_PEinst;
     logic [DWD-1:0] i_Input [IPADN] , i_Weight [PEROW];
-    logic [PSUMDWD-1:0] o_Psum [PEROW];
+    logic [PSUMDWD-1:0] o_Psum [PEROW] , i_Psum_LPE [PEROW];
+    PSconf i_Psumconf_LPE, o_Psumconf;
     `rdyack_logic(Input);
     `rdyack_logic(Weight);
-    `rdyack_logic(Psum_in);
-    `rdyack_logic(Psum_out);
+    `rdyack_logic(LPE);
+    `rdyack_logic(POUT);
     `default_Nico_define 
     
 PE dut(
