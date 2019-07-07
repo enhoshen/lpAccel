@@ -89,20 +89,20 @@ class StructBusCreator():
             for k,v in T.items():
                 StructBusCreator(k,v)
     @classmethod
-    def Get(cls,i,name):
-        return cls.structlist[i].CreateStructBus(name)
-    def CreateStructBus (self, signalName , DIM=() ):
+    def Get(cls,i,name,hier=''):
+        return cls.structlist[i].CreateStructBus(name,hier)
+    def CreateStructBus (self, signalName , hier='',DIM=() ):
         #buses = {'logic' :  CreateBus( self.createTuple(signalName) )}
         buses = []
         attrs = self.structlist[self.structName].attrs
         for  n , bw, dim ,t ,*_ in attrs :
             
             if t=='logic':
-                buses.append ( CreateBus( ((None, signalName+'.'+n ,DIM+dim),) ) )
+                buses.append ( CreateBus( ((hier, signalName+'.'+n ,DIM+dim),) ) )
             elif t == 'enum':
-                buses.append ( CreateBus( ((None, signalName , DIM+dim ),) ) )
+                buses.append ( CreateBus( ((hier, signalName , DIM+dim ),) ) )
             else:
-                buses.append ( self.structlist[t].CreateStructBus( signalName+'.'+n , DIM+dim ) )
+                buses.append ( self.structlist[t].CreateStructBus( signalName+'.'+n , hier, DIM+dim ) )
         return StructBus(self.structName,signalName,attrs,buses)
 global ck_ev
 class ProtoBus ():
@@ -119,8 +119,10 @@ class ProtoBus ():
             self.data = args[0]
 
         if len(args)==1:
-            protolist =  portCallback( kw['name'] )
+            protolist =  portCallback( kw['name'] , hier=kw['hier']) if kw.get('hier') else portCallback(kw['name'])  
             kw.pop('name')
+            if kw.get('hier'):
+                kw.pop('hier')
             self.proto = protoCallback( *(protolist),self.data ,clk=clk ,**kw)
         else:
             self.proto = protoCallback( *args , clk=clk ,**kw)
@@ -151,16 +153,16 @@ class TwoWireBus ( ProtoBus):
         protoCallback = TwoWire.Master if side == 'master' else MySlaveTwoWire
         self.ArgParse(protoCallback, self.PortParse, *args, clk=clk, **kwargs)
         self.SideChoose(side)
-    def PortParse(self, name):
-        self.rdy , self.ack = CreateBuses( [(name+'_rdy',) , (name+'_ack',) ])
+    def PortParse(self, name , hier=''):
+        self.rdy , self.ack = CreateBuses( [((hier,name+'_rdy',),) , ((hier,name+'_ack',),) ])
         return [self.rdy , self.ack]
 class OneWireBus ( ProtoBus): 
     def __init__(self, *args, clk , side = 'master' , **kwargs):
         protoCallback = OneWire.Master if side == 'master' else OneWire.Slave
         self.ArgParse(protoCallback, self.PortParse, *args , clk=clk , **kwargs)
         self.SideChoose(side)
-    def PortParse(self,name):
-        self.dval = CreateBus( (name+'_dval',))
+    def PortParse(self,name,hier=''):
+        self.dval = CreateBus( (hier,name+'_dval',))
         return [self.dval]
 class MySlaveTwoWire(TwoWire.Slave):
     def __init__(

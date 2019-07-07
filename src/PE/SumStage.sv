@@ -16,12 +16,14 @@ output PPctl o_ppctl_SS
     localparam [31:0] MIN16 = 32'h0000_8000;
     localparam [31:0] MAX32 = 32'h7fff_ffff;
     localparam [31:0] MIN32 = 32'h8000_0000;
+    localparam SHTDWD = ASUMDWD+8;
     //===============
     //logic
     //===============
     SSctl i_ctl;
         assign i_ctl = i_pipe.ssctl;
-    logic signed [PSUMDWD-1:0] Sum_SS_w [PEROW] , Sum_add_sht [PEROW] , Operand [PEROW];
+    logic signed [PSUMDWD-1:0] Sum_SS_w [PEROW] , Sum_add [PEROW] , Operand [PEROW];
+    logic signed [SHTDWD-1:0] Sum_sht[PEROW];
     logic Overflow [PEROW];
     logic Underflow[PEROW];
     logic Sum_sign [PEROW];
@@ -34,16 +36,17 @@ output PPctl o_ppctl_SS
         for (int i=0 ; i<PEROW ; ++i)begin
             //TODO
             Operand [i] = (i_ctl.resetsum)? '0 : (i_ctl.psumread)? i_data[i].Psum_MS : Sum_SS[i]; 
-            Sum_add_sht [i] = (Operand[i] + i_data[i].Sum_MS) << i_ctl.sht_num ; //TODO critical path with shifter?
+            Sum_sht[i] = i_data[i].Sum_MS << i_ctl.sht_num;
+            Sum_add[i] = (Operand[i] + Sum_sht[i]) ; //TODO critical path with shifter?
             // overflow
-            Overflow [i] = (i_ctl.psum_mode==D16) ? ( !Sum_SS[i][15] && !i_data[i].Sum_MS[ASUMDWD-1] && Sum_add_sht[i][15] ) : ( !Sum_SS[i][31] && !i_data[i].Sum_MS[ASUMDWD-1] && Sum_add_sht[i][31] ) ;
-            Underflow[i] = (i_ctl.psum_mode==D16) ? ( Sum_SS[i][15] && i_data[i].Sum_MS[ASUMDWD-1] && !Sum_add_sht[i][15] ) : ( Sum_SS[i][31] && i_data[i].Sum_MS[ASUMDWD-1] && !Sum_add_sht[i][31] ) ; 
+            Overflow [i] = (i_ctl.psum_mode==D16) ? ( !Operand[i][15] && !Sum_sht[i][15] && (|Sum_add[i][18:15]) ) : ( !Operand[i][31] && !Sum_sht[i][SHTDWD-1] && Sum_add[i][31] ) ;
+            Underflow[i] = (i_ctl.psum_mode==D16) ? ( Operand[i][15] && Sum_sht[i][15] && ! ( &Sum_add[i][18:15]) ) : ( Operand[i][31] && Sum_sht[i][SHTDWD-1] && !Sum_add[i][31] ) ; 
             case ( {Overflow[i],Underflow[i]} )
                 2'b01: Sum_SS_w[i] = (i_ctl.psum_mode==D16)? MIN16 : MIN32;
                 2'b10: Sum_SS_w[i] = (i_ctl.psum_mode==D16)? MAX16 : MAX32;
                 default: begin
-                    Sum_SS_w[i][DWD-1:0] = Sum_add_sht[i][DWD-1:0];
-                    Sum_SS_w[i][PSUMDWD-1:DWD] = (i_ctl.psum_mode==D16)? '0 : Sum_add_sht[i][PSUMDWD-1:DWD];
+                    Sum_SS_w[i][DWD-1:0] = Sum_add[i][DWD-1:0];
+                    Sum_SS_w[i][PSUMDWD-1:DWD] = (i_ctl.psum_mode==D16)? '0 : Sum_add[i][PSUMDWD-1:DWD];
                 end
             endcase
         end 

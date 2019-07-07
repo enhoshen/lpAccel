@@ -28,10 +28,10 @@
       name(\
     .QA  (o_rdata),\
     .CLKA(i_clk),\
-    .CENA(we_n),\
+    .CENA(re_n),\
     .AA  (raddr),\
     .CLKB(i_clk),\
-    .CENB(re_n),\
+    .CENB(we_n),\
     .AB  (waddr),\
     .DB  (i_wdata),\
     .EMAA(EMA),\
@@ -41,10 +41,10 @@
       name(\
     .QA  (o_rdata[idx]),\
     .CLKA(i_clk),\
-    .CENA(we_n),\
+    .CENA(re_n),\
     .AA  (raddr),\
     .CLKB(i_clk),\
-    .CENB(re_n),\
+    .CENB(we_n),\
     .AB  (waddr),\
     .DB  (i_wdata[idx]),\
     .EMAA(EMA),\
@@ -54,11 +54,11 @@
     name (\
     .QA(o_rdata[idx]),\
     .CLKA(i_clk),\
-    .CENA(we_n),\
+    .CENA(re_n),\
     .AA(raddr),\
     .CLKB(i_clk),\
-    .CENB(re_n),\
-    .WENB(wmsk),\
+    .CENB(we_n),\
+    .WENB(wmsk_n),\
     .AB(waddr),\
     .DB(i_wdata[idx]),\
     .EMAA(EMA),\

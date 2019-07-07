@@ -141,6 +141,11 @@ class SVparse():
     def IncludeFileParse(cls , path):
         f = open(cls.include_path+path)
         paths = []
+        while 1:
+            line = f.readline()
+            if '`else' in line:
+                break
+            #TODO this part is very unpolished
         for line in f.readlines():
             line = line.split('//')[0]
             if '`include' in line:
@@ -148,7 +153,10 @@ class SVparse():
                 paths.append( cls.include_path+line)
         return paths
     def Readfile(self , path):
-        self.f = open(path)
+        try:
+            self.f = open(path)
+        except:
+            return
         self.lines = iter(self.f.readlines())
         _s = self.Rdline(self.lines)
         while(1):

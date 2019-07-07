@@ -18,8 +18,9 @@
 
 // modified by En-ho Shen
 
-`define CLK 2.5
-`define HCLK 1.25
+`define CLK 10 
+`define HCLK 10 
+`define INPUT_DELAY 1 
 `define pbpix_input(name) output logic name``_ack, input name``_rdy , input name``_zero
 `define pbpix_output(name) output logic name``_rdy, input name``_ack , output logic name``_zero
 `define pbpix_logic(name) logic name``_rdy, name``_ack ,name``_zero
@@ -33,7 +34,11 @@
 `define default_Nico_define \
     `clk_logic;\
     `Pos(rst_out , i_rstn)\
-    `PosIf(ck_ev, i_clk, i_rstn)\
+     `ifdef GATE_LEVEL\
+     `PosIfDelayed(ck_ev, i_clk, i_rstn, `INPUT_DELAY)\
+     `else \
+     `PosIf(ck_ev, i_clk, i_rstn) \
+     `endif \
     `WithFinish\
     logic dummy;\
     integer clk_cnt;
@@ -41,8 +46,16 @@
     always #`HCLK i_clk = ~i_clk;\
     `ff_rstn clk_cnt <= 0; `ff_nocg clk_cnt <= clk_cnt+1; `ff_end\
     initial begin\
-        $fsdbDumpfile(`"name.fsdb`");\
-        $fsdbDumpvars( 0 , name , "+all");\
+        `ifdef GATE_LEVEL\
+            $fsdbDumpfile(`fsdb_file(`GATE_LEVEL,name) );\
+            $sdf_annotate(`syn_file(`GATE_LEVEL,.sdf), name);\
+            $display( `syn_file(`GATE_LEVEL,.sdf));\
+            $fsdbDumpvars(0, name, "+all");\
+        `else\
+            $fsdbDumpfile(`"name.fsdb`");\
+            $fsdbDumpvars( 0 , name , "+all");\
+            $display( `"name`" );\
+        `endif\
         i_clk =0;\
         i_rstn=1;\
         #(`CLK) $NicotbInit();\
@@ -52,6 +65,7 @@
         $NicotbFinal();\
         $finish();\
     end
+//========= project =================
 package GenCfg; //general config
 
     task automatic TODO;
@@ -62,13 +76,17 @@ package GenCfg; //general config
     typedef enum { SIM , SYN ,FPGA , ERROR} GenMode;
     `ifdef SIM
         parameter GenMode GENMODE = SIM;
-    `elsif SYN
+    `elsif DC 
         parameter GenMode GENMODE = SYN;
     `elsif FPGA
         parameter GenMode GENMODE = FPGA;
     `else
     `endif
 endpackage
+//========= utility  ============
+`define syn_file( name , suffix) `"`HOME/syn/name``suffix`"
+`define src_file( name ) `"`HOME/src/name.sv`"
+`define fsdb_file( name ,test) `"name``_``test.fsdb`"
 // =======by JohnJohnLin ==========
 `define rdyack_input(name) output logic name``_ack, input name``_rdy
 `define rdyack_output(name) output logic name``_rdy, input name``_ack

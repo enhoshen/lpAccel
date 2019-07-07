@@ -151,7 +151,7 @@ output PECtlCfg::DPstatus        o_DPstatus
         assign o_IPctl.write= in_idx_ctl.inc;
         assign o_WPctl.read = out_idx_ctl.inc;
         assign o_WPctl.write= wt_idx_ctl.inc;
-        assign o_PPctl.read = psum_raddr_ctl.inc && !o_SSctl.fstrow && !(i_PEconf.Psum_mode==D16 && o_PPctl.raddr[0]); // address is odd and data of D16 type:don't read; first row don't read, just initialize.
+        assign o_PPctl.read = psum_raddr_ctl.inc && (!o_SSctl.fstrow || (o_SSctl.fstrow && &out_end[OUTTW:OUTPCH] ) ) && !(i_PEconf.Psum_mode==D16 && o_PPctl.raddr[0]); // address is odd and data of D16 type:don't read; first row don't read, just initialize.
         assign o_PPctl.write= '0;
         assign o_SSPPctl.write = psum_waddr_ctl.inc;
         assign o_SSPPctl.read = '0;
@@ -164,8 +164,9 @@ output PECtlCfg::DPstatus        o_DPstatus
     //=====================
     //Status
     //=====================
-    assign o_DPstatus.firstPixEnd= &out_end[OUTR:OUTPCH] && &out_end[OUTS:OUTXB] && `rdyNack(MAIN);
-    assign o_DPstatus.confEnd = &out_end ; 
+    PECtlCfg::DPstatus dpstatus_w;
+    assign dpstatus_w.firstPixEnd= &out_end[OUTR:OUTPCH] && &out_end[OUTS:OUTXB] && `rdyNack(MAIN);
+    assign dpstatus_w.confEnd = &out_end ; 
     //==================
     // comb
     //==================
@@ -289,7 +290,7 @@ output PECtlCfg::DPstatus        o_DPstatus
         o_SSctl.lstrow = (out_end[OUTXB] && out_end[OUTS] );
         o_SSctl.psumread  = psum_raddr_ctl.inc;
         o_SSctl.psumwrite = psum_waddr_ctl.inc;
-        o_SSctl.resetsum  = psum_raddr_ctl.inc && o_SSctl.fstrow; 
+        o_SSctl.resetsum  =  o_SSctl.fstrow && (psum_raddr_ctl.inc || ( out_loopIdx[OUTPCH]=='0 && out_idx_ctl.inc ) ); 
         o_SSctl.psum_mode   = i_PEconf.Psum_mode;
         case (i_PEconf.Au)
             XNOR: Ab=4'b1;
@@ -311,7 +312,9 @@ output PECtlCfg::DPstatus        o_DPstatus
     `ff_end
 
     `ff_rstn
+        o_DPstatus <= '0;
     `ff_cg(ce)
+        o_DPstatus <= dpstatus_w;
     `ff_end
 
     `ff_rstn

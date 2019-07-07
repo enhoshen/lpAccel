@@ -10,6 +10,7 @@ typedef struct packed{
 } FSpipein;
 typedef struct packed{
     MSctl msctl;
+    FSctl fsctl;
     SSctl ssctl;
     PPctl ssppctl;
 } FSpipeout;
@@ -79,6 +80,7 @@ output FSpipeout o_FSpipe_FS
                     psum_FS[pe_row] = (i_ctl.psum_parity)? i_data[pe_row].Psum_PP >> DWD : i_data[pe_row].Psum_PP;
                 else
                     psum_FS[pe_row] = i_data[pe_row].Psum_PP;
+            o_data[pe_row] = {i_data[pe_row].Input_IP,i_data[pe_row].Weight_WP,psum_FS[pe_row]};
             end
         end
     endgenerate
@@ -88,14 +90,7 @@ output FSpipeout o_FSpipe_FS
     //===============
     `ff_rstn
         o_FSpipe_FS <= '0;
-        for ( int i =0 ; i<PEROW ; ++i)begin
-            o_data[i] <= '0;
-        end
     `ff_cg( `rdyNack(MAIN) || `rdyNack(FS) )
-        o_FSpipe_FS <= {msctl, i_pipe.ssctl , i_pipe.ssppctl};
-        for ( int i =0 ; i<PEROW ; ++i)begin
-            o_data[i] <= {i_data[i].Input_IP,i_data[i].Weight_WP,i_data[i].Psum_PP};
-        end 
+        o_FSpipe_FS <= {msctl,i_pipe.fsctl, i_pipe.ssctl , i_pipe.ssppctl};
     `ff_end
-
 endmodule

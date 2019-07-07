@@ -1,4 +1,6 @@
+`ifdef GATE_LEVEL
 
+`else
 import PECfg::*;
 import PECtlCfg::*;
 module PE #(
@@ -54,7 +56,6 @@ output PSconf o_Psumconf
     //=========================================
     //debug/test
     //=========================================
-    assign o_Psum = sum_SS;
     assign Psum_out_rdy = ppctl_SS.write;
     //=========================================
     //comb
@@ -63,7 +64,7 @@ output PSconf o_Psumconf
     generate
         for( pe_row=0 ; pe_row<PEROW ; ++pe_row)begin: ipad_gen
             localparam int ip_idx = pe_row/(16/IPADN);
-            assign fs_data_in[pe_row] = {ip_out[ip_idx],wp_out[pe_row],pp_out[pe_row]};
+            assign fs_data_out[pe_row] = {ip_out[ip_idx],wp_out[pe_row],pp_out[pe_row]};
         end
     endgenerate
         // module // 
@@ -130,7 +131,7 @@ output PSconf o_Psumconf
         `rdyack_connect(FS,FS),    
         .i_pipe(fspipe_MAIN),                
         .i_data(fs_data_in),              
-        .o_data(fs_data_out),             
+        .o_data(),             
         .o_FSpipe_FS(fspipe_FS)         
     );
     MultStage Ms(
@@ -172,10 +173,13 @@ output PSconf o_Psumconf
     //=========================================
     
 endmodule
+`endif
 
 `ifdef PEtest
+import PECfg::*;
+import PECtlCfg::*;
 module PEtest;
-    import PECfg::*;
+
     Conf i_PEconf;
     Inst i_PEinst;
     logic [DWD-1:0] i_Input [IPADN] , i_Weight [PEROW];
@@ -186,9 +190,16 @@ module PEtest;
     `rdyack_logic(LPE);
     `rdyack_logic(POUT);
     `default_Nico_define 
-    
+
 PE dut(
 .*      
+`ifdef GATE_LEVEL
+,
+.i_Input({>>{i_Input}}),
+.i_Weight( {>>{i_Weight}}),
+.o_Psum({>>{o_Psum}}),
+.i_Psum_LPE({>>{i_Psum_LPE}})
+`endif
 );
 
 `default_Nico_init_block(PEtest,10000)

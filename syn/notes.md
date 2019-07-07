@@ -6,6 +6,31 @@ useful variable such as `$current_design`, so that your tcl files can be easily 
 source $current_design\_syn.sdc
 report_timing >> $current_design.txt
 ```
+* Design compiler `DC` macro: when trying to synthesize my design, you'd try to define sythesis related macro like defining `SIM`,`GATE_LEVEL` 
+Macros for simulations, and it's tricky to define macro inside dc_shell. Haven't try other workarounds, but using 
+the design compiler built-in **`DC`** macro is enough for synthesis purpose so far.
+```verilog
+    //inside define.sv, GenCfg
+    `ifdef SIM                                
+         parameter GenMode GENMODE = SIM;      
+    `elsif DC //DC macro is automatically defined as inside dc_shell         
+         parameter GenMode GENMODE = SYN;      
+    `elsif FPGA                               
+         parameter GenMode GENMODE = FPGA;     
+    `else
+    `endif
+```
+* dc_shell user defined variable: following tcl rules, the method to initialize your own variable is
+```shell
+$dc_shell> set mymodule PE_2-5ns 
+$dc_shell> echo $mymodule
+$dc_shell> report_timing > $mymodule.txt
+```
+* The help "command" for these shells tool is the unix `man`, just type `man` followed by your questioned command.
+```shell
+$dc_shell> man get_unix_variable
+$pt_shell> man read_saif
+```
 # Synthesis issues
 ## An unexpected critical path
 * As prof suggested, some unexpected critical path may occured if logics are not properly blocked by registers,
@@ -34,5 +59,6 @@ and the following synthesis results makes much more sense.
         end
     `ff_e
 ``` 
-from this example, the morale is that when examine a unreasonable large synthesis result, you might  
+from this example, the moral is that when examine a unreasonable large synthesis result, you might  
 need to check **critical path**, where it might be a cause of unblocked comb wires.
+

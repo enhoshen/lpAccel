@@ -77,6 +77,7 @@ output PSconf o_psconf_POUT
     
     always_comb begin
         `forstart(perow,PEROW)
+            psum_w[perow] = o_Psum_POUT[perow];
             case ( {read_PP_valid_r,`rdyNack(LPE)} )
                 2'b01: psum_w[perow] = i_Psum_LPE[perow];
                 2'b10: psum_w[perow] = i_Psum_PP [perow];
