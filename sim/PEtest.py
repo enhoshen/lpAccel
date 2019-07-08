@@ -9,18 +9,15 @@ from itertools import repeat
 from nicotb import *
 from nicotb.primitives import JoinableFork
 from NicoUtil import *
+import os
 def BusInit():
     SBC = StructBusCreator
     SBC.TopTypes()
     confbus = SBC.Get('Conf','i_PEconf')
     instbus = SBC.Get('Inst','i_PEinst')
+    status = SBC.Get('DPstatus','o_status' )
     dummy = CreateBus( ('dummy',) )
-    return confbus , instbus , dummy
-def Ctlrdyack(dummy):
-    inbus = TwoWireBus( dummy,clk=ck_ev ,A=2,name='Input' )
-    wbus = TwoWireBus ( dummy,clk=ck_ev ,A=5,name='Weight') 
-    obus = TwoWireBus ( dummy,clk=ck_ev ,side='slave',A=5,name='MAIN')
-    return inbus , wbus , obus 
+    return confbus , instbus , status,dummy
 def PErdyack(data):
     inbus = TwoWireBus( data[0],clk=ck_ev ,A=2,name='Input' )
     wbus = TwoWireBus ( data[1],clk=ck_ev ,A=5,name='Weight') 
@@ -39,7 +36,7 @@ def DataBusInit():
     #TODO LPE data and bus
 def test():
     yield rst_out
-    conf ,inst ,dummy = BusInit()
+    conf ,inst ,status,dummy = BusInit()
     data = DataBusInit()
     
     inbus , wbus ,obus ,lpebus= PErdyack(data)
@@ -47,10 +44,9 @@ def test():
     SVparse.hiers['PE'].ShowPorts
     conf.SetTo(0)
     inst.SetTo(0)
-    config = [ (  4,4,3,1,1,3,1, 48,12,13*4,4,1,2,1,1,1,1,0,13),\
+    config = [ (  4,4,3,1,1,3,3, 48,12,13*4,4,1,2,1,1,1,1,0,13),\
                 (  4,2,3,1,1,3,3, 24,12,13*2,4,1,3,2,0,0,2,1,13),\
                  (  1,2,3,1,3,3,3, 6,3,13*2,3,0,3,2,0,0,2,1,13)  ]
-
     def it(i):
         for _ in range(i):
             yield dummy.value
@@ -77,8 +73,8 @@ def test():
         j = []
         ab = 1 if conf.Au.value[0] == 0 else 2**(conf.Au.value[0]-1)
         print(xb)
-        Input = InputData(pch,tw+2*(int(r/2)),xb,ab,1.3)
-        Weight = WeightData(pch,r,pm,wb,ab,1.3)
+        Input = InputData(pch,tw+2*(int(r/2)),s  ,xb,ab,1.3)
+        Weight = WeightData(pch,r,pm,s,  wb,ab,1.3)
         if conf.PixReuse.value[0] == 1:
             j.append( JoinableFork( inbus.SendIter( Input[3](inbus.data) ) ) )
             #j.append( JoinableFork(inbus.SendIter(it(pch*tw*xb*s)))   )
@@ -104,10 +100,15 @@ def test():
         inst.start.value =0
         inst.Write()
         for jj in j:
-            yield from jj.Join()
-            
+            yield from jj.Join() 
         [jj.Destroy() for jj in j]
-        yield from repeat(ck_ev,100)
+    while True:
+        yield ck_ev
+        status.Read()
+        if status.confEnd.value[0]:
+            print ( "confEnd")
+            break         
+    #yield from repeat(ck_ev,100)
     FinishSim()
 
 rst_out , ck_ev = CreateEvents(["rst_out","ck_ev"])

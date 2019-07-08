@@ -2,7 +2,7 @@
 # You can only modify clock period 
 set compile ultra
 set clock_gate 1 
-set cycle 2.5 
+set cycle 3 
 echo $cycle
 set t_in [expr 0.01]
 set t_out  0.01 
@@ -22,6 +22,9 @@ set_clock_latency                0.1  [get_clocks i_clk]
 set_max_transition 0.3 [current_design]
 set_max_fanout 100  [current_design] 
 
+#ungroup this part is hard-coded to PE 
+set auto_ungroup 0 
+source pe_ungroup.tcl
 #Don't touch the basic env setting as below
 set_operating_conditions -min_library fast -min fast -max_library typical -max typical 
 set_drive        1     [all_inputs]                                                        ;# DC w IOpad 
@@ -30,9 +33,13 @@ set_input_delay   $t_in  -clock i_clk [remove_from_collection [all_inputs] [get_
 set_output_delay  $t_out -clock i_clk [all_outputs] 
 set_wire_load_model -name tsmc090_wl10 -library typical ;# remove while P&R 
 
-set write_name ${current_design}_${cycle}_${compile}_[expr { 0<1 ? "cg": "" }]_[clock format [clock seconds] -format %m%d%H]
-
-[expr { $compile=={ultra} ? "compile_ultra" : "compile" }] [ expr { $clock_gate==1 ? "-gate_clock" : ""}]
+set write_name ${current_design}_${cycle}ns_${compile}_[expr { 0<1 ? "cg": "" }]_[clock format [clock seconds] -format %m%d%H]_syn
+echo -e $write_name
+# "" argument doesn't work because tcl interpret it as part of the command
+# look up https://stackoverflow.com/questions/28468367/tcl-eval-and-exec-confusing-point
+set command "[expr { $compile=={ultra} ? "compile_ultra" : "compile" }] [expr { $auto_ungroup==1 ? " ":"-no_autoungroup" }] [ expr { $clock_gate==1 ? "-gate_clock" : " "}]"
+echo $command
+eval exec $command
 report_timing > $write_name.txt
 report_area >> $write_name.txt
 report_cell >> $write_name.txt

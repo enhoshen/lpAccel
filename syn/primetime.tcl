@@ -1,3 +1,6 @@
+echo "usage: $ DESIGN=\[design\] TEST=\[test\] MODULE=\[module\] pt_shell "
+echo "       $ pt_shell> source primetime.tcl" 
+echo "ex   : $  DESIGN=PE_3ns_cg_ultra_070322 TEST=PETEST pt_shell MODULE=PE"
 set company {NTUGIEE}                                                                                                            
 set designer {EnHo}                                                                                                              
 set memdb_path ~/research/lpAccel/src/MEM/memdb                                                                                  
@@ -31,8 +34,7 @@ echo $saif_file
 read_saif $saif_file -strip_path ${test}/dut
 report_switching_activity -list_not_annotated > ./rpt/${design}_power.txt
 report_power -verbose -hierarchy >> ./rpt/${design}_power.txt
-exit
-
+report_power >> ./rpt/${design}_power.txt
 
 
                                                                                                                                   

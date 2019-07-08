@@ -18,8 +18,11 @@
 
 // modified by En-ho Shen
 
-`define CLK 10 
-`define HCLK 10 
+`ifdef HCLK
+    `define hclk `HCLK
+`else
+    `define hclk 1.25
+`endif
 `define INPUT_DELAY 1 
 `define pbpix_input(name) output logic name``_ack, input name``_rdy , input name``_zero
 `define pbpix_output(name) output logic name``_rdy, input name``_ack , output logic name``_zero
@@ -43,7 +46,7 @@
     logic dummy;\
     integer clk_cnt;
 `define default_Nico_init_block(name,end_cycle) \
-    always #`HCLK i_clk = ~i_clk;\
+    always #`hclk i_clk = ~i_clk;\
     `ff_rstn clk_cnt <= 0; `ff_nocg clk_cnt <= clk_cnt+1; `ff_end\
     initial begin\
         `ifdef GATE_LEVEL\
@@ -56,12 +59,13 @@
             $fsdbDumpvars( 0 , name , "+all");\
             $display( `"name`" );\
         `endif\
+        $display(`hclk); \
         i_clk =0;\
         i_rstn=1;\
-        #(`CLK) $NicotbInit();\
+        #(2*`hclk) $NicotbInit();\
         #11 i_rstn = 0;\
         #10 i_rstn = 1;\
-        #(`CLK*end_cycle) $display("timeout");\
+        #(2*`hclk*end_cycle) $display("timeout");\
         $NicotbFinal();\
         $finish();\
     end

@@ -18,7 +18,8 @@ input [DWD-1:0] i_Weight [PEROW],
 output[PSUMDWD-1:0] o_Psum [PEROW],
 input [PSUMDWD-1:0] i_Psum_LPE [PEROW],
 input  PSconf i_Psumconf_LPE,
-output PSconf o_Psumconf
+output PSconf o_Psumconf,
+output DPstatus o_status
 );
     //=========================================
     //parameters
@@ -47,6 +48,7 @@ output PSconf o_Psumconf
     MSconf ms_conf_MAIN;
     SSctl ss_ctl_MAIN;
     DPstatus dpstatus_MAIN;            
+        assign o_status = dpstatus_MAIN;
     FSpipein fspipe_MAIN;
         assign fspipe_MAIN = {fs_ctl_MAIN,ms_conf_MAIN,ss_ctl_MAIN,ss_ppctl_MAIN};
     FSpipeout fspipe_FS; 
@@ -185,12 +187,12 @@ module PEtest;
     logic [DWD-1:0] i_Input [IPADN] , i_Weight [PEROW];
     logic [PSUMDWD-1:0] o_Psum [PEROW] , i_Psum_LPE [PEROW];
     PSconf i_Psumconf_LPE, o_Psumconf;
+    DPstatus o_status;
     `rdyack_logic(Input);
     `rdyack_logic(Weight);
     `rdyack_logic(LPE);
     `rdyack_logic(POUT);
     `default_Nico_define 
-
 PE dut(
 .*      
 `ifdef GATE_LEVEL
@@ -202,7 +204,7 @@ PE dut(
 `endif
 );
 
-`default_Nico_init_block(PEtest,10000)
+`default_Nico_init_block(PEtest,1000000)
 endmodule
 
 `endif

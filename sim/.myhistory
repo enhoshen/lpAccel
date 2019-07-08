@@ -1,0 +1,4 @@
+make PEtest SV=../include/PE_compile.sv GATE_LEVEL=PE_2-5ns_ultra_cg_070323 HCLK=1.25
+make PEtest SV=../include/PE_compile.sv GATE_LEVEL=PE_3ns_ultra_cg_070322 HCLK=1.25
+make PEtest SV=../include/PE_compile.sv SIM=1
+make PEtest SV=../include/PE_compile.sv GATE_LEVEL=PE_3_ultra_cg_070813_syn HCLK=1.25

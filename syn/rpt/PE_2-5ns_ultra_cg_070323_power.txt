@@ -3,7 +3,7 @@ Report : Switching Activity
 	-list_not_annotated
 Design : PE
 Version: M-2017.06-SP2
-Date   : Fri Jul  5 00:16:18 2019
+Date   : Sun Jul  7 22:00:14 2019
 ****************************************
 
  Switching Activity Overview Statistics for "PE"
@@ -53,7 +53,7 @@ Report : Averaged Power
 	-verbose
 Design : PE
 Version: M-2017.06-SP2
-Date   : Fri Jul  5 00:16:23 2019
+Date   : Sun Jul  7 22:00:18 2019
 ****************************************
 
 Library(s) Used:
@@ -88,50 +88,50 @@ Power-specific unit information :
                                       Int      Switch   Leak      Total
 Hierarchy                             Power    Power    Power     Power    %
 --------------------------------------------------------------------------------
-PE                                    9.26e-03 2.03e-03 1.63e-03  1.29e-02 100.0
-  Ps (PathStage)                      1.22e-04 7.66e-06 6.72e-05  1.97e-04   1.5
+PE                                    7.34e-02 1.60e-02 1.63e-03  9.10e-02 100.0
+  Ps (PathStage)                      9.79e-04 6.05e-05 6.70e-05  1.11e-03   1.2
     clk_gate_psconf_r_reg[psum_mode] (SNPS_CLOCK_GATE_HIGH_PathStage_2)
-                                      4.91e-07 1.59e-10 2.24e-08  5.13e-07   0.0
+                                      3.93e-06 6.32e-09 2.24e-08  3.96e-06   0.0
     clk_gate_last_src_r_reg (SNPS_CLOCK_GATE_HIGH_PathStage_0)
-                                      5.54e-07 9.18e-08 2.26e-08  6.68e-07   0.0
+                                      4.43e-06 7.41e-07 2.26e-08  5.20e-06   0.0
     PSLp/clk_gate_loopIdx_r_reg (SNPS_CLOCK_GATE_HIGH_LoopCounterD1_6_0)
-                                      5.34e-07 1.61e-08 2.25e-08  5.73e-07   0.0
+                                      4.27e-06 1.30e-07 2.25e-08  4.42e-06   0.0
     clk_gate_ps_loopSize_r_reg (SNPS_CLOCK_GATE_HIGH_PathStage_1)
-                                      5.34e-07 1.52e-08 2.25e-08  5.71e-07   0.0
+                                      4.27e-06 1.23e-07 2.25e-08  4.41e-06   0.0
     clk_gate_o_Psum_POUT_reg[0] (SNPS_CLOCK_GATE_HIGH_PathStage_3)
-                                      5.78e-07 2.41e-06 2.26e-08  3.01e-06   0.0
+                                      4.63e-06 1.94e-05 2.26e-08  2.41e-05   0.0
   DPC/WPWADDR/clk_gate_loopIdx_r_reg (SNPS_CLOCK_GATE_HIGH_LoopCounterD1_7_1_0_3)
-                                      5.07e-07 3.77e-08 2.25e-08  5.67e-07   0.0
+                                      4.06e-06 3.06e-07 2.25e-08  4.38e-06   0.0
   DPC/OLp/clk_gate_loopIdx_r_reg[1] (SNPS_CLOCK_GATE_HIGH_LoopCounter_6_6_1)
-                                      7.63e-07 1.36e-07 2.28e-08  9.22e-07   0.0
+                                      6.08e-06 1.08e-06 2.28e-08  7.19e-06   0.0
   DPC/OLp/clk_gate_loopIdx_r_reg[2] (SNPS_CLOCK_GATE_HIGH_LoopCounter_6_6_2)
-                                      5.79e-07 3.58e-08 2.26e-08  6.37e-07   0.0
+                                      4.63e-06 2.87e-07 2.26e-08  4.94e-06   0.0
   DPC/OLp/clk_gate_loopIdx_r_reg[3] (SNPS_CLOCK_GATE_HIGH_LoopCounter_6_6_3)
-                                      5.13e-07 1.65e-08 2.25e-08  5.52e-07   0.0
+                                      4.10e-06 1.36e-07 2.25e-08  4.26e-06   0.0
   DPC/OLp/clk_gate_loopIdx_r_reg[4] (SNPS_CLOCK_GATE_HIGH_LoopCounter_6_6_4)
-                                      4.92e-07 4.69e-10 2.24e-08  5.15e-07   0.0
+                                      3.93e-06 6.70e-09 2.24e-08  3.96e-06   0.0
   DPC/OLp/clk_gate_loopIdx_r_reg[5] (SNPS_CLOCK_GATE_HIGH_LoopCounter_6_6_5)
-                                      4.91e-07 5.21e-11 2.24e-08  5.13e-07   0.0
+                                      3.93e-06 2.07e-09 2.24e-08  3.95e-06   0.0
   DPC/IPWADDR/clk_gate_loopIdx_r_reg (SNPS_CLOCK_GATE_HIGH_LoopCounterD1_5_1)
-                                      5.75e-07 6.97e-08 2.26e-08  6.67e-07   0.0
+                                      4.62e-06 5.58e-07 2.26e-08  5.20e-06   0.0
   DPC/WPRADDR/clk_gate_loopIdx_r_reg (SNPS_CLOCK_GATE_HIGH_LoopCounterD1_7_1_0_2)
-                                      8.91e-07 7.64e-07 2.37e-08  1.68e-06   0.0
+                                      7.10e-06 6.07e-06 2.37e-08  1.32e-05   0.0
   Ms/clk_gate_o_data_reg[0][Psum_MS] (SNPS_CLOCK_GATE_HIGH_MultStage)
-                                      1.43e-06 5.22e-05 2.37e-08  5.37e-05   0.4
+                                      1.14e-05 4.15e-04 2.37e-08  4.26e-04   0.5
   Ss/clk_gate_Sum_SS_reg[0] (SNPS_CLOCK_GATE_HIGH_SumStage)
-                                      1.22e-06 3.13e-05 2.37e-08  3.26e-05   0.3
+                                      9.68e-06 2.49e-04 2.37e-08  2.59e-04   0.3
   DPC/IPRADDR/clk_gate_loopStart_r_reg (SNPS_CLOCK_GATE_HIGH_LoopCounterStrideStart_5_1_1)
-                                      5.11e-07 6.05e-09 2.25e-08  5.39e-07   0.0
+                                      4.09e-06 5.00e-08 2.25e-08  4.16e-06   0.0
   DPC/IPRADDR/clk_gate_loopStrideIdx_r_reg (SNPS_CLOCK_GATE_HIGH_LoopCounterStrideStart_5_1_0)
-                                      8.87e-07 6.34e-07 2.37e-08  1.54e-06   0.0
+                                      7.07e-06 5.04e-06 2.37e-08  1.21e-05   0.0
   DPC/PPWADDR/clk_gate_loopIdx_r_reg (SNPS_CLOCK_GATE_HIGH_LoopCounterD1_7_1_0_1)
-                                      5.84e-07 7.18e-08 2.26e-08  6.78e-07   0.0
+                                      4.67e-06 5.75e-07 2.26e-08  5.26e-06   0.0
   DPC/WLp/clk_gate_loopIdx_r_reg[1] (SNPS_CLOCK_GATE_HIGH_LoopCounter_3_4_1)
-                                      5.00e-07 3.77e-09 2.24e-08  5.26e-07   0.0
+                                      4.00e-06 3.26e-08 2.24e-08  4.06e-06   0.0
   DPC/WLp/clk_gate_loopIdx_r_reg[2] (SNPS_CLOCK_GATE_HIGH_LoopCounter_3_4_2)
-                                      4.93e-07 1.02e-09 2.24e-08  5.17e-07   0.0
+                                      3.95e-06 1.06e-08 2.24e-08  3.98e-06   0.0
   Fs/clk_gate_o_FSpipe_FS_reg[msctl][auctl][mode] (SNPS_CLOCK_GATE_HIGH_FetchStage)
-                                      9.16e-07 1.83e-06 2.37e-08  2.77e-06   0.0
+                                      7.30e-06 1.46e-05 2.37e-08  2.19e-05   0.0
   DPC/INLp/clk_gate_loopIdx_r_reg[1] (SNPS_CLOCK_GATE_HIGH_LoopCounter_2_0000000400000008_8_1)
-                                      5.19e-07 2.10e-08 2.25e-08  5.63e-07   0.0
+                                      4.15e-06 1.73e-07 2.25e-08  4.34e-06   0.0
 1
