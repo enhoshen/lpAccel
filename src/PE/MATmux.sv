@@ -41,7 +41,7 @@ output [ASUMDWD-1:0] o_sum
         // num range 1bx1b: -1~1 
         //           2bx2b: -6~9
         //           4bx4b: -120~225  
-    logic signed  m1b [16];
+    logic  m1b [16];
     logic signed [4:0] m2b [8];
     logic signed [8:0] m4b [4];
         // num range sum1b:-16~16
@@ -65,7 +65,7 @@ output [ASUMDWD-1:0] o_sum
     //================
     //submodule
     //================
-    ADDT #(
+    ADDT1b #(
         .ODWD(5),
         .DWD(1),
         .NUM(16)
@@ -139,7 +139,7 @@ output [ASUMDWD-1:0] o_sum
             m8b[i] = setd8b_ipix[i] * setd8b_wpix[i];
         end
         case ( i_ctl.mode )
-            XNOR: sum_w = sum1b - 5'd16;
+            XNOR: sum_w = 2*sum1b - 5'd16;
             M1:   sum_w = (i_ctl.iNumT == i_ctl.wNumT)? sum1b : -sum1b ;
             M2:   sum_w = sum2b;
             M4:   sum_w = sum4b;
@@ -150,6 +150,28 @@ output [ASUMDWD-1:0] o_sum
 
     end
 endmodule
+
+module ADDT1b #(
+    parameter ODWD = 16,
+    parameter DWD =8,
+    parameter NUM = 8
+)(
+input [DWD-1:0] i_in [NUM],
+output [ODWD-1:0] o_out
+);
+    logic [ODWD-1:0] out; 
+        assign o_out = out;
+    integer i;
+    
+    always_comb  begin
+        out = {ODWD{1'd0}};
+            for ( i=0 ; i< NUM ; i=i+1)begin
+                out = out + (i_in[i]); 
+            end
+    end
+
+endmodule
+
 
 
 module ADDT #(

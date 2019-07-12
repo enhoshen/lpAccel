@@ -116,14 +116,12 @@ output PSconf o_psconf_POUT
         `forstart(perow,PEROW) 
             o_Psum_POUT[perow] <= '0; 
         `forend
-        psconf_r <= '0;
         o_psconf_POUT <= '0;
         last_src_r <= FROMLPE;
     `ff_cg( read_PP_valid_r || `rdyNack(LPE))
         `forstart(perow,PEROW)
             o_Psum_POUT[perow] <= psum_w[perow]; 
         `forend
-        psconf_r <= psconf_w;
         o_psconf_POUT <= psconf_POUT_w;
         last_src_r <= last_src_w;
     `ff_end
@@ -134,11 +132,13 @@ output PSconf o_psconf_POUT
         ps_loopSize_r <= 1;
         address_priority_r <= SSB4PS;
         POUT_rdy <= 0;
+        psconf_r <= '0;
     `ff_nocg
         s_main <= s_main_nxt;
         read_PP_valid_r <= read_PP_valid;
         ps_loopSize_r <= ps_loopSize_w;
         address_priority_r <= address_priority_w;
         POUT_rdy <= POUT_rdy_w;
+        psconf_r <= psconf_w;
     `ff_end
 endmodule

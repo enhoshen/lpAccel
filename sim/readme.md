@@ -1,5 +1,9 @@
 # Simulation for this project
 * SV variable define the simulated .sv source file path
+* GATE_LEVEL post-sim simulation mode, define the gate level design and +define+ GATE_LEVEL macro for the tool. 
+* TEST define the testbench module and +define TEST macro for the tool.
+* SIM pre-sim simulation mode.
+* HCLK define the half-clock cycle time in ns. 
 ## StructBus
 `TODO`
 ## Protocol Wrapper

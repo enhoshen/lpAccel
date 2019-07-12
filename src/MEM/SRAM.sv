@@ -1,7 +1,7 @@
 `timescale 1 ns/1 ps
 // MEMdefin
 import SRAMCfg::*;
-import GenCfg::GENMODE;
+import GenCfg::*;
 module SRAM_SP#(
     parameter WORDWD = 256,
     parameter DWD    = 16,
@@ -25,6 +25,7 @@ input        [DWD-1:0] i_wdata[SIZE]
     genvar arr;
     generate  
         if (GENMODE == SIM) begin: sim_mode
+            /*
             logic [DWD-1:0] data_r[WORDWD][SIZE];
             always @(posedge i_clk) begin
                 if (i_write) begin
@@ -41,12 +42,24 @@ input        [DWD-1:0] i_wdata[SIZE]
                         o_rdata <= {SIZE{'x}};
                 end
             end
+            */
+            for ( arr=0 ; arr<SIZE ; ++arr)begin: rf_instance 
+                case ({WORDWD,DWD}) 
+                    {32'd256,32'd16}: SRAM_SP_256x16 `SRAMSPinstance_arr(SRAM256x16,arr)
+                    {32'd512,32'd16}: SRAM_SP_512x16 `SRAMSPinstance_arr(SRAM512x16,arr)
+                    {32'd1024,32'd32}: SRAM_SP_1024x32 `SRAMSPinstance_arr(SRAM1024x32,arr)
+
+                    default: initial ErrorRF;
+                endcase
+            end 
         end 
         else if (GENMODE == SYN) begin: syn_mode
             for ( arr=0 ; arr<SIZE ; ++arr)begin: rf_instance 
                 case ({WORDWD,DWD}) 
-                    {32'd256,32'd16}: `SRAMSPinstance_arr(SRAM256x16,arr)
-                    {32'd512,32'd16}: `SRAMSPinstance_arr(SRAM512x16,arr)
+                    {32'd256,32'd16}: SRAM_SP_256x16 `SRAMSPinstance_arr(SRAM256x16,arr)
+                    {32'd512,32'd16}: SRAM_SP_512x16 `SRAMSPinstance_arr(SRAM512x16,arr)
+                    {32'd1024,32'd32}: SRAM_SP_1024x32 `SRAMSPinstance_arr(SRAM1024x32,arr)
+
                     default: initial ErrorRF;
                 endcase
             end

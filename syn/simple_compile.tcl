@@ -25,6 +25,7 @@ set_max_fanout 100  [current_design]
 #ungroup this part is hard-coded to PE 
 set auto_ungroup 0 
 source pe_ungroup.tcl
+
 #Don't touch the basic env setting as below
 set_operating_conditions -min_library fast -min fast -max_library typical -max typical 
 set_drive        1     [all_inputs]                                                        ;# DC w IOpad 
@@ -37,9 +38,12 @@ set write_name ${current_design}_${cycle}ns_${compile}_[expr { 0<1 ? "cg": "" }]
 echo -e $write_name
 # "" argument doesn't work because tcl interpret it as part of the command
 # look up https://stackoverflow.com/questions/28468367/tcl-eval-and-exec-confusing-point
-set command "[expr { $compile=={ultra} ? "compile_ultra" : "compile" }] [expr { $auto_ungroup==1 ? " ":"-no_autoungroup" }] [ expr { $clock_gate==1 ? "-gate_clock" : " "}]"
-echo $command
-eval exec $command
+set command "[expr { $compile=={ultra} ? "compile_ultra" : "compile" }]"
+set arguments " [expr { $auto_ungroup==1 ? " ":"-no_autoungroup" }] [ expr { $clock_gate==1 ? "-gate_clock" : " "}]"
+echo $command $arguments
+$command {*}$arguments
+
+# report
 report_timing > $write_name.txt
 report_area >> $write_name.txt
 report_cell >> $write_name.txt
