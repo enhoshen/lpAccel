@@ -195,4 +195,26 @@ output signed [ODWD-1:0] o_out
 
 endmodule
 
+module ADDTSHT #(
+    parameter ODWD = 16,
+    parameter DWD =8,
+    parameter NUM = 8
+)(
+input signed [DWD-1:0] i_in [NUM],
+output signed [ODWD-1:0] o_out
+);
+    logic signed [ODWD-1:0] out; 
+        assign o_out = out;
+    integer i;
+    
+    always_comb  begin
+        out = {ODWD{1'd0}};
+            for ( i=0 ; i< NUM ; i=i+1)begin
+                out = out + (i_in[i]<<i); 
+            end
+    end
+
+endmodule
+
+
 

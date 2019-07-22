@@ -6,7 +6,7 @@ module AunitPacked16 (
 input           AuCtl     i_ctl,
 input           [15:0] i_ipix,
 input           [15:0] i_wpix,
-output logic    [15:0] o_sum,
+output logic signed    [ASUMDWD-1:0] o_sum
 );
 
     //================
@@ -16,9 +16,8 @@ output logic    [15:0] o_sum,
     //logic
     //================
     logic ce;
-    logic [15:0] sum_w ;
-    logic sum_rdy_w;
-    logic sum_zero_w;
+    logic signed [15:0] sum [2];
+    assign o_sum= sum[1] + sum[0]; 
     //================
     //comb
     //================
@@ -29,10 +28,10 @@ output logic    [15:0] o_sum,
     generate 
         for ( i=0 ; i<2 ; i++) begin : ADDT_8b
             ADTMult8 adt8(
-                .i_ctl(),
-                .i_i(),
-                .i_w(),
-                .o_o()
+                .*,
+                .i_i(i_ipix[8*i+:8]),
+                .i_w(i_wpix[8*i+:8]),
+                .o_o(sum[i])
             );
         end
     endgenerate 
@@ -57,6 +56,7 @@ output [15:0] o_o
     //logic
     //================
     logic [7:0] PP [8];
+    logic signed [8:0] SSPP[8];
     logic [7:0] AndPP [8]; // ANDed partial product
     logic XnorBit [8];
     logic [1:0] FlipBit2b [4];
@@ -73,7 +73,8 @@ output [15:0] o_o
     always_comb begin
         Sum = 16'b0;
         for ( i=0 ; i<8 ; ++i)begin
-            Sum = Sum + $signed({PPSignExtend[i],PP[i]<<i});
+            SSPP[i] = {PPSignExtend[i],PP[i]} ;
+            Sum = Sum + (SSPP[i]<<i);
         end
     end
      always_comb begin 

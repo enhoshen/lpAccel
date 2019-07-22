@@ -65,10 +65,10 @@ output FSpipeout o_FSpipe_FS
             assign auctl.AuMask = (auctl.mode == XNOR)? {48'b0 ,16'hffff }:MUXMASK[modem1];
         end
         else if (ATYPE == SIMPLE)begin
-            initial GenCfg::TODO;
+            assign auctl.AuMask= '1; 
         end
         else if (ATYPE == BOOTH)begin
-            initial GenCfg::TODO;
+            assign auctl.AuMask= '1; 
         end
         else begin
             initial ErrorAu;

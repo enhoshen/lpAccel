@@ -28,7 +28,7 @@ PRE := $(if$(SV),$(SV).sv, %.sv )
 	$(IRUN) +ncnowarn+VPISTF +access+rw -loadvpi $(BRIDGE_SO):VpiBoot \
     +incdir+/opt/CAD/cell_lib/CBDK_TSMC90GUTM_Arm_f1.0/CIC/Verilog/ \
     +define+$@ +define+HOME=$(HOME) +define+TESTMODULE=$(if $(TEST),$(TEST),$@)  \
-    $(if $(HCLK) , +define+HCLK=$(HCLK) ,) \
+    $(if $(HCLK) , +define+HCLK=$(HCLK) ,) $(if $(COND) , +define+COND=$(COND), ) \
     $(if $(SIM) , -seq_udp_delay 50ps +define+SIM=$(SIM),) $(if $(GATE_LEVEL) , +define+GATE_LEVEL=$(GATE_LEVEL),)\
     $(if $(GATE_LEVEL) ,  -seq_udp_delay 50ps +define+no_warning +nowarn+SDFNCAP:SDFNDP:MACRDF:CUVWSP:SDFNSB:SDFNL1,)\
     $(NICOTB)/verilog/Utils.sv $(if $(SV),$(SV) , $@.sv) +sv

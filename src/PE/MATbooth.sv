@@ -2,6 +2,47 @@ typedef enum logic [1:0] {FULL,HEAD,BIN,RSHIFT} boothT;
 
 import PECtlCfg::*;
 import PECfg::*;
+
+module MATbooth(
+`clk_input,
+input           AuCtl     i_ctl,
+input           [15:0] i_ipix,
+input           [15:0] i_wpix,
+output logic signed    [ASUMDWD-1:0] o_sum
+);
+
+    //================
+    //parameter
+    //================
+    //================
+    //logic
+    //================
+    logic ce;
+    logic signed [15:0] sum [2];
+    assign o_sum= sum[1] + sum[0]; 
+    //================
+    //comb
+    //================
+        //============
+        //submodule
+        //============
+    genvar i;
+    generate 
+        for ( i=0 ; i<2 ; i++) begin : ADDT_8b
+            MATbooth8 bt8(
+                .*,
+                .i_i(i_ipix[8*i+:8]),
+                .i_w(i_wpix[8*i+:8]),
+                .o_o(sum[i])
+            );
+        end
+    endgenerate 
+    //================
+    //seq
+    //================
+endmodule
+
+
 module MATbooth8 (
 `clk_input,
 input AuCtl i_ctl,

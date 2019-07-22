@@ -16,7 +16,7 @@
     `include "../src/common/myControllers.sv"
     //`include "../src/MEM/memv/MEMV_include.sv"
     `ifdef SIM 
-        `include "../src/MEM/memv/RF_2P_32x32.v" 
+        //`include "../src/MEM/memv/RF_2P_32x32.v" 
     `endif 
     `include "../src/MEM/RF.sv"
     // for simulation
@@ -29,5 +29,6 @@
     `include "../src/PE/SumStage.sv"
     `include "../src/PE/PathStage.sv"
     `include "../src/PE/PE.sv"
-`endif
 
+
+`endif

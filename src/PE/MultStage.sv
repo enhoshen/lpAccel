@@ -44,17 +44,27 @@ output MSpipe o_MSpipe_MS
                 );                                                      
             end                                                         
             else if (ATYPE == SIMPLE)begin                              
-                initial GenCfg::TODO;                                  
+                AunitPacked16 SM(
+                .*,
+                .i_ipix(i_data[pe_row].Input_FS),
+                .i_wpix(i_data[pe_row].Weight_FS),
+                .o_sum(sum[pe_row])
+                );
             end                                                         
             else if (ATYPE == BOOTH)begin                               
-                initial GenCfg::TODO;                                  
+                 MATbooth MB (                                             
+                .*,                                                     
+                .i_ipix(i_data[pe_row].Input_FS),                               
+                .i_wpix(i_data[pe_row].Weight_FS),                              
+                .o_sum(sum[pe_row])                                   
+                ); 
             end                                                         
             else begin                                                  
                 initial ErrorAu;                                        
             end                                                         
             always_comb begin
                 if ( i_pipe.fsctl.psum_mode == D16)
-                    psum_ms_w[pe_row] = (i_pipe.fsctl.psum_parity)? i_data[pe_row].Psum_FS>> DWD : i_data[pe_row].Psum_FS;
+                    psum_ms_w[pe_row] = (i_pipe.fsctl.psum_parity)? {{DWD{1'b0}},i_data[pe_row].Psum_FS[DWD+:DWD]} : i_data[pe_row].Psum_FS;
                 else
                     psum_ms_w[pe_row] = i_data[pe_row].Psum_FS;
             end

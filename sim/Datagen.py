@@ -4,11 +4,19 @@ class LayerConf():
     def __init__(self,*arg,**kwarg):
         # avoid invoking setattr at initialization, use self.__dict__['attr']
         self.__dict__['dic']={}
-        self.__dict__['arglist']= [ 'H','W','R','S','E','F','U','C','M','B','Xb','Wb','Ab','Ob','Tm','Tw','Th','Tb','Pch','Pm','Au']
+        self.__dict__['arglist']= [ 'H','W','R','S','E','F','U','C','M','B','Xb','Wb','Ab','Ob','Tm','Tw','Th','Tb','Pch','Pm','Au','ibuf_row']
         for i,v in enumerate(arg):
             self.dic[ self.arglist[i] ] = v 
         for i , v in kwarg.items(): 
             self.dic[i]=v
+        self.Cnew=ceil(self.C*self.Ab/16)
+        self.Ctile=ceil(self.Cnew/self.Pch)
+        self.Spattile=ceil(self.E/self.Tw)*ceil(self.F/self.Th)
+        self.Btile=ceil(self.B/self.Tb)
+        self.Mtile=ceil(self.M/self.Tm)
+        self.Thtile=ceil(self.Th/16)
+        self.Tmtile=ceil(self.Tm/self.Pm/16)
+        self.PEpass=self.Wb*self.Tb*self.Thtile*self.Tmtile
     def __getattr__(self,n):
         return self.dic[n] 
     def __setattr__(self,n,v):
@@ -39,13 +47,12 @@ class ModelConf():
         self.layers.append(conf)
     def __iter__(self):
         yield from self.layers 
-AlexBest = ModelConf( [ LayerConf(227,227,11,11,55,55,4,3,64,4,8,4,4,4,64,55,55,4,2,4 ),
-                        LayerConf(31,31,5,5,27,27,1,64,256,4,4,4,4,4,64,27,27,4,4,4),
-                        LayerConf(15,15,3,3,13,13,1,256,256,4,4,4,4,4,64,13,13,4,4,4),
-                        LayerConf(15,15,3,3,13,13,1,256,256,4,4,4,4,4,64,13,13,4,4,4),
-                        LayerConf(15,15,3,3,13,13,1,256,256,4,4,4,4,4,64,13,13,4,4,4)] )
-Vgg16 = ModelConf ( [   LayerConf(),
-                        LayerConf()])
+AlexBest = ModelConf( [ LayerConf(227,227,11,11,55,55,4,3,64,4,2,1,4,4,64,14,14,4,1,2,3,4),
+                        LayerConf(31,31,5,5,27,27,1,64,256,4,1,1,4,4,64,27,27,4,4,4,2,2),
+                        LayerConf(15,15,3,3,13,13,1,256,256,4,1,1,4,4,64,13,13,4,4,4,3,1),
+                        LayerConf(15,15,3,3,13,13,1,256,256,4,1,1,4,4,64,13,13,4,4,4,3,1),
+                        LayerConf(15,15,3,3,13,13,1,256,256,4,1,1,4,4,64,13,13,4,4,4,3,1)] )
+Vgg16 = ModelConf ( [   LayerConf(227,227,3,3,224,224,1,3,64,3,1,1,4,4,64,224,224,4,4,4,3,1) ]) 
                     
 for i in AlexBest:
     print( i ) 
@@ -72,10 +79,8 @@ def InputData(pch,tw,s,   xb,ab,th):
     Repack= np.zeros( shape=(xb,s,tw,pch ),dtype=np.uint16 )
     Pack( Repack , uQuant , xb , pch ,ab)
     Repack= np.swapaxes(Repack,0,1)
-    print(s,xb,tw,pch)
     def it(bus):
         size =(s*xb*tw*pch)
-        print ( size)
         for i in range(size):
             bus.value = Repack.flat[i]
             yield bus.value
@@ -91,10 +96,8 @@ def WeightData(pch,r,m,s,    wb,ab,th):
         Repack= np.swapaxes(Repack,0,1)
         return data , Quant , uQuant , Repack, Pack
     datas , Quants, uQuants, Repacks, Packs = zip ( * [onefilter(pch,r,m,s, wb,ab,th) for i in range(16)])
-    print(s,wb,m,r,pch)
     def it(bus):
         size = (s*wb*m*r*pch)
-        print(size)
         for i in range(size):
             for f in range(16):
                 bus.value[f] = Repacks[f].flat[i]
@@ -105,39 +108,46 @@ def Conv1d( r , indata, wtdata):
     pad = indata
 def PsumData(m,tw,ab,th,inputdata,weightdata):
     pass
-def BufData(Tm,B,Tw,Th,Pch,S,Xb,Wb):
-    input_size = B*Th*Tw*Pch*Xb
-    weight_size = Tm*S*S*Pch*Wb
-    ibuf_write = Pch*Tw*Xb *ceil(Th/16)*B
-    wbuf_write = S*S*Pch*Tm*Wb *B*ceil(Th/16) 
-    ibuf_read = Tw*Pch*Xb  *B*S*ceil(Th/16) 
-    wbuf_read = S*S*Pch*Tm*Wb  *B*ceil(Th/16)
-    psum_write = Tw*Th *B*ceil(Tm/16)
+def BufData(conf):
+    Tw=conf.Tw
+    Pch=conf.Pch
+    Pm =conf.Pm
+    Xb=conf.Xb
+    R=conf.R
+    S=conf.S
+    
+    input_size = Tw*Pch*Xb*S
+    weight_size = R*S*Pch*Pm
+    ibuf_write = Pch*Tw*Xb 
+    wbuf_write = R*Pch*Pm 
+    ibuf_read = input_size 
+    wbuf_read = weight_size 
+    psum_write = Tw*Pm
     gb_write = input_size + weight_size + psum_write 
     gb_read = ibuf_write + wbuf_write + psum_write
     def ibuf_r(bus):
         for i in range (ibuf_read):
-            bus.values = np.random.randint( np.iinfo(np.uint16).max ,size=16,dtype=np.uint16) 
+            bus.values = np.random.randint( np.iinfo(np.uint16).max ,size=1,dtype=np.uint16) 
             yield bus.values
     def ibuf_w(bus):
         for i in range (ibuf_write):
-            bus.values = np.random.randint( np.iinfo(np.uint16).max ,size=16,dtype=np.uint16) 
+            bus.values = np.random.randint( np.iinfo(np.uint16).max ,size=1,dtype=np.uint16) 
             yield bus.values
     def wbuf_r(bus):
         for i in range (wbuf_read):
-            bus.values = np.random.randint( np.iinfo(np.uint16).max ,size=16,dtype=np.uint16) 
+            bus.values = np.random.randint( np.iinfo(np.uint16).max ,size=1,dtype=np.uint16) 
             yield bus.values
     def wbuf_w(bus):
         for i in range (wbuf_write):
-            bus.values = np.random.randint( np.iinfo(np.uint16).max ,size=16,dtype=np.uint16) 
+            bus.values = np.random.randint( np.iinfo(np.uint16).max ,size=1,dtype=np.uint16) 
             yield bus.values
     def gbuf_r(bus):
         for i in range (gb_read//4):
-            bus.values = np.random.randint( np.iinfo(np.uint32).max ,size=32,dtype=np.uint32) 
+            bus.values = np.random.randint( np.iinfo(np.uint32).max ,size=2,dtype=np.uint32) 
             yield bus.values
     def gbuf_w(bus):
         for i in range (gb_write//4):
-            bus.values = np.random.randint( np.iinfo(np.uint32).max ,size=32,dtype=np.uint32) 
+            bus.values = np.random.randint( np.iinfo(np.uint32).max ,size=2,dtype=np.uint32) 
             yield bus.values
     return ibuf_r ,ibuf_w , wbuf_r , wbuf_w , gbuf_r ,gbuf_w
 if __name__ == "__main__":

@@ -51,9 +51,9 @@ output PECtlCfg::DPstatus        o_DPstatus
     logic ce;
         assign ce = s_main==WORK ;
     LpCtl in_idx_ctl , wt_idx_ctl , out_idx_ctl ;
-        assign in_idx_ctl = '{reset:i_PEinst.reset||i_PEinst.next,dval:ce,inc:Input_rdy&&Input_ack};
-        assign wt_idx_ctl = '{reset:i_PEinst.reset||i_PEinst.next,dval:ce,inc:Weight_rdy&&Weight_ack};
-        assign out_idx_ctl ='{reset:i_PEinst.reset||i_PEinst.next,dval:ce,inc:MAIN_rdy&&MAIN_ack};
+        assign in_idx_ctl = '{reset:i_PEinst.reset||o_DPstatus.confEnd ,dval:ce,inc:Input_rdy&&Input_ack};
+        assign wt_idx_ctl = '{reset:i_PEinst.reset||o_DPstatus.confEnd ,dval:ce,inc:Weight_rdy&&Weight_ack};
+        assign out_idx_ctl ='{reset:i_PEinst.reset||o_DPstatus.confEnd ,dval:ce,inc:MAIN_rdy&&MAIN_ack};
         //--------------
         //data index loop size and index
         //--------------
@@ -63,7 +63,7 @@ output PECtlCfg::DPstatus        o_DPstatus
         logic [MAXTW-1:0] in_row_tile;
         logic [3:0] in_real_stride;
             assign in_real_stride = (i_PEconf.PixReuse)? i_PEconf.U : i_PEconf.R;
-            assign in_row_tile = (i_PEconf.PixReuse)? i_PEconf.Tw * in_real_stride + i_PEconf.R - 1'b1 : i_PEconf.Tw*in_real_stride ;
+            assign in_row_tile = (i_PEconf.PixReuse)? i_PEconf.Tw * in_real_stride-in_real_stride + i_PEconf.R  : i_PEconf.Tw*in_real_stride ;
         assign in_loopSize = {i_PEconf.Pch ,  in_row_tile};
         assign wt_loopSize = {i_PEconf.Pch , i_PEconf.R , i_PEconf.Pm} ;
         assign out_loopSize = {i_PEconf.Pch , i_PEconf.R , i_PEconf.Pm , i_PEconf.Tw, i_PEconf.Xb , i_PEconf.S};
@@ -261,7 +261,7 @@ output PECtlCfg::DPstatus        o_DPstatus
         if ( i_PEinst.dval)
         case (s_main) 
             IDLE: begin
-                s_main_nxt = ( i_PEinst.start) ? INIT : IDLE;
+                s_main_nxt = ( i_PEinst.start||i_PEinst.next) ? INIT : IDLE;
             end 
             STALL:begin
                 s_main_nxt = ( i_PEinst.reset ) ? IDLE : (!i_PEinst.stall)? WORK : STALL;
@@ -270,7 +270,12 @@ output PECtlCfg::DPstatus        o_DPstatus
                 s_main_nxt = ( i_PEinst.reset ) ? IDLE : WORK; 
             end
             WORK: begin
-                s_main_nxt = ( (i_PEinst.reset && i_PEinst.start) || i_PEinst.next)? INIT :(   (i_PEinst.reset && !i_PEinst.start ) || o_DPstatus.confEnd) ? IDLE : (!i_PEinst.stall)? WORK : STALL;
+                if(i_PEinst.stall) s_main_nxt=STALL;
+                else if( i_PEinst.reset) s_main_nxt =IDLE; 
+                else if( o_DPstatus.confEnd && ! i_PEinst.next)  s_main_nxt=IDLE;
+                else if( i_PEinst.next) s_main_nxt=INIT;
+                else s_main_nxt=s_main; 
+                //s_main_nxt = ( (i_PEinst.reset && i_PEinst.start) || i_PEinst.next)? INIT :(   (i_PEinst.reset && !i_PEinst.start ) || (o_DPstatus.confEnd && !i_PEinst.next)) ? IDLE : (!i_PEinst.stall)? WORK : STALL;
             end
             default: begin
             end   
@@ -312,13 +317,13 @@ output PECtlCfg::DPstatus        o_DPstatus
     `ff_end
 
     `ff_rstn
-        o_DPstatus <= '0;
     `ff_cg(ce)
-        o_DPstatus <= dpstatus_w;
     `ff_end
 
     `ff_rstn
+        o_DPstatus <= '0;
     `ff_nocg
+        o_DPstatus <= dpstatus_w;
     `ff_end
 
 endmodule

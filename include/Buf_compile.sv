@@ -4,7 +4,7 @@
     `include "tsmc090.v"
     `include "../src/define.sv"
     `include "../src/MEM/MEMdefine.sv"
-    `include "../BUFFER/BufDefine.sv"
+    `include "../src/BUFFER/BufDefine.sv"
     `include `syn_file(`GATE_LEVEL, .v) 
     `include "../src/BUFFER/Buffertest.sv"
 `else
@@ -14,6 +14,7 @@
         `include "../src/MEM/memv/SRAM_SP_1024x32.v"
         `include "../src/MEM/memv/SRAM_SP_512x16.v"
         `include "../src/MEM/memv/SRAM_SP_256x16.v"
+        `include "../src/MEM/memv/SRAM_SP_800x32.v"
     `endif 
     `include "../src/MEM/MEMdefine.sv"
     `include "../src/MEM/SRAM.sv"

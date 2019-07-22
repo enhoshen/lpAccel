@@ -143,9 +143,15 @@ module Buftest;
 
     `default_Nico_define
     BufferTest dut(
-    .*
+    .*,
+    .i_Input({>>{i_Input}}),
+    .i_Weight({>>{i_Weight}}),
+    .i_GB({>>{i_GB}}),
+    .o_Input({>>{o_Input}}),
+    .o_Weight({>>{o_Weight}}),
+    .o_GB({>>{o_GB}})
     );
-    `default_Nico_init_block(Buftest,1000000)
+    `default_Nico_init_block(Buftest,10000)
 endmodule
 
 `endif

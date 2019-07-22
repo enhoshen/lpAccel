@@ -1,5 +1,5 @@
 # You can only modify clock period 
-set cycle 2.5 
+set cycle 3 
 echo $cycle
 set t_in [expr 0.01]
 set t_out  0.01 

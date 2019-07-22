@@ -50,7 +50,11 @@
     `ff_rstn clk_cnt <= 0; `ff_nocg clk_cnt <= clk_cnt+1; `ff_end\
     initial begin\
         `ifdef GATE_LEVEL\
-            $fsdbDumpfile(`fsdb_file(`GATE_LEVEL,name) );\
+            `ifdef COND \
+                $fsdbDumpfile(`fsdb_cond_file(`GATE_LEVEL,name,`COND) );\
+            `else \
+                $fsdbDumpfile(`fsdb_file(`GATE_LEVEL,name) );\
+            `endif \
             $sdf_annotate(`syn_file(`GATE_LEVEL,.sdf), name);\
             $display( `syn_file(`GATE_LEVEL,.sdf));\
             $fsdbDumpvars(0, name, "+all");\
@@ -90,7 +94,8 @@ endpackage
 //========= utility  ============
 `define syn_file( name , suffix) `"`HOME/syn/name``suffix`"
 `define src_file( name ) `"`HOME/src/name.sv`"
-`define fsdb_file( name ,test) `"name``_``test.fsdb`"
+`define fsdb_file( name ,test ) `"name``_``test``.fsdb`"
+`define fsdb_cond_file( name ,test, condition) `"name``_``test``_``condition``.fsdb`"
 // =======by JohnJohnLin ==========
 `define rdyack_input(name) output logic name``_ack, input name``_rdy
 `define rdyack_output(name) output logic name``_rdy, input name``_ack

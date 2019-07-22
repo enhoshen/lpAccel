@@ -194,7 +194,7 @@ module PEtest;
     `rdyack_logic(POUT);
     `default_Nico_define 
 PE dut(
-.*      
+.*     
 `ifdef GATE_LEVEL
 ,
 .i_Input({>>{i_Input}}),

@@ -3,8 +3,8 @@ package BufCfg ;
     parameter GBUFDWD=32;
     parameter IBUFSIZE=512;
     parameter WBUFSIZE=256; 
-    parameter IBUFBANK=16;
-    parameter WBUFBANK=16;
-    parameter GBUFSIZE=1024;
-    parameter GBUFBANK=32;
+    parameter IBUFBANK=1;
+    parameter WBUFBANK=1;
+    parameter GBUFSIZE=800;
+    parameter GBUFBANK=2;
 endpackage
