@@ -108,41 +108,43 @@ def Conv1d( r , indata, wtdata):
     pad = indata
 def PsumData(m,tw,ab,th,inputdata,weightdata):
     pass
-def BufData(conf):
+def BufData(conf,allgb=0):
     Tw=conf.Tw
     Pch=conf.Pch
     Pm =conf.Pm
     Xb=conf.Xb
     R=conf.R
     S=conf.S
-    
-    input_size = Tw*Pch*Xb*S
+    U=conf.U 
+    TW=(Tw*U)-U+R
+    input_size = TW*Pch*Xb*S
     weight_size = R*S*Pch*Pm
-    ibuf_write = Pch*Tw*Xb 
+    ibuf_write = Pch*TW*Xb 
     wbuf_write = R*Pch*Pm 
     ibuf_read = input_size 
     wbuf_read = weight_size 
     psum_write = Tw*Pm
     gb_write = input_size + weight_size + psum_write 
     gb_read = ibuf_write + wbuf_write + psum_write
+    gb_all_read= ibuf_read + wbuf_read + psum_write 
     def ibuf_r(bus):
-        for i in range (ibuf_read):
+        for i in range (ibuf_read if allgb==0 else 1):
             bus.values = np.random.randint( np.iinfo(np.uint16).max ,size=1,dtype=np.uint16) 
             yield bus.values
     def ibuf_w(bus):
-        for i in range (ibuf_write):
+        for i in range (ibuf_write if allgb==0 else 1):
             bus.values = np.random.randint( np.iinfo(np.uint16).max ,size=1,dtype=np.uint16) 
             yield bus.values
     def wbuf_r(bus):
-        for i in range (wbuf_read):
+        for i in range (wbuf_read if allgb==0 else 1):
             bus.values = np.random.randint( np.iinfo(np.uint16).max ,size=1,dtype=np.uint16) 
             yield bus.values
     def wbuf_w(bus):
-        for i in range (wbuf_write):
+        for i in range (wbuf_write if allgb==0 else 1):
             bus.values = np.random.randint( np.iinfo(np.uint16).max ,size=1,dtype=np.uint16) 
             yield bus.values
     def gbuf_r(bus):
-        for i in range (gb_read//4):
+        for i in range (gb_read//4 if allgb==0 else gb_all_read//4):
             bus.values = np.random.randint( np.iinfo(np.uint32).max ,size=2,dtype=np.uint32) 
             yield bus.values
     def gbuf_w(bus):

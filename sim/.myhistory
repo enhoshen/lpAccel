@@ -7,3 +7,4 @@ make PEtest SV=../include/PE_compile.sv GATE_LEVEL=PE_3ns_ultra_cg_072102_syn HC
 make Buftest SV=../include/Buf_compile.sv GATE_LEVEL=BufferTest_3ns_ultra_cg_ug_072207_syn HCLK=2.5
 make PEtest SV=../include/PE_compile.sv GATE_LEVEL=PE_3ns_ultra_cg_noug_072208_syn HCLK=2.5
 make Buftest SV=../include/Buf_compile.sv GATE_LEVEL=BufferTest_3ns_ultra_cg_noug_072302_syn COND=row HCLK=2.5
+make Buftest SV=../include/Buf_compile.sv GATE_LEVEL=BufferTest_3ns_ultra_cg_noug_072303_syn COND=row HCLK=2.5

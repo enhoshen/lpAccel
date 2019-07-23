@@ -84,7 +84,7 @@ FSDBDumpMem = "$novasDumpMemNow(${SimDmpObj}, ${SimDmpBegin}, ${SimDmpSize});"
 [DesignTree]
 IfShowModule = {TRUE, FALSE}
 [DisabledMessages]
-version = Verdi_M-2017.03-SP2
+version = Verdi_O-2018.09
 [Editor]
 editorName = TurboEditor
 [Emacs]
@@ -164,8 +164,12 @@ StickSet-TextColor = black
 [FSM_Dlg-Print]
 Orientation = Landscape
 [FileBrowser]
-nWaveOpenFsdbDirHistory = "\"/home/enhoshen/research/lpAccel/sim/loop.fsdb\"" "\"/home/enhoshen/research/lpAccel/sim/PEtest.fsdb\""
 nWaveRestoreRCDirHistory = "\"/home/enhoshen/research/lpAccel/sim/Address.rc\"" "\"/home/enhoshen/research/lpAccel/sim/novas.rc\"" "\"/home/enhoshen/research/lpAccel/sim/Controls.rc\""
+nWaveOpenFsdbDirHistory = "\"/home/enhoshen/research/lpAccel/sim/loop.fsdb\"" "\"/home/enhoshen/research/lpAccel/sim/PEtest.fsdb\"" "\"/home/enhoshen/research/lpAccel/sim/PE_3ns_ultra_cg_noug_072205_syn_PEtest.fsdb\"" "\"/home/enhoshen/research/lpAccel/sim/PE_3ns_ultra_cg_ug_072205\
+_syn_PEtest.fsdb\"" "\"/home/enhoshen/research/lpAccel/sim/PE_3_ultra_cg_070813_syn_PEtest.fsdb\"" "\"/home/enhoshen/research/lpAccel/sim/PE_3_ultra_cg_070813_syn_PEtest_5ns.fsdb\"" "\"/home/enhoshen/research/lpAccel/sim/PE_3ns_ultra_cg_noug_072206_syn_PEt\
+est.fsdb\"" "\"/home/enhoshen/research/lpAccel/sim/BufferTest_3ns_ultra_cg_ug_072207_syn_Buftest.fsdb\"" "\"/home/enhoshen/research/lpAccel/sim/PE_3_compile_syn_PEtest.fsdb\"" "\"/home/enhoshen/research/lpAccel/sim/PE_3ns_ultra_cg_noug_072208_syn_PEtest.fs\
+db\"" "\"/home/enhoshen/research/lpAccel/sim/BufferTest_3ns_ultra_cg_ug_072207_syn_Buftest_row.fsdb\"" "\"/home/enhoshen/research/lpAccel/sim/BufferTest_3ns_ultra_cg_noug_072302_syn_Buftest_row.fsdb\"" "\"/home/enhoshen/research/lpAccel/sim/BufferTest_3ns_\
+ultra_cg_noug_072303_syn_Buftest_row.fsdb\""
 [Form]
 version = Verdi_O-2018.09
 [General]
@@ -251,16 +255,19 @@ FileName = test.ps
 PaperSize = A4 - 210x297 (mm)
 ColorPrint = FALSE
 [QtDialog]
-QwUserAskDlg = 436,333,324,110
 aboutVerdiDialog = 221,85,773,641
 VirtualFileEditorDialog = 297,235,637,403
 QwQuestionMsgDlg = 444,366,324,110
-QwWarnMsgDlg = 298,240,600,250
 QwShortcutDialog = 206,97,800,600
-qWaveSignalDialog = 208,197,800,479
 saveSigDlg = 332,244,551,386
-openFileDlg = 280,198,602,483
 restoreSigDlg = 305,220,551,438
+QwWarnMsgDlg = 2594,57,600,250
+QwUserAskDlg = 2594,57,324,134
+openFileDlg = 207,836,1374,484
+CreateBusDialog = 886,724,788,709
+SetWindowTimeUnitDialog = 1063,1035,433,86
+ActiveFileDialog = 1005,942,549,272
+qWaveSignalDialog = 824,776,1405,499
 [QwSettings.QwMainWindow.shortcuts.nWave.RestoreFile1]
 shortcut = 
 [QwSettings.QwMainWindow.shortcuts.nWave.RestoreFile3]
@@ -471,8 +478,8 @@ PiecewiseConstant = FALSE
 PointStyle = FALSE
 SetDefaultRadix = TRUE
 FilterTextField = FALSE
-getSignalForm = 208 197 800 479 163 381 387 89
-viewPort = 60 91 1042 697 100 65
+getSignalForm = 824 776 1405 499 662 401 497 113
+viewPort = 0 570 2560 1017 218 65
 signalSpacing = 5
 digitalSignalHeight = 15
 analogSignalHeight = 98
@@ -741,10 +748,11 @@ curveWindow_Drag&Drop_Mode = TRUE
 hspiceIncOpenMode = TRUE
 pcSelectMode = TRUE
 hierarchyDelimiter = /
-RecentFile1 = "\"/home/enhoshen/research/lpAccel/sim/PEtest.fsdb\""
-RecentFile2 = "\"/home/enhoshen/research/lpAccel/sim/Controls.rc\""
-RecentFile3 = "\"/home/enhoshen/research/lpAccel/sim/loop.fsdb\""
-RecentFile4 = "\"/home/enhoshen/research/lpAccel/sim/loop.fsdb\""
+RecentFile1 = "\"/home/enhoshen/research/lpAccel/sim/BufferTest_3ns_ultra_cg_noug_072303_syn_Buftest_row.fsdb\""
+RecentFile2 = "\"/home/enhoshen/research/lpAccel/sim/BufferTest_3ns_ultra_cg_noug_072302_syn_Buftest_row.fsdb\""
+RecentFile3 = "\"/home/enhoshen/research/lpAccel/sim/BufferTest_3ns_ultra_cg_ug_072207_syn_Buftest_row.fsdb\""
+RecentFile4 = "\"/home/enhoshen/research/lpAccel/sim/PEtest.fsdb\""
+RecentFile5 = "\"/home/enhoshen/research/lpAccel/sim/PE_3ns_ultra_cg_noug_072208_syn_PEtest.fsdb\""
 open_file_time_range = FALSE
 value_window_aligment = Right
 signal_window_alignment = Auto

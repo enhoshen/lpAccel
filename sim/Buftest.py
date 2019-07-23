@@ -16,16 +16,16 @@ def DataBusInit(name,dim):
     return CreateBus( (('',name,dim,),) )
 def test():
      
-    inrbus = RdyAckInit(DataBusInit('i_Input',(1,)) , 'w_Input') 
-    wrbus = RdyAckInit(DataBusInit('i_Weight',(1,)) , 'w_Weight') 
-    grbus = RdyAckInit(DataBusInit('i_GB',(2,)) , 'w_GB') 
-    iwbus = RdyAckInit(DataBusInit('o_Input',(1,)) , 'r_Input') 
-    wwbus = RdyAckInit(DataBusInit('o_Weight',(1,)) , 'r_Weight') 
-    gwbus = RdyAckInit(DataBusInit('o_GB',(2,)) , 'r_GB') 
+    inrbus = RdyAckInit(DataBusInit('i_Input',(1,)) , 'r_Input') 
+    wrbus = RdyAckInit(DataBusInit('i_Weight',(1,)) , 'r_Weight') 
+    grbus = RdyAckInit(DataBusInit('i_GB',(2,)) , 'r_GB') 
+    iwbus = RdyAckInit(DataBusInit('o_Input',(1,)) , 'w_Input') 
+    wwbus = RdyAckInit(DataBusInit('o_Weight',(1,)) , 'w_Weight') 
+    gwbus = RdyAckInit(DataBusInit('o_GB',(2,)) , 'w_GB') 
     conf = AlexBest[4]
     c=conf
     process_cycle = c.B * c.Tm * c.Th * c.Tw * c.S * c.S * c.Pch * c.Xb * c.Wb//256  
-    ir  ,  iw ,  wr ,  ww ,  gr ,  gw = BufData(c)
+    ir  ,  iw ,  wr ,  ww ,  gr ,  gw = BufData(c,1)
     j=[]
     for it,bus in zip( *[[ir , iw , wr, ww, gr, gw],[inrbus,iwbus,wrbus,wwbus,grbus,gwbus]]):
         j.append(JoinableFork (bus.SendIter(it(bus.data)) )  ) 

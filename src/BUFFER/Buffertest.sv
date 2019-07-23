@@ -36,20 +36,16 @@ output [GBUFDWD-1:0] o_GB [GBUFBANK]
     logic [IBUFAWD-1:0] input_addr;
     logic [WBUFAWD-1:0] weight_addr ;
     logic [GBUFAWD-1:0] gb_addr ;
-    logic [2:0] rw_state , rw_state_nxt;
-        assign rw_state_nxt[0] = (`rdyNack(r_Input))? 1 : (`rdyNack(w_Input))? 0 : rw_state[0];
-        assign rw_state_nxt[1] = (`rdyNack(r_Weight))? 1 : (`rdyNack(w_Weight))? 0 : rw_state[1];
-        assign rw_state_nxt[2] = (`rdyNack(r_GB))? 1 : (`rdyNack(w_GB))? 0 : rw_state[2];
 
     //====================
     // comb
     //====================
-    assign r_Input_ack=!rw_state[0];
-    assign r_Weight_ack=!rw_state[1];
-    assign r_GB_ack= !rw_state[2];
-    assign w_Input_ack=rw_state[0];
-    assign w_Weight_ack=rw_state[1];
-    assign w_GB_ack= rw_state[2];
+    assign r_Input_ack=!`rdyNack(w_Input);
+    assign r_Weight_ack=!`rdyNack(w_Weight);
+    assign r_GB_ack= !`rdyNack(w_GB);
+    assign w_Input_ack=1;
+    assign w_Weight_ack=1;
+    assign w_GB_ack= 1;
 
     genvar in_bank;
     generate
@@ -97,7 +93,7 @@ output [GBUFDWD-1:0] o_GB [GBUFBANK]
                 .WORDWD(GBUFSIZE),
                 .DWD(GBUFDWD),
                 .SIZE(GBUFBANK)
-            ) ibuf (
+            ) gbuf (
                 .*,
                 .i_rw(gb_mode),
                 .ce( `rdyNack(r_GB) || `rdyNack(w_GB) ),
@@ -113,12 +109,10 @@ output [GBUFDWD-1:0] o_GB [GBUFBANK]
         input_addr<= '0;
         weight_addr<= '0;
         gb_addr <= '0;
-        rw_state <= '0;
     `ff_nocg
         input_addr<= (`rdyNack(r_Input)||`rdyNack(w_Input))? input_addr+1'b1 : input_addr;
         weight_addr<= (`rdyNack(r_Weight)||`rdyNack(w_Weight))? weight_addr+1'b1 : weight_addr;
         gb_addr <= (`rdyNack(r_GB)||`rdyNack(w_GB))? gb_addr+1'b1 : gb_addr;
-        rw_state <= rw_state_nxt;
         
     `ff_end
 
