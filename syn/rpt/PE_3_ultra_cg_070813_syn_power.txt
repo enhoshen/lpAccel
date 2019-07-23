@@ -1,0 +1,168 @@
+****************************************
+Report : Switching Activity
+	-list_not_annotated
+Design : PE
+Version: M-2017.06-SP2
+Date   : Mon Jul  8 13:47:41 2019
+****************************************
+
+ Switching Activity Overview Statistics for "PE"
+----------------------------------------------------------------------------------------------------------------------------------------------------
+                  From Activity     From         From         From                                                         Not
+Object Type       File (%)          SSA (%)      SCA (%)      Clock (%)    Default (%)     Propagated(%)   Implied(%)      Annotated(%)    Total
+----------------------------------------------------------------------------------------------------------------------------------------------------
+ Nets             37999(100.00%)    0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        37999
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Nets Driven by
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Primary Input     890(100.00%)      0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        890
+Tri-State         0(0%)             0(0%)        0(0%)        0(0%)        0(0%)           0(0%)           0(0%)           0(0%)           0
+Black Box         0(0%)             0(0%)        0(0%)        0(0%)        0(0%)           0(0%)           0(0%)           0(0%)           0
+Sequential        2033(100.00%)     0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        2033
+Combinational     34270(100.00%)    0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        34270
+Memory            784(100.00%)      0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        784
+Clock Gate        22(100.00%)       0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        22
+----------------------------------------------------------------------------------------------------------------------------------------------------
+ Static Probability Overview Statistics for "PE"
+----------------------------------------------------------------------------------------------------------------------------------------------------
+                  From Activity     From         From         From                                                         Not
+Object Type       File (%)          SSA (%)      SCA (%)      Clock (%)    Default (%)     Propagated(%)   Implied(%)      Annotated(%)    Total
+----------------------------------------------------------------------------------------------------------------------------------------------------
+ Nets             37999(100.00%)    0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        37999
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Nets Driven by
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Primary Input     890(100.00%)      0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        890
+Tri-State         0(0%)             0(0%)        0(0%)        0(0%)        0(0%)           0(0%)           0(0%)           0(0%)           0
+Black Box         0(0%)             0(0%)        0(0%)        0(0%)        0(0%)           0(0%)           0(0%)           0(0%)           0
+Sequential        2033(100.00%)     0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        2033
+Combinational     34270(100.00%)    0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        34270
+Memory            784(100.00%)      0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        784
+Clock Gate        22(100.00%)       0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        22
+----------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+List of nonannotated nets :
+1
+Warning: Some timing arcs have been disabled for breaking timing loops or because of constant propagation. Use the 'report_disable_timing' command to get the list of these disabled timing arcs. (PTE-003)
+Information: Running averaged power analysis... (PWR-601)
+Information: Running power calculation with 4 threads. (PWR-602)
+****************************************
+Report : Averaged Power
+	-hierarchy
+	-verbose
+Design : PE
+Version: M-2017.06-SP2
+Date   : Mon Jul  8 13:47:44 2019
+****************************************
+
+Library(s) Used:
+
+    typical (File: /opt/CAD/cell_lib/CBDK_TSMC90GUTM_Arm_f1.0/orig_lib/aci/sc-x/synopsys/typical.db)
+    slow (File: /opt/CAD/cell_lib/CBDK_TSMC90GUTM_Arm_f1.0/orig_lib/aci/sc-x/synopsys/slow.db)
+    fast (File: /opt/CAD/cell_lib/CBDK_TSMC90GUTM_Arm_f1.0/orig_lib/aci/sc-x/synopsys/fast.db)
+    RF_2P_12x16 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/RF_2P_12x16.db)
+    SRAM_DP_512x16 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/SRAM_DP_512x16.db)
+    RF_2P_64x16 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/RF_2P_64x16.db)
+    RF_2P_32x32 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/RF_2P_32x32.db)
+    SRAM_SP_256x16 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/SRAM_SP_256x16.db)
+    RF_2P_48x16 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/RF_2P_48x16.db)
+    SRAM_DP_256x16 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/SRAM_DP_256x16.db)
+    SRAM_SP_512x16 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/SRAM_SP_512x16.db)
+
+
+Operating Conditions: typical   Library: typical
+Wire Load Model Mode: top
+
+<no wire load model is set>
+
+Power-specific unit information :
+    Voltage Units = 1 V
+    Capacitance Units = 1 pf
+    Time Units = 1 ns
+    Dynamic Power Units = 1 W
+    Leakage Power Units = 1 W
+
+
+
+                                      Int      Switch   Leak      Total
+Hierarchy                             Power    Power    Power     Power    %
+--------------------------------------------------------------------------------
+PE                                    5.81e-02 4.50e-03 1.22e-03  6.39e-02 100.0
+  clk_gate_DPC/WLp/loopIdx_r_reg[0] (SNPS_CLOCK_GATE_HIGH_PE_18)
+                                      4.06e-06 2.12e-07 2.25e-08  4.29e-06   0.0
+  clk_gate_DPC/WLp/loopIdx_r_reg[1] (SNPS_CLOCK_GATE_HIGH_PE_19)
+                                      4.01e-06 2.09e-08 2.24e-08  4.05e-06   0.0
+  clk_gate_DPC/WLp/loopIdx_r_reg[2] (SNPS_CLOCK_GATE_HIGH_PE_20)
+                                      3.95e-06 7.08e-09 2.24e-08  3.98e-06   0.0
+  clk_gate_Fs/o_FSpipe_FS_reg[ssppctl][write] (SNPS_CLOCK_GATE_HIGH_PE_8)
+                                      7.41e-06 1.19e-05 2.37e-08  1.94e-05   0.0
+  clk_gate_DPC/PPWADDR/loopIdx_r_reg (SNPS_CLOCK_GATE_HIGH_PE_9)
+                                      4.69e-06 5.91e-07 2.26e-08  5.31e-06   0.0
+  clk_gate_DPC/INLp/loopIdx_r_reg[0] (SNPS_CLOCK_GATE_HIGH_PE_21)
+                                      4.62e-06 4.42e-07 2.26e-08  5.09e-06   0.0
+  clk_gate_Ps/ps_loopSize_r_reg (SNPS_CLOCK_GATE_HIGH_PE_5)
+                                      4.05e-06 4.27e-08 2.25e-08  4.11e-06   0.0
+  clk_gate_DPC/INLp/loopIdx_r_reg[1] (SNPS_CLOCK_GATE_HIGH_PE_22)
+                                      4.16e-06 1.56e-07 2.25e-08  4.33e-06   0.0
+  clk_gate_DPC/OLp/loopIdx_r_reg[0] (SNPS_CLOCK_GATE_HIGH_PE_12)
+                                      7.20e-06 5.48e-06 2.37e-08  1.27e-05   0.0
+  clk_gate_DPC/OLp/loopIdx_r_reg[1] (SNPS_CLOCK_GATE_HIGH_PE_13)
+                                      6.15e-06 9.71e-07 2.28e-08  7.14e-06   0.0
+  clk_gate_DPC/OLp/loopIdx_r_reg[2] (SNPS_CLOCK_GATE_HIGH_PE_14)
+                                      4.63e-06 1.82e-07 2.26e-08  4.83e-06   0.0
+  clk_gate_DPC/OLp/loopIdx_r_reg[3] (SNPS_CLOCK_GATE_HIGH_PE_15)
+                                      4.12e-06 1.41e-07 2.25e-08  4.28e-06   0.0
+  clk_gate_DPC/OLp/loopIdx_r_reg[4] (SNPS_CLOCK_GATE_HIGH_PE_16)
+                                      3.94e-06 3.62e-09 2.24e-08  3.96e-06   0.0
+  clk_gate_DPC/OLp/loopIdx_r_reg[5] (SNPS_CLOCK_GATE_HIGH_PE_17)
+                                      3.93e-06 1.84e-09 2.24e-08  3.95e-06   0.0
+  clk_gate_Ps/PSLp/loopIdx_r_reg (SNPS_CLOCK_GATE_HIGH_PE_1)
+                                      4.04e-06 4.06e-08 2.25e-08  4.11e-06   0.0
+  clk_gate_Ps/o_psconf_POUT_reg[tw] (SNPS_CLOCK_GATE_HIGH_PE_4)
+                                      4.10e-06 2.58e-07 2.25e-08  4.38e-06   0.0
+  clk_gate_Ps/psconf_r_reg[tw] (SNPS_CLOCK_GATE_HIGH_PE_3)
+                                      3.93e-06 2.20e-09 2.24e-08  3.95e-06   0.0
+  clk_gate_DPC/IPRADDR/loopIdx_r_reg (SNPS_CLOCK_GATE_HIGH_PE_10)
+                                      7.19e-06 5.14e-06 2.37e-08  1.24e-05   0.0
+  clk_gate_Ps/o_Psum_POUT_reg[15] (SNPS_CLOCK_GATE_HIGH_PE_2)
+                                      4.17e-06 6.76e-06 2.25e-08  1.10e-05   0.0
+  clk_gate_DPC/IPRADDR/loopStart_r_reg (SNPS_CLOCK_GATE_HIGH_PE_11)
+                                      4.09e-06 5.04e-08 2.25e-08  4.16e-06   0.0
+  clk_gate_Ms/o_MSpipe_MS_reg[ssppctl][write] (SNPS_CLOCK_GATE_HIGH_PE_7)
+                                      1.13e-05 3.97e-04 2.37e-08  4.09e-04   0.6
+  clk_gate_Ss/o_ppctl_SS_reg[write] (SNPS_CLOCK_GATE_HIGH_PE_6)
+                                      9.77e-06 2.44e-04 2.37e-08  2.54e-04   0.4
+1
+****************************************
+Report : Averaged Power
+Design : PE
+Version: M-2017.06-SP2
+Date   : Mon Jul  8 13:47:44 2019
+****************************************
+
+
+
+  Attributes
+  ----------
+      i  -  Including register clock pin internal power
+      u  -  User defined power group
+
+                        Internal  Switching  Leakage    Total
+Power Group             Power     Power      Power      Power   (     %)  Attrs
+--------------------------------------------------------------------------------
+clock_network              0.0000    0.0000    0.0000    0.0000 ( 0.00%)  i
+register                   0.0000    0.0000    0.0000    0.0000 ( 0.00%)  
+combinational           6.487e-03 3.205e-03 4.867e-04    0.0102 (15.94%)  
+sequential                 0.0279 8.334e-04 3.481e-05    0.0288 (45.12%)  
+memory                     0.0237 4.657e-04 6.972e-04    0.0249 (38.94%)  
+io_pad                     0.0000    0.0000    0.0000    0.0000 ( 0.00%)  
+black_box                  0.0000    0.0000    0.0000    0.0000 ( 0.00%)  
+
+  Net Switching Power  = 4.504e-03   ( 7.05%)
+  Cell Internal Power  =    0.0581   (91.04%)
+  Cell Leakage Power   = 1.219e-03   ( 1.91%)
+                         ---------
+Total Power            =    0.0639  (100.00%)
+
+1

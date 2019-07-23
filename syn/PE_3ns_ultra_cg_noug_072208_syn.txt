@@ -1,0 +1,264 @@
+Information: Updating design information... (UID-85)
+Warning: Design 'PE' contains 9 high-fanout nets. A fanout number of 20 will be used for delay calculations involving these nets. (TIM-134)
+Warning: A non-unate path in clock network for clock 'i_clk'
+ from pin 'Ps/PSLp/clk_gate_loopIdx_r_reg/latch/CKcheckpin1' is detected. (TIM-052)
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : PE
+Version: O-2018.06
+Date   : Mon Jul 22 08:40:27 2019
+****************************************
+
+ # A fanout number of 20 was used for high fanout net computations.
+
+Operating Conditions: typical   Library: typical
+Wire Load Model Mode: top
+
+  Startpoint: IPAD/syn_mode.rf_instance[0].genblk1.RF12x16
+              (rising edge-triggered flip-flop clocked by i_clk)
+  Endpoint: Ms/o_data_reg[7][Sum_MS][16]
+            (rising edge-triggered flip-flop clocked by i_clk)
+  Path Group: i_clk
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  PE                 tsmc090_wl10          typical
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock i_clk (rise edge)                                 0.00       0.00
+  clock network delay (ideal)                             0.10       0.10
+  IPAD/syn_mode.rf_instance[0].genblk1.RF12x16/CLKA (RF_2P_12x16)
+                                                          0.00 #     0.10 r
+  IPAD/syn_mode.rf_instance[0].genblk1.RF12x16/QA[6] (RF_2P_12x16)
+                                                          0.61       0.71 f
+  IPAD/o_rdata[0][6] (RF_2P_WORDWD12_DWD16_SIZE1)         0.00       0.71 f
+  U1169/Y (CLKBUFX40)                                     0.09       0.81 f
+  Ms/i_data[7][Input_FS][6] (MultStage)                   0.00       0.81 f
+  Ms/Arithmetic_unit[7].genblk1.MA/i_ipix[6] (MATmux_8)
+                                                          0.00       0.81 f
+  Ms/Arithmetic_unit[7].genblk1.MA/U731/Y (CLKAND2X4)     0.09       0.90 f
+  Ms/Arithmetic_unit[7].genblk1.MA/U163/Y (INVX4)         0.05       0.95 r
+  Ms/Arithmetic_unit[7].genblk1.MA/U490/Y (XOR2X8)        0.06       1.01 r
+  Ms/Arithmetic_unit[7].genblk1.MA/U34/Y (INVX6)          0.03       1.05 f
+  Ms/Arithmetic_unit[7].genblk1.MA/U31/Y (INVX16)         0.07       1.12 r
+  Ms/Arithmetic_unit[7].genblk1.MA/U323/Y (INVX10)        0.02       1.14 f
+  Ms/Arithmetic_unit[7].genblk1.MA/U489/Y (NAND2BX8)      0.12       1.26 f
+  Ms/Arithmetic_unit[7].genblk1.MA/U58/Y (OAI22X1)        0.14       1.41 r
+  Ms/Arithmetic_unit[7].genblk1.MA/U812/S (ADDFX2)        0.29       1.70 r
+  Ms/Arithmetic_unit[7].genblk1.MA/U303/Y (XOR2X4)        0.12       1.82 r
+  Ms/Arithmetic_unit[7].genblk1.MA/U45/Y (XOR2X4)         0.13       1.95 r
+  Ms/Arithmetic_unit[7].genblk1.MA/U637/Y (NOR2X8)        0.05       1.99 f
+  Ms/Arithmetic_unit[7].genblk1.MA/U784/Y (NOR2X2)        0.11       2.10 r
+  Ms/Arithmetic_unit[7].genblk1.MA/U89/Y (NAND2X4)        0.06       2.16 f
+  Ms/Arithmetic_unit[7].genblk1.MA/U374/Y (CLKNAND2X12)
+                                                          0.06       2.22 r
+  Ms/Arithmetic_unit[7].genblk1.MA/U43/Y (INVX6)          0.04       2.26 f
+  Ms/Arithmetic_unit[7].genblk1.MA/U433/Y (OAI21X8)       0.08       2.33 r
+  Ms/Arithmetic_unit[7].genblk1.MA/U473/Y (AOI21X6)       0.04       2.38 f
+  Ms/Arithmetic_unit[7].genblk1.MA/U366/Y (CLKXOR2X4)     0.11       2.49 f
+  Ms/Arithmetic_unit[7].genblk1.MA/AT8b/i_in[0][14] (ADDT_ODWD18_DWD17_NUM2_8)
+                                                          0.00       2.49 f
+  Ms/Arithmetic_unit[7].genblk1.MA/AT8b/U98/Y (NAND2X2)
+                                                          0.10       2.59 r
+  Ms/Arithmetic_unit[7].genblk1.MA/AT8b/U66/Y (INVX4)     0.06       2.65 f
+  Ms/Arithmetic_unit[7].genblk1.MA/AT8b/U73/Y (AOI21X8)
+                                                          0.09       2.74 r
+  Ms/Arithmetic_unit[7].genblk1.MA/AT8b/U65/Y (INVX10)
+                                                          0.02       2.76 f
+  Ms/Arithmetic_unit[7].genblk1.MA/AT8b/U59/Y (AOI21X8)
+                                                          0.05       2.81 r
+  Ms/Arithmetic_unit[7].genblk1.MA/AT8b/U58/Y (XOR2X8)
+                                                          0.05       2.86 r
+  Ms/Arithmetic_unit[7].genblk1.MA/AT8b/o_out[16] (ADDT_ODWD18_DWD17_NUM2_8)
+                                                          0.00       2.86 r
+  Ms/Arithmetic_unit[7].genblk1.MA/U503/Y (OAI2BB1X4)     0.07       2.92 r
+  Ms/Arithmetic_unit[7].genblk1.MA/o_sum[16] (MATmux_8)
+                                                          0.00       2.92 r
+  Ms/o_data_reg[7][Sum_MS][16]/D (DFFRQX1)                0.00       2.92 r
+  data arrival time                                                  2.92
+
+  clock i_clk (rise edge)                                 3.00       3.00
+  clock network delay (ideal)                             0.10       3.10
+  clock uncertainty                                      -0.10       3.00
+  Ms/o_data_reg[7][Sum_MS][16]/CK (DFFRQX1)               0.00       3.00 r
+  library setup time                                     -0.08       2.92
+  data required time                                                 2.92
+  --------------------------------------------------------------------------
+  data required time                                                 2.92
+  data arrival time                                                 -2.92
+  --------------------------------------------------------------------------
+  slack (MET)                                                        0.00
+
+
+1
+ 
+****************************************
+Report : area
+Design : PE
+Version: O-2018.06
+Date   : Mon Jul 22 08:40:27 2019
+****************************************
+
+Library(s) Used:
+
+    typical (File: /opt/CAD/cell_lib/CBDK_TSMC90GUTM_Arm_f1.0/CIC/SynopsysDC/db/typical.db)
+    RF_2P_32x32 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/RF_2P_32x32.db)
+    RF_2P_48x16 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/RF_2P_48x16.db)
+    RF_2P_12x16 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/RF_2P_12x16.db)
+
+Number of ports:                        15403
+Number of nets:                         52623
+Number of cells:                        37253
+Number of combinational cells:          32929
+Number of sequential cells:              4166
+Number of macros/black boxes:              33
+Number of buf/inv:                       6950
+Number of references:                      14
+
+Combinational area:             221773.609756
+Buf/Inv area:                    37216.871861
+Noncombinational area:           32763.830631
+Macro/Black Box area:           401423.281738
+Net Interconnect area:         3880119.721008
+
+Total cell area:                655960.722125
+Total area:                    4536080.443133
+1
+ 
+****************************************
+Report : cell
+Design : PE
+Version: O-2018.06
+Date   : Mon Jul 22 08:40:27 2019
+****************************************
+
+Attributes:
+    b - black box (unknown)
+    h - hierarchical
+    n - noncombinational
+    p - parameterized
+    r - removable
+    u - contains unmapped logic
+
+Cell                      Reference       Library             Area  Attributes
+--------------------------------------------------------------------------------
+DPC                       DataPathController              10033.632107
+                                                                    b, h, n
+Fs                        FetchStage                      581.414403
+                                                                    b, h, n
+IPAD                      RF_2P_WORDWD12_DWD16_SIZE1      7717.179788
+                                                                    b, h, p
+Ms                        MultStage                       171031.091157
+                                                                    b, h, n
+PPAD                      RF_2P_MSK_WORDWD32_DWD32_SIZE16 208587.221774
+                                                                    b, h, p
+Ps                        PathStage                       26005.593161
+                                                                    b, h, n
+Ss                        SumStage                        43752.845554
+                                                                    b, h, n
+U1081                     BUFX18          typical         11.995200 
+U1082                     BUFX8           typical         6.350400  
+U1083                     BUFX8           typical         6.350400  
+U1084                     CLKBUFX4        typical         3.528000  
+U1085                     CLKBUFX40       typical         24.695999 
+U1086                     BUFX18          typical         11.995200 
+U1087                     CLKBUFX40       typical         24.695999 
+U1088                     BUFX10          typical         7.761600  
+U1089                     CLKBUFX40       typical         24.695999 
+U1090                     BUFX8           typical         6.350400  
+U1091                     CLKBUFX40       typical         24.695999 
+U1092                     BUFX14          typical         9.878400  
+U1093                     BUFX18          typical         11.995200 
+U1094                     BUFX18          typical         11.995200 
+U1095                     BUFX14          typical         9.878400  
+U1096                     CLKBUFX40       typical         24.695999 
+U1097                     CLKBUFX40       typical         24.695999 
+U1098                     CLKBUFX40       typical         24.695999 
+U1099                     CLKBUFX40       typical         24.695999 
+U1100                     CLKBUFX40       typical         24.695999 
+U1101                     CLKBUFX40       typical         24.695999 
+U1102                     CLKBUFX40       typical         24.695999 
+U1103                     CLKBUFX40       typical         24.695999 
+U1104                     CLKBUFX40       typical         24.695999 
+U1105                     CLKBUFX40       typical         24.695999 
+U1106                     CLKBUFX40       typical         24.695999 
+U1164                     CLKBUFX40       typical         24.695999 
+U1165                     CLKBUFX40       typical         24.695999 
+U1166                     CLKBUFX40       typical         24.695999 
+U1167                     CLKBUFX40       typical         24.695999 
+U1168                     CLKBUFX40       typical         24.695999 
+U1169                     CLKBUFX40       typical         24.695999 
+U1170                     CLKBUFX40       typical         24.695999 
+U1171                     CLKBUFX40       typical         24.695999 
+U1172                     CLKBUFX40       typical         24.695999 
+U1173                     CLKBUFX40       typical         24.695999 
+U1174                     CLKBUFX40       typical         24.695999 
+U1175                     CLKBUFX40       typical         24.695999 
+U1176                     CLKBUFX40       typical         24.695999 
+WPAD                      RF_2P_WORDWD48_DWD16_SIZE16     187462.177805
+                                                                    b, h, p
+--------------------------------------------------------------------------------
+Total 47 cells                                            655960.722125
+1
+ 
+****************************************
+Report : power
+        -analysis_effort low
+Design : PE
+Version: O-2018.06
+Date   : Mon Jul 22 08:40:27 2019
+****************************************
+
+
+Library(s) Used:
+
+    typical (File: /opt/CAD/cell_lib/CBDK_TSMC90GUTM_Arm_f1.0/CIC/SynopsysDC/db/typical.db)
+    RF_2P_32x32 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/RF_2P_32x32.db)
+    RF_2P_48x16 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/RF_2P_48x16.db)
+    RF_2P_12x16 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/RF_2P_12x16.db)
+
+
+Operating Conditions: typical   Library: typical
+Wire Load Model Mode: top
+
+Design        Wire Load Model            Library
+------------------------------------------------
+PE                     tsmc090_wl10      typical
+
+
+Global Operating Voltage = 1    
+Power-specific unit information :
+    Voltage Units = 1V
+    Capacitance Units = 1.000000pf
+    Time Units = 1ns
+    Dynamic Power Units = 1mW    (derived from V,C,T units)
+    Leakage Power Units = 1pW
+
+
+  Cell Internal Power  =   5.0421 mW   (29%)
+  Net Switching Power  =  12.5959 mW   (71%)
+                         ---------
+Total Dynamic Power    =  17.6380 mW  (100%)
+
+Cell Leakage Power     =   1.2552 mW
+
+
+                 Internal         Switching           Leakage            Total
+Power Group      Power            Power               Power              Power   (   %    )  Attrs
+--------------------------------------------------------------------------------------------------
+io_pad             0.0000            0.0000            0.0000            0.0000  (   0.00%)
+memory             2.0176            0.3217        6.9720e+08            3.0365  (  16.07%)
+black_box          0.0000            0.0000            0.0000            0.0000  (   0.00%)
+clock_network      0.1241            3.6410        5.6292e+05            3.7656  (  19.93%)
+register           1.3688            0.1372        3.2497e+07            1.5384  (   8.14%)
+sequential         0.0000            0.0000            0.0000            0.0000  (   0.00%)
+combinational      1.5316            8.4961        5.2493e+08           10.5526  (  55.85%)
+--------------------------------------------------------------------------------------------------
+Total              5.0421 mW        12.5959 mW     1.2552e+09 pW        18.8931 mW
+1

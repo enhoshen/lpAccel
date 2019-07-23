@@ -1,0 +1,138 @@
+****************************************
+Report : Switching Activity
+	-list_not_annotated
+Design : BufferTest
+Version: M-2017.06-SP2
+Date   : Mon Jul 22 19:32:44 2019
+****************************************
+
+ Switching Activity Overview Statistics for "BufferTest"
+----------------------------------------------------------------------------------------------------------------------------------------------------
+                  From Activity     From         From         From                                                         Not
+Object Type       File (%)          SSA (%)      SCA (%)      Clock (%)    Default (%)     Propagated(%)   Implied(%)      Annotated(%)    Total
+----------------------------------------------------------------------------------------------------------------------------------------------------
+ Nets             537(100.00%)      0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        537
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Nets Driven by
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Primary Input     104(100.00%)      0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        104
+Tri-State         0(0%)             0(0%)        0(0%)        0(0%)        0(0%)           0(0%)           0(0%)           0(0%)           0
+Black Box         0(0%)             0(0%)        0(0%)        0(0%)        0(0%)           0(0%)           0(0%)           0(0%)           0
+Sequential        27(100.00%)       0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        27
+Combinational     243(100.00%)      0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        243
+Memory            160(100.00%)      0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        160
+Clock Gate        3(100.00%)        0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        3
+----------------------------------------------------------------------------------------------------------------------------------------------------
+ Static Probability Overview Statistics for "BufferTest"
+----------------------------------------------------------------------------------------------------------------------------------------------------
+                  From Activity     From         From         From                                                         Not
+Object Type       File (%)          SSA (%)      SCA (%)      Clock (%)    Default (%)     Propagated(%)   Implied(%)      Annotated(%)    Total
+----------------------------------------------------------------------------------------------------------------------------------------------------
+ Nets             537(100.00%)      0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        537
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Nets Driven by
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Primary Input     104(100.00%)      0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        104
+Tri-State         0(0%)             0(0%)        0(0%)        0(0%)        0(0%)           0(0%)           0(0%)           0(0%)           0
+Black Box         0(0%)             0(0%)        0(0%)        0(0%)        0(0%)           0(0%)           0(0%)           0(0%)           0
+Sequential        27(100.00%)       0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        27
+Combinational     243(100.00%)      0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        243
+Memory            160(100.00%)      0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        160
+Clock Gate        3(100.00%)        0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        3
+----------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+List of nonannotated nets :
+1
+Warning: Some timing arcs have been disabled for breaking timing loops or because of constant propagation. Use the 'report_disable_timing' command to get the list of these disabled timing arcs. (PTE-003)
+Information: Running averaged power analysis... (PWR-601)
+Information: Running power calculation with 4 threads. (PWR-602)
+****************************************
+Report : Averaged Power
+	-hierarchy
+	-verbose
+Design : BufferTest
+Version: M-2017.06-SP2
+Date   : Mon Jul 22 19:32:44 2019
+****************************************
+
+Library(s) Used:
+
+    typical (File: /opt/CAD/cell_lib/CBDK_TSMC90GUTM_Arm_f1.0/orig_lib/aci/sc-x/synopsys/typical.db)
+    RF_2P_12x16 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/RF_2P_12x16.db)
+    SRAM_SP_1024x32 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/SRAM_SP_1024x32.db)
+    SRAM_SP_800x32 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/SRAM_SP_800x32.db)
+    SRAM_DP_512x16 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/SRAM_DP_512x16.db)
+    RF_2P_64x16 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/RF_2P_64x16.db)
+    RF_2P_32x32 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/RF_2P_32x32.db)
+    SRAM_SP_256x16 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/SRAM_SP_256x16.db)
+    RF_2P_48x16 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/RF_2P_48x16.db)
+    SRAM_DP_256x16 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/SRAM_DP_256x16.db)
+    SRAM_SP_512x16 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/SRAM_SP_512x16.db)
+
+
+Operating Conditions: typical   Library: typical
+Wire Load Model Mode: top
+
+<no wire load model is set>
+
+Power-specific unit information :
+    Voltage Units = 1 V
+    Capacitance Units = 1 pf
+    Time Units = 1 ns
+    Dynamic Power Units = 1 W
+    Leakage Power Units = 1 W
+
+
+
+                                      Int      Switch   Leak      Total
+Hierarchy                             Power    Power    Power     Power    %
+--------------------------------------------------------------------------------
+BufferTest                            1.01e-02 4.79e-05 5.35e-04  1.07e-02 100.0
+  clk_gate_rw_state_reg_0 (SNPS_CLOCK_GATE_HIGH_BufferTest_2)
+                                      3.70e-06 1.14e-06 2.34e-08  4.87e-06   0.0
+  clk_gate_rw_state_reg_1 (SNPS_CLOCK_GATE_HIGH_BufferTest_1)
+                                      2.09e-06 9.33e-08 2.25e-08  2.21e-06   0.0
+  genblk1[0].ibuf (SRAM_SP_WORDWD512_DWD16_SIZE1)
+                                      2.06e-04 4.36e-07 5.79e-05  2.65e-04   2.5
+  clk_gate_rw_state_reg (SNPS_CLOCK_GATE_HIGH_BufferTest_0)
+                                      3.22e-06 2.21e-06 2.31e-08  5.45e-06   0.1
+  genblk2[0].wbuf (SRAM_SP_WORDWD256_DWD16_SIZE1)
+                                      1.61e-03 6.07e-06 4.87e-05  1.67e-03  15.5
+  genblk3[1].ibuf (SRAM_SP_WORDWD800_DWD32_SIZE2_0)
+                                      4.10e-03 4.29e-06 2.10e-04  4.31e-03  40.2
+  genblk3[0].ibuf (SRAM_SP_WORDWD800_DWD32_SIZE2_1)
+                                      4.10e-03 4.27e-06 2.10e-04  4.31e-03  40.2
+1
+****************************************
+Report : Averaged Power
+Design : BufferTest
+Version: M-2017.06-SP2
+Date   : Mon Jul 22 19:32:44 2019
+****************************************
+
+
+
+  Attributes
+  ----------
+      i  -  Including register clock pin internal power
+      u  -  User defined power group
+
+                        Internal  Switching  Leakage    Total
+Power Group             Power     Power      Power      Power   (     %)  Attrs
+--------------------------------------------------------------------------------
+clock_network              0.0000    0.0000    0.0000    0.0000 ( 0.00%)  i
+register                   0.0000    0.0000    0.0000    0.0000 ( 0.00%)  
+combinational           1.153e-04 2.314e-05 1.088e-05 1.493e-04 ( 1.39%)  
+sequential              5.158e-05 1.830e-05 1.104e-06 7.098e-05 ( 0.66%)  
+memory                  9.980e-03 6.449e-06 5.234e-04    0.0105 (97.95%)  
+io_pad                     0.0000    0.0000    0.0000    0.0000 ( 0.00%)  
+black_box                  0.0000    0.0000    0.0000    0.0000 ( 0.00%)  
+
+  Net Switching Power  = 4.789e-05   ( 0.45%)
+  Cell Internal Power  =    0.0101   (94.56%)
+  Cell Leakage Power   = 5.354e-04   ( 4.99%)
+                         ---------
+Total Power            =    0.0107  (100.00%)
+
+1

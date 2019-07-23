@@ -1,0 +1,259 @@
+****************************************
+Report : Switching Activity
+	-list_not_annotated
+Design : BufferTest
+Version: M-2017.06-SP2
+Date   : Fri Jul 12 16:47:17 2019
+****************************************
+
+ Switching Activity Overview Statistics for "BufferTest"
+----------------------------------------------------------------------------------------------------------------------------------------------------
+                  From Activity     From         From         From                                                         Not
+Object Type       File (%)          SSA (%)      SCA (%)      Clock (%)    Default (%)     Propagated(%)   Implied(%)      Annotated(%)    Total
+----------------------------------------------------------------------------------------------------------------------------------------------------
+ Nets             60058(100.00%)    0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        60058
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Nets Driven by
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Primary Input     1544(100.00%)     0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        1544
+Tri-State         0(0%)             0(0%)        0(0%)        0(0%)        0(0%)           0(0%)           0(0%)           0(0%)           0
+Black Box         0(0%)             0(0%)        0(0%)        0(0%)        0(0%)           0(0%)           0(0%)           0(0%)           0
+Sequential        27(100.00%)       0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        27
+Combinational     17524(100.00%)    0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        17524
+Memory            40960(100.00%)    0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        40960
+Clock Gate        3(100.00%)        0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        3
+----------------------------------------------------------------------------------------------------------------------------------------------------
+ Static Probability Overview Statistics for "BufferTest"
+----------------------------------------------------------------------------------------------------------------------------------------------------
+                  From Activity     From         From         From                                                         Not
+Object Type       File (%)          SSA (%)      SCA (%)      Clock (%)    Default (%)     Propagated(%)   Implied(%)      Annotated(%)    Total
+----------------------------------------------------------------------------------------------------------------------------------------------------
+ Nets             60058(100.00%)    0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        60058
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Nets Driven by
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Primary Input     1544(100.00%)     0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        1544
+Tri-State         0(0%)             0(0%)        0(0%)        0(0%)        0(0%)           0(0%)           0(0%)           0(0%)           0
+Black Box         0(0%)             0(0%)        0(0%)        0(0%)        0(0%)           0(0%)           0(0%)           0(0%)           0
+Sequential        27(100.00%)       0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        27
+Combinational     17524(100.00%)    0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        17524
+Memory            40960(100.00%)    0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        40960
+Clock Gate        3(100.00%)        0(0.00%)     0(0.00%)     0(0.00%)     0(0.00%)        0(0.00%)        0(0.00%)        0(0.00%)        3
+----------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+List of nonannotated nets :
+1
+Warning: Some timing arcs have been disabled for breaking timing loops or because of constant propagation. Use the 'report_disable_timing' command to get the list of these disabled timing arcs. (PTE-003)
+Information: Running averaged power analysis... (PWR-601)
+Information: Running power calculation with 4 threads. (PWR-602)
+****************************************
+Report : Averaged Power
+	-hierarchy
+	-verbose
+Design : BufferTest
+Version: M-2017.06-SP2
+Date   : Fri Jul 12 16:47:25 2019
+****************************************
+
+Library(s) Used:
+
+    typical (File: /opt/CAD/cell_lib/CBDK_TSMC90GUTM_Arm_f1.0/orig_lib/aci/sc-x/synopsys/typical.db)
+    slow (File: /opt/CAD/cell_lib/CBDK_TSMC90GUTM_Arm_f1.0/orig_lib/aci/sc-x/synopsys/slow.db)
+    fast (File: /opt/CAD/cell_lib/CBDK_TSMC90GUTM_Arm_f1.0/orig_lib/aci/sc-x/synopsys/fast.db)
+    RF_2P_12x16 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/RF_2P_12x16.db)
+    SRAM_SP_1024x32 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/SRAM_SP_1024x32.db)
+    SRAM_DP_512x16 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/SRAM_DP_512x16.db)
+    RF_2P_64x16 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/RF_2P_64x16.db)
+    RF_2P_32x32 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/RF_2P_32x32.db)
+    SRAM_SP_256x16 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/SRAM_SP_256x16.db)
+    RF_2P_48x16 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/RF_2P_48x16.db)
+    SRAM_DP_256x16 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/SRAM_DP_256x16.db)
+    SRAM_SP_512x16 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/SRAM_SP_512x16.db)
+
+
+Operating Conditions: typical   Library: typical
+Wire Load Model Mode: top
+
+<no wire load model is set>
+
+Power-specific unit information :
+    Voltage Units = 1 V
+    Capacitance Units = 1 pf
+    Time Units = 1 ns
+    Dynamic Power Units = 1 W
+    Leakage Power Units = 1 W
+
+
+
+                                      Int      Switch   Leak      Total
+Hierarchy                             Power    Power    Power     Power    %
+--------------------------------------------------------------------------------
+BufferTest                               6.605 2.09e-02    0.146     6.771 100.0
+  genblk1[0].ibuf (SRAM_SP_WORDWD512_DWD16_SIZE16_15)
+                                      1.63e-02 5.89e-05 9.02e-04  1.73e-02   0.3
+  genblk3[24].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_7)
+                                         0.175 4.68e-04 3.71e-03     0.179   2.6
+  genblk1[1].ibuf (SRAM_SP_WORDWD512_DWD16_SIZE16_14)
+                                      1.63e-02 5.90e-05 9.02e-04  1.73e-02   0.3
+  genblk3[25].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_6)
+                                         0.175 4.69e-04 3.71e-03     0.179   2.6
+  genblk1[2].ibuf (SRAM_SP_WORDWD512_DWD16_SIZE16_13)
+                                      1.63e-02 5.93e-05 9.02e-04  1.73e-02   0.3
+  genblk3[26].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_5)
+                                         0.175 4.70e-04 3.71e-03     0.179   2.6
+  genblk3[2].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_29)
+                                         0.175 4.67e-04 3.71e-03     0.179   2.6
+  genblk1[8].ibuf (SRAM_SP_WORDWD512_DWD16_SIZE16_7)
+                                      1.63e-02 5.87e-05 9.02e-04  1.73e-02   0.3
+  genblk3[27].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_4)
+                                         0.175 4.67e-04 3.71e-03     0.179   2.6
+  genblk3[3].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_28)
+                                         0.175 4.65e-04 3.71e-03     0.179   2.6
+  clk_gate_rw_state_reg (SNPS_CLOCK_GATE_HIGH_BufferTest_0)
+                                      7.47e-06 2.79e-06 2.35e-08  1.03e-05   0.0
+  genblk1[9].ibuf (SRAM_SP_WORDWD512_DWD16_SIZE16_6)
+                                      1.63e-02 5.89e-05 9.02e-04  1.73e-02   0.3
+  genblk3[28].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_3)
+                                         0.175 4.66e-04 3.71e-03     0.179   2.6
+  genblk3[4].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_27)
+                                         0.175 4.68e-04 3.71e-03     0.179   2.6
+  genblk2[10].wbuf (SRAM_SP_WORDWD256_DWD16_SIZE16_5)
+                                      4.65e-02 2.06e-04 7.55e-04  4.74e-02   0.7
+  genblk3[11].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_20)
+                                         0.175 4.66e-04 3.71e-03     0.179   2.6
+  genblk3[5].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_26)
+                                         0.175 4.68e-04 3.71e-03     0.179   2.6
+  genblk3[12].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_19)
+                                         0.175 4.68e-04 3.71e-03     0.179   2.6
+  genblk3[6].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_25)
+                                         0.175 4.70e-04 3.71e-03     0.179   2.6
+  genblk3[13].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_18)
+                                         0.175 4.69e-04 3.71e-03     0.179   2.6
+  genblk3[14].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_17)
+                                         0.175 4.71e-04 3.71e-03     0.179   2.6
+  genblk3[15].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_16)
+                                         0.175 4.67e-04 3.71e-03     0.179   2.6
+  genblk1[11].ibuf (SRAM_SP_WORDWD512_DWD16_SIZE16_4)
+                                      1.63e-02 5.89e-05 9.02e-04  1.73e-02   0.3
+  genblk2[5].wbuf (SRAM_SP_WORDWD256_DWD16_SIZE16_10)
+                                      4.65e-02 2.02e-04 7.55e-04  4.74e-02   0.7
+  genblk1[12].ibuf (SRAM_SP_WORDWD512_DWD16_SIZE16_3)
+                                      1.63e-02 5.62e-05 9.02e-04  1.73e-02   0.3
+  genblk2[6].wbuf (SRAM_SP_WORDWD256_DWD16_SIZE16_9)
+                                      4.65e-02 2.03e-04 7.55e-04  4.74e-02   0.7
+  genblk1[13].ibuf (SRAM_SP_WORDWD512_DWD16_SIZE16_2)
+                                      1.63e-02 5.88e-05 9.02e-04  1.73e-02   0.3
+  genblk2[7].wbuf (SRAM_SP_WORDWD256_DWD16_SIZE16_8)
+                                      4.65e-02 2.08e-04 7.54e-04  4.75e-02   0.7
+  genblk1[14].ibuf (SRAM_SP_WORDWD512_DWD16_SIZE16_1)
+                                      1.63e-02 5.93e-05 9.02e-04  1.73e-02   0.3
+  genblk2[8].wbuf (SRAM_SP_WORDWD256_DWD16_SIZE16_7)
+                                      4.65e-02 2.04e-04 7.55e-04  4.74e-02   0.7
+  genblk3[20].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_11)
+                                         0.175 4.64e-04 3.71e-03     0.179   2.6
+  genblk1[15].ibuf (SRAM_SP_WORDWD512_DWD16_SIZE16_0)
+                                      1.63e-02 5.95e-05 9.02e-04  1.73e-02   0.3
+  genblk2[9].wbuf (SRAM_SP_WORDWD256_DWD16_SIZE16_6)
+                                      4.65e-02 2.05e-04 7.55e-04  4.74e-02   0.7
+  genblk3[21].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_10)
+                                         0.175 4.70e-04 3.71e-03     0.179   2.6
+  genblk1[3].ibuf (SRAM_SP_WORDWD512_DWD16_SIZE16_12)
+                                      1.63e-02 5.91e-05 9.02e-04  1.73e-02   0.3
+  genblk3[22].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_9)
+                                         0.175 4.71e-04 3.71e-03     0.179   2.6
+  genblk1[4].ibuf (SRAM_SP_WORDWD512_DWD16_SIZE16_11)
+                                      1.63e-02 5.89e-05 9.02e-04  1.73e-02   0.3
+  genblk3[23].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_8)
+                                         0.175 4.67e-04 3.71e-03     0.179   2.6
+  genblk1[5].ibuf (SRAM_SP_WORDWD512_DWD16_SIZE16_10)
+                                      1.63e-02 5.82e-05 9.02e-04  1.73e-02   0.3
+  genblk3[29].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_2)
+                                         0.175 4.67e-04 3.71e-03     0.179   2.6
+  genblk3[0].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_31)
+                                         0.175 4.68e-04 3.71e-03     0.179   2.6
+  genblk2[11].wbuf (SRAM_SP_WORDWD256_DWD16_SIZE16_4)
+                                      4.65e-02 2.07e-04 7.55e-04  4.75e-02   0.7
+  genblk1[6].ibuf (SRAM_SP_WORDWD512_DWD16_SIZE16_9)
+                                      1.63e-02 5.84e-05 9.02e-04  1.73e-02   0.3
+  genblk3[1].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_30)
+                                         0.175 4.63e-04 3.71e-03     0.179   2.6
+  genblk2[12].wbuf (SRAM_SP_WORDWD256_DWD16_SIZE16_3)
+                                      4.65e-02 2.01e-04 7.55e-04  4.74e-02   0.7
+  genblk1[7].ibuf (SRAM_SP_WORDWD512_DWD16_SIZE16_8)
+                                      1.63e-02 5.83e-05 9.02e-04  1.73e-02   0.3
+  genblk3[7].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_24)
+                                         0.175 4.67e-04 3.71e-03     0.179   2.6
+  genblk2[13].wbuf (SRAM_SP_WORDWD256_DWD16_SIZE16_2)
+                                      4.65e-02 2.05e-04 7.55e-04  4.74e-02   0.7
+  genblk3[8].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_23)
+                                         0.175 4.67e-04 3.71e-03     0.179   2.6
+  genblk3[10].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_21)
+                                         0.175 4.68e-04 3.71e-03     0.179   2.6
+  genblk2[14].wbuf (SRAM_SP_WORDWD256_DWD16_SIZE16_1)
+                                      4.65e-02 2.06e-04 7.55e-04  4.74e-02   0.7
+  genblk3[9].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_22)
+                                         0.175 4.70e-04 3.71e-03     0.179   2.6
+  genblk2[15].wbuf (SRAM_SP_WORDWD256_DWD16_SIZE16_0)
+                                      4.65e-02 2.07e-04 7.55e-04  4.75e-02   0.7
+  genblk3[16].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_15)
+                                         0.175 4.69e-04 3.71e-03     0.179   2.6
+  clk_gate_rw_state_reg_0 (SNPS_CLOCK_GATE_HIGH_BufferTest_2)
+                                      7.40e-06 2.23e-06 2.35e-08  9.65e-06   0.0
+  clk_gate_rw_state_reg_1 (SNPS_CLOCK_GATE_HIGH_BufferTest_1)
+                                      4.94e-06 7.33e-07 2.28e-08  5.69e-06   0.0
+  genblk3[17].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_14)
+                                         0.175 4.70e-04 3.71e-03     0.179   2.6
+  genblk3[18].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_13)
+                                         0.175 4.71e-04 3.71e-03     0.179   2.6
+  genblk3[19].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_12)
+                                         0.175 4.67e-04 3.71e-03     0.179   2.6
+  genblk2[0].wbuf (SRAM_SP_WORDWD256_DWD16_SIZE16_15)
+                                      4.65e-02 2.04e-04 7.55e-04  4.74e-02   0.7
+  genblk3[30].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_1)
+                                         0.175 4.69e-04 3.71e-03     0.179   2.6
+  genblk2[1].wbuf (SRAM_SP_WORDWD256_DWD16_SIZE16_14)
+                                      4.65e-02 2.06e-04 7.55e-04  4.74e-02   0.7
+  genblk3[31].ibuf (SRAM_SP_WORDWD1024_DWD32_SIZE32_0)
+                                         0.175 4.65e-04 3.71e-03     0.179   2.6
+  genblk2[2].wbuf (SRAM_SP_WORDWD256_DWD16_SIZE16_13)
+                                      4.65e-02 2.06e-04 7.55e-04  4.74e-02   0.7
+  genblk2[3].wbuf (SRAM_SP_WORDWD256_DWD16_SIZE16_12)
+                                      4.65e-02 2.08e-04 7.54e-04  4.75e-02   0.7
+  genblk1[10].ibuf (SRAM_SP_WORDWD512_DWD16_SIZE16_5)
+                                      1.63e-02 5.91e-05 9.02e-04  1.73e-02   0.3
+  genblk2[4].wbuf (SRAM_SP_WORDWD256_DWD16_SIZE16_11)
+                                      4.65e-02 2.05e-04 7.54e-04  4.74e-02   0.7
+1
+****************************************
+Report : Averaged Power
+Design : BufferTest
+Version: M-2017.06-SP2
+Date   : Fri Jul 12 16:47:25 2019
+****************************************
+
+
+
+  Attributes
+  ----------
+      i  -  Including register clock pin internal power
+      u  -  User defined power group
+
+                        Internal  Switching  Leakage    Total
+Power Group             Power     Power      Power      Power   (     %)  Attrs
+--------------------------------------------------------------------------------
+clock_network              0.0000    0.0000    0.0000    0.0000 ( 0.00%)  i
+register                   0.0000    0.0000    0.0000    0.0000 ( 0.00%)  
+combinational           9.586e-03    0.0182 2.988e-04    0.0280 ( 0.41%)  
+sequential              8.371e-05 1.173e-05 5.861e-07 9.603e-05 ( 0.00%)  
+memory                     6.5954 2.695e-03    0.1453    6.7434 (99.58%)  
+io_pad                     0.0000    0.0000    0.0000    0.0000 ( 0.00%)  
+black_box                  0.0000    0.0000    0.0000    0.0000 ( 0.00%)  
+
+  Net Switching Power  =    0.0209   ( 0.31%)
+  Cell Internal Power  =    6.6051   (97.54%)
+  Cell Leakage Power   =    0.1456   ( 2.15%)
+                         ---------
+Total Power            =    6.7715  (100.00%)
+
+1
