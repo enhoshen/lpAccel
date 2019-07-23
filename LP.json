@@ -79,11 +79,22 @@
       "options": {
         "automatic-rename": "off"
       },
+      "window_name": "power",
+      "layout": "bd64,207x58,0,0",
+      "panes":[
+        "tool 17"
+      ],
+      "start_directory": "/home/enhoshen/research/lpAccel/syn",
+      "window_index":6
+    },
+      "options": {
+        "automatic-rename": "off"
+      },
       "window_name": "notes",
       "layout": "bd64,207x58,0,0",
       "panes":[],
       "start_directory": "/home/enhoshen/research/lpAccel/",
-      "window_index":6
+      "window_index":7
     },
     {
       "options": {
@@ -93,7 +104,7 @@
       "layout": "bd63,207x58,0,0",
       "panes": [],
       "start_directory": "/home/enhoshen/media3temp",
-      "window_index":7
+      "window_index":8
     }
   ]
 }
