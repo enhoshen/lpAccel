@@ -61,4 +61,14 @@ and the following synthesis results makes much more sense.
 ``` 
 from this example, the moral is that when examine a unreasonable large synthesis result, you might  
 need to check **critical path**, where it might be a cause of unblocked comb wires.
+## Unexpected broken synthesis with rtl simulation intact
+* This could be related to clock gate signal closely
+```verilog
+//inside DatapathController
+    ce = s_main == MAIN || PE_inst.dval;
+    // this is used as a clock gating signal
+    // this seems to break the entire controller so the system breaks entirely
+    ce = s_main == MAIN || s_main == IDLE;
+```
+it is very very hard to pinpoint the mistake of a failed synthesized code out of the blue especially for the simulation results working perfectly. So modify your clock-gating signal very carefully.
 
