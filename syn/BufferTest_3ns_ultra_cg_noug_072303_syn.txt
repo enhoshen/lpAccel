@@ -1,0 +1,429 @@
+Information: Updating design information... (UID-85)
+Warning: Design 'BufferTest' contains 1 high-fanout nets. A fanout number of 20 will be used for delay calculations involving these nets. (TIM-134)
+Warning: A non-unate path in clock network for clock 'i_clk'
+ from pin 'clk_gate_input_addr_reg/latch/CKcheckpin1' is detected. (TIM-052)
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : BufferTest
+Version: O-2018.06
+Date   : Tue Jul 23 03:13:52 2019
+****************************************
+
+ # A fanout number of 20 was used for high fanout net computations.
+
+Operating Conditions: typical   Library: typical
+Wire Load Model Mode: top
+
+  Startpoint: w_GB_rdy (input port clocked by i_clk)
+  Endpoint: clk_gate_gb_addr_reg/latch
+            (rising edge-triggered flip-flop clocked by i_clk')
+  Path Group: i_clk
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  BufferTest         tsmc090_wl10          typical
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock i_clk (rise edge)                                 0.00       0.00
+  clock network delay (ideal)                             0.10       0.10
+  input external delay                                    0.01       0.11 r
+  w_GB_rdy (in)                                           0.00       0.11 r
+  C210/Y (AND2X8)                                         0.00       0.11 r
+  C208/Y (OR2X8)                                          0.00       0.11 r
+  clk_gate_gb_addr_reg/EN (SNPS_CLOCK_GATE_HIGH_BufferTest_0)
+                                                          0.00       0.11 r
+  clk_gate_gb_addr_reg/latch/E (TLATNTSCAX2)              0.00       0.11 r
+  data arrival time                                                  0.11
+
+  clock i_clk' (rise edge)                                1.50       1.50
+  clock network delay (ideal)                             0.10       1.60
+  clock uncertainty                                      -0.10       1.50
+  clk_gate_gb_addr_reg/latch/CKcheckpin1 (TLATNTSCAX2)
+                                                          0.00       1.50 r
+  library setup time                                     -0.09       1.41
+  data required time                                                 1.41
+  --------------------------------------------------------------------------
+  data required time                                                 1.41
+  data arrival time                                                 -0.11
+  --------------------------------------------------------------------------
+  slack (MET)                                                        1.30
+
+
+1
+ 
+****************************************
+Report : area
+Design : BufferTest
+Version: O-2018.06
+Date   : Tue Jul 23 03:13:52 2019
+****************************************
+
+Library(s) Used:
+
+    typical (File: /opt/CAD/cell_lib/CBDK_TSMC90GUTM_Arm_f1.0/CIC/SynopsysDC/db/typical.db)
+    SRAM_SP_800x32 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/SRAM_SP_800x32.db)
+    SRAM_SP_256x16 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/SRAM_SP_256x16.db)
+    SRAM_SP_512x16 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/SRAM_SP_512x16.db)
+
+Number of ports:                          591
+Number of nets:                           941
+Number of cells:                          309
+Number of combinational cells:            257
+Number of sequential cells:                39
+Number of macros/black boxes:               6
+Number of buf/inv:                        121
+Number of references:                      32
+
+Combinational area:               3098.995126
+Buf/Inv area:                     2423.735920
+Noncombinational area:             563.774397
+Macro/Black Box area:           338773.937500
+Net Interconnect area:           39806.865784
+
+Total cell area:                342436.707023
+Total area:                     382243.572807
+1
+ 
+****************************************
+Report : cell
+Design : BufferTest
+Version: O-2018.06
+Date   : Tue Jul 23 03:13:52 2019
+****************************************
+
+Attributes:
+    b - black box (unknown)
+   cg - clock gating logic
+    d - dont_touch
+    h - hierarchical
+   mo - map_only
+    n - noncombinational
+    p - parameterized
+    r - removable
+    u - contains unmapped logic
+
+Cell                      Reference       Library             Area  Attributes
+--------------------------------------------------------------------------------
+C169                      AND2X8          typical         9.878400  d, mo
+C171                      AND2X8          typical         9.878400  d, mo
+C173                      AND2X8          typical         9.878400  d, mo
+C175                      AND2X8          typical         9.878400  d, mo
+C177                      AND2X8          typical         9.878400  d, mo
+C179                      AND2X8          typical         9.878400  d, mo
+C181                      OR2X8           typical         9.172800  d, mo
+C182                      AND2X8          typical         9.878400  d, mo
+C183                      AND2X8          typical         9.878400  d, mo
+C184                      OR2X8           typical         9.172800  d, mo
+C185                      AND2X8          typical         9.878400  d, mo
+C186                      AND2X8          typical         9.878400  d, mo
+C187                      OR2X8           typical         9.172800  d, mo
+C188                      AND2X8          typical         9.878400  d, mo
+C189                      AND2X8          typical         9.878400  d, mo
+C190                      OR2X8           typical         9.172800  d, mo
+C191                      AND2X8          typical         9.878400  d, mo
+C192                      AND2X8          typical         9.878400  d, mo
+C196                      OR2X8           typical         9.172800  d, mo
+C197                      AND2X8          typical         9.878400  d, mo
+C198                      AND2X8          typical         9.878400  d, mo
+C202                      OR2X8           typical         9.172800  d, mo
+C203                      AND2X8          typical         9.878400  d, mo
+C204                      AND2X8          typical         9.878400  d, mo
+C208                      OR2X8           typical         9.172800  d, mo
+C209                      AND2X8          typical         9.878400  d, mo
+C210                      AND2X8          typical         9.878400  d, mo
+U5                        CLKINVX2        typical         2.116800  d
+U6                        CLKINVX2        typical         2.116800  d
+U7                        CLKINVX2        typical         2.116800  d
+U8                        CLKINVX2        typical         2.116800  d
+U9                        CLKINVX2        typical         2.116800  d
+U10                       CLKINVX2        typical         2.116800  d
+U11                       INVXL           typical         2.116800  
+U12                       AOI2BB1X1       typical         4.233600  
+U13                       OA21X1          typical         4.939200  
+U14                       OA21X1          typical         4.939200  
+U15                       OA21X1          typical         4.939200  
+U16                       NOR2X4          typical         4.939200  
+U17                       AOI21X1         typical         3.528000  
+U18                       NOR2X4          typical         4.939200  
+U19                       NOR2X4          typical         4.939200  
+U20                       NOR2X4          typical         4.939200  
+U21                       NOR2X4          typical         4.939200  
+U22                       AND2X2          typical         3.528000  
+U23                       AND2X2          typical         3.528000  
+U24                       AND2X2          typical         3.528000  
+U25                       AND2X2          typical         3.528000  
+U26                       AND2X2          typical         3.528000  
+U27                       AND2X2          typical         3.528000  
+U28                       AND2X2          typical         3.528000  
+U29                       AND2X2          typical         3.528000  
+U30                       AND2X2          typical         3.528000  
+U31                       AND2X2          typical         3.528000  
+U32                       AND2X2          typical         3.528000  
+U33                       AND2X2          typical         3.528000  
+U34                       AND2X2          typical         3.528000  
+U35                       AND2X2          typical         3.528000  
+U36                       AND2X2          typical         3.528000  
+U37                       AND2X2          typical         3.528000  
+U38                       AND2X2          typical         3.528000  
+U39                       AND2X2          typical         3.528000  
+U40                       AND2X2          typical         3.528000  
+U41                       AND2X2          typical         3.528000  
+U42                       AND2X2          typical         3.528000  
+U43                       AND2X2          typical         3.528000  
+U44                       AND2X2          typical         3.528000  
+U45                       AND2X2          typical         3.528000  
+U46                       AND2X2          typical         3.528000  
+U47                       AND2X2          typical         3.528000  
+U48                       AND2X2          typical         3.528000  
+U49                       AND2X2          typical         3.528000  
+U50                       AND2X2          typical         3.528000  
+U51                       AND2X2          typical         3.528000  
+U52                       AND2X2          typical         3.528000  
+U53                       AND2X2          typical         3.528000  
+U54                       AND2X2          typical         3.528000  
+U55                       AND2X2          typical         3.528000  
+U56                       AND2X2          typical         3.528000  
+U57                       AND2X2          typical         3.528000  
+U58                       AND2X2          typical         3.528000  
+U59                       AND2X2          typical         3.528000  
+U60                       AND2X2          typical         3.528000  
+U61                       AND2X2          typical         3.528000  
+U62                       AND2X2          typical         3.528000  
+U63                       AND2X2          typical         3.528000  
+U64                       AND2X2          typical         3.528000  
+U65                       AND2X2          typical         3.528000  
+U66                       AND2X2          typical         3.528000  
+U67                       AND2X2          typical         3.528000  
+U68                       AND2X2          typical         3.528000  
+U69                       AND2X2          typical         3.528000  
+U70                       AND2X2          typical         3.528000  
+U71                       AND2X2          typical         3.528000  
+U72                       AND2X2          typical         3.528000  
+U73                       AND2X2          typical         3.528000  
+U74                       AND2X2          typical         3.528000  
+U75                       AND2X2          typical         3.528000  
+U76                       AND2X2          typical         3.528000  
+U77                       AND2X2          typical         3.528000  
+U78                       AND2X2          typical         3.528000  
+U79                       AND2X2          typical         3.528000  
+U80                       AND2X2          typical         3.528000  
+U81                       AND2X2          typical         3.528000  
+U82                       AND2X2          typical         3.528000  
+U83                       AND2X2          typical         3.528000  
+U84                       AND2X2          typical         3.528000  
+U85                       AND2X2          typical         3.528000  
+U86                       NOR2X4          typical         4.939200  
+U87                       INVX2           typical         2.116800  
+U88                       INVX2           typical         2.116800  
+U89                       INVX2           typical         2.116800  
+U90                       AND2XL          typical         3.528000  
+U91                       INVX2           typical         2.116800  
+U92                       INVX2           typical         2.116800  
+U93                       INVX2           typical         2.116800  
+U94                       NAND2X1         typical         2.822400  
+U95                       OA21X1          typical         4.939200  
+U96                       AOI21X1         typical         3.528000  
+U97                       AOI21X1         typical         3.528000  
+U98                       AOI21X1         typical         3.528000  
+U99                       INVX1           typical         2.116800  
+U103                      AOI2B1XL        typical         4.939200  
+U104                      OA21XL          typical         4.939200  
+U105                      AOI21XL         typical         3.528000  
+U106                      AOI21XL         typical         3.528000  
+U107                      OA21XL          typical         4.939200  
+U108                      OA21XL          typical         4.939200  
+U109                      OA21XL          typical         4.939200  
+U110                      OA21XL          typical         4.939200  
+U111                      OA21XL          typical         4.939200  
+U112                      AOI21XL         typical         3.528000  
+U113                      AOI21XL         typical         3.528000  
+U114                      OA21XL          typical         4.939200  
+U115                      NOR2X2          typical         2.822400  
+U116                      NAND2X2         typical         2.822400  
+U117                      NAND2X2         typical         2.822400  
+U118                      NOR2X4          typical         4.939200  
+U119                      NAND2X2         typical         2.822400  
+U120                      NAND2X2         typical         2.822400  
+U121                      NAND2X2         typical         2.822400  
+U122                      NAND2X2         typical         2.822400  
+U123                      NAND2X2         typical         2.822400  
+U124                      CLKBUFX40       typical         24.695999 
+U125                      CLKBUFX40       typical         24.695999 
+U126                      CLKBUFX40       typical         24.695999 
+U127                      CLKBUFX40       typical         24.695999 
+U128                      CLKBUFX40       typical         24.695999 
+U129                      CLKBUFX40       typical         24.695999 
+U130                      CLKBUFX40       typical         24.695999 
+U131                      CLKBUFX40       typical         24.695999 
+U132                      CLKBUFX40       typical         24.695999 
+U133                      CLKBUFX40       typical         24.695999 
+U134                      CLKBUFX40       typical         24.695999 
+U135                      CLKBUFX40       typical         24.695999 
+U136                      CLKBUFX40       typical         24.695999 
+U137                      CLKBUFX40       typical         24.695999 
+U138                      CLKBUFX40       typical         24.695999 
+U139                      CLKBUFX40       typical         24.695999 
+U140                      CLKBUFX40       typical         24.695999 
+U141                      CLKBUFX40       typical         24.695999 
+U142                      CLKBUFX40       typical         24.695999 
+U143                      CLKBUFX40       typical         24.695999 
+U144                      CLKBUFX40       typical         24.695999 
+U145                      CLKBUFX40       typical         24.695999 
+U146                      CLKBUFX40       typical         24.695999 
+U147                      CLKBUFX40       typical         24.695999 
+U148                      CLKBUFX40       typical         24.695999 
+U149                      CLKBUFX40       typical         24.695999 
+U150                      CLKBUFX40       typical         24.695999 
+U151                      CLKBUFX40       typical         24.695999 
+U152                      CLKBUFX40       typical         24.695999 
+U153                      CLKBUFX40       typical         24.695999 
+U154                      CLKBUFX40       typical         24.695999 
+U155                      CLKBUFX40       typical         24.695999 
+U156                      CLKBUFX40       typical         24.695999 
+U157                      CLKBUFX40       typical         24.695999 
+U158                      CLKBUFX40       typical         24.695999 
+U159                      CLKBUFX40       typical         24.695999 
+U160                      CLKBUFX40       typical         24.695999 
+U161                      CLKBUFX40       typical         24.695999 
+U162                      CLKBUFX40       typical         24.695999 
+U163                      CLKBUFX40       typical         24.695999 
+U164                      CLKBUFX40       typical         24.695999 
+U165                      CLKBUFX40       typical         24.695999 
+U166                      CLKBUFX40       typical         24.695999 
+U167                      CLKBUFX40       typical         24.695999 
+U168                      CLKBUFX40       typical         24.695999 
+U169                      CLKBUFX40       typical         24.695999 
+U170                      CLKBUFX40       typical         24.695999 
+U171                      CLKBUFX40       typical         24.695999 
+U172                      CLKBUFX40       typical         24.695999 
+U173                      CLKBUFX40       typical         24.695999 
+U174                      CLKBUFX40       typical         24.695999 
+U175                      CLKBUFX40       typical         24.695999 
+U176                      CLKBUFX40       typical         24.695999 
+U177                      CLKBUFX40       typical         24.695999 
+U178                      CLKBUFX40       typical         24.695999 
+U179                      CLKBUFX40       typical         24.695999 
+U180                      CLKBUFX40       typical         24.695999 
+U181                      CLKBUFX40       typical         24.695999 
+U182                      CLKBUFX40       typical         24.695999 
+U183                      CLKBUFX40       typical         24.695999 
+U184                      CLKBUFX40       typical         24.695999 
+U185                      CLKBUFX40       typical         24.695999 
+U186                      CLKBUFX40       typical         24.695999 
+U187                      CLKBUFX40       typical         24.695999 
+U188                      NAND3X2         typical         4.233600  
+U189                      NAND3X2         typical         4.233600  
+U190                      INVX2           typical         2.116800  
+U191                      XNOR2X1         typical         5.644800  
+U192                      NAND2X2         typical         2.822400  
+U193                      INVXL           typical         2.116800  
+U194                      INVXL           typical         2.116800  
+U195                      AND3X2          typical         4.233600  
+U196                      XNOR2X1         typical         5.644800  
+U197                      XNOR2X1         typical         5.644800  
+clk_gate_gb_addr_reg      SNPS_CLOCK_GATE_HIGH_BufferTest_0
+                                                          12.700800 b, cg, h
+clk_gate_input_addr_reg   SNPS_CLOCK_GATE_HIGH_BufferTest_2
+                                                          12.700800 b, cg, h
+clk_gate_weight_addr_reg  SNPS_CLOCK_GATE_HIGH_BufferTest_1
+                                                          12.700800 b, cg, h
+gb_addr_reg[0]            DFFRHQX8        typical         25.401600 n
+gb_addr_reg[1]            DFFRHQX8        typical         25.401600 n
+gb_addr_reg[2]            DFFRHQX8        typical         25.401600 n
+gb_addr_reg[3]            DFFRHQX8        typical         25.401600 n
+gb_addr_reg[4]            DFFRHQX8        typical         25.401600 n
+gb_addr_reg[5]            DFFRHQX8        typical         25.401600 n
+gb_addr_reg[6]            DFFRHQX8        typical         25.401600 n
+gb_addr_reg[7]            DFFRHQX8        typical         25.401600 n
+gb_addr_reg[8]            DFFRHQX8        typical         25.401600 n
+gb_addr_reg[9]            DFFRHQX8        typical         25.401600 n
+genblk1[0].ibuf           SRAM_SP_WORDWD512_DWD16_SIZE1   33943.689899
+                                                                    b, h, p
+genblk2[0].wbuf           SRAM_SP_WORDWD256_DWD16_SIZE1   28086.424274
+                                                                    b, h, p
+genblk3[0].ibuf           SRAM_SP_WORDWD800_DWD32_SIZE2_1 138775.514850
+                                                                    b, h, p
+genblk3[1].ibuf           SRAM_SP_WORDWD800_DWD32_SIZE2_0 138775.514850
+                                                                    b, h, p
+input_addr_reg[0]         DFFRQX4         typical         16.228800 n
+input_addr_reg[1]         DFFRQX4         typical         16.228800 n
+input_addr_reg[2]         DFFRQX4         typical         16.228800 n
+input_addr_reg[3]         DFFRQX4         typical         16.228800 n
+input_addr_reg[4]         DFFRQX2         typical         15.523200 n
+input_addr_reg[5]         DFFRQX4         typical         16.228800 n
+input_addr_reg[6]         DFFRQX2         typical         15.523200 n
+input_addr_reg[7]         DFFRQX4         typical         16.228800 n
+input_addr_reg[8]         DFFRQX2         typical         15.523200 n
+weight_addr_reg[0]        DFFRQX4         typical         16.228800 n
+weight_addr_reg[1]        DFFRQX4         typical         16.228800 n
+weight_addr_reg[2]        DFFRQX4         typical         16.228800 n
+weight_addr_reg[3]        DFFRQX2         typical         15.523200 n
+weight_addr_reg[4]        DFFRQX4         typical         16.228800 n
+weight_addr_reg[5]        DFFRQX2         typical         15.523200 n
+weight_addr_reg[6]        DFFRQX4         typical         16.228800 n
+weight_addr_reg[7]        DFFRQX2         typical         15.523200 n
+--------------------------------------------------------------------------------
+Total 251 cells                                           342436.707023
+1
+ 
+****************************************
+Report : power
+        -analysis_effort low
+Design : BufferTest
+Version: O-2018.06
+Date   : Tue Jul 23 03:13:52 2019
+****************************************
+
+
+Library(s) Used:
+
+    typical (File: /opt/CAD/cell_lib/CBDK_TSMC90GUTM_Arm_f1.0/CIC/SynopsysDC/db/typical.db)
+    SRAM_SP_800x32 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/SRAM_SP_800x32.db)
+    SRAM_SP_256x16 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/SRAM_SP_256x16.db)
+    SRAM_SP_512x16 (File: /home/enhoshen/research/lpAccel/src/MEM/memdb/SRAM_SP_512x16.db)
+
+
+Operating Conditions: typical   Library: typical
+Wire Load Model Mode: top
+
+Design        Wire Load Model            Library
+------------------------------------------------
+BufferTest             tsmc090_wl10      typical
+
+
+Global Operating Voltage = 1    
+Power-specific unit information :
+    Voltage Units = 1V
+    Capacitance Units = 1.000000pf
+    Time Units = 1ns
+    Dynamic Power Units = 1mW    (derived from V,C,T units)
+    Leakage Power Units = 1pW
+
+
+  Cell Internal Power  =  33.6432 mW   (95%)
+  Net Switching Power  =   1.7847 mW    (5%)
+                         ---------
+Total Dynamic Power    =  35.4279 mW  (100%)
+
+Cell Leakage Power     = 535.3110 uW
+
+
+                 Internal         Switching           Leakage            Total
+Power Group      Power            Power               Power              Power   (   %    )  Attrs
+--------------------------------------------------------------------------------------------------
+io_pad             0.0000            0.0000            0.0000            0.0000  (   0.00%)
+memory            33.3294        3.5492e-02        5.2340e+08           33.8883  (  94.23%)
+black_box          0.0000            0.0000            0.0000            0.0000  (   0.00%)
+clock_network  1.7743e-02        8.0249e-02        7.0483e+04        9.8063e-02  (   0.27%)
+register           0.1390        4.4514e-02        8.1283e+05            0.1843  (   0.51%)
+sequential         0.0000            0.0000            0.0000            0.0000  (   0.00%)
+combinational      0.1570            1.6245        1.1028e+07            1.7925  (   4.98%)
+--------------------------------------------------------------------------------------------------
+Total             33.6432 mW         1.7847 mW     5.3531e+08 pW        35.9633 mW
+1
